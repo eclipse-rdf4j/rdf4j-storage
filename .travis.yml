@@ -1,7 +1,7 @@
 language: java
 jdk:
   - oraclejdk8
-script: travis_wait mvn verify
+script: travis_wait 60 mvn verify
 branches:
   only:
   - master
