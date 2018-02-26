@@ -28,7 +28,6 @@ import org.eclipse.rdf4j.query.algebra.TupleExpr;
 import org.eclipse.rdf4j.query.algebra.evaluation.EvaluationStrategy;
 import org.eclipse.rdf4j.query.algebra.evaluation.QueryBindingSet;
 import org.eclipse.rdf4j.query.impl.EmptyBindingSet;
-import org.eclipse.rdf4j.util.iterators.EmptyIterator;
 
 /**
  * Generic hash join implementation suitable for use by Sail implementations.
@@ -138,10 +137,8 @@ public class HashJoinIteration extends LookAheadIteration<BindingSet, QueryEvalu
 				if (currentScanElem instanceof EmptyBindingSet) {
 					// the empty bindingset should be merged with all bindingset in the
 					// hash table
-					Collection<List<BindingSet>> values = nextHashTable.values();
-					boolean empty = values.isEmpty() || values.size() == 1 && values.contains(null);
-					nextHashTableValues = hashTableValues = empty ? new EmptyIterator<>()
-							: new UnionIterator<BindingSet>(values);
+					nextHashTableValues = hashTableValues = new UnionIterator<BindingSet>(
+							nextHashTable.values());
 					if (!nextHashTableValues.hasNext()) {
 						currentScanElem = null;
 						closeHashValue(nextHashTableValues);

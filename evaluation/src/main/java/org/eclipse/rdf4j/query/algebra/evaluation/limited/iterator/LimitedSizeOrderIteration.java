@@ -7,7 +7,9 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.query.algebra.evaluation.limited.iterator;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.NavigableMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
@@ -43,16 +45,39 @@ public class LimitedSizeOrderIteration extends OrderIterator {
 	}
 
 	@Override
-	protected void increment() throws QueryEvaluationException {
-		if (used.incrementAndGet() > maxSize) {
-			throw new QueryEvaluationException(
-					"Size limited reached inside order operator query, max size is:" + maxSize);
-		}
+	protected void removeLast(Collection<BindingSet> lastResults) {
+		super.removeLast(lastResults);
+		used.decrementAndGet();
 	}
 
 	@Override
-	protected void decrement(int amount) throws QueryEvaluationException {
-		used.getAndAdd(-amount);
+	protected boolean add(BindingSet next, Collection<BindingSet> list)
+		throws QueryEvaluationException
+	{
+
+		return LimitedSizeIteratorUtil.add(next, list, used, maxSize);
+	}
+
+	@Override
+	protected Integer put(NavigableMap<BindingSet, Integer> map, BindingSet next, int count)
+		throws QueryEvaluationException
+	{
+		final Integer i = map.get(next);
+		final int oldCount = i == null ? 0 : i;
+
+		final Integer put = super.put(map, next, count);
+
+		if (oldCount < count) {
+			if (used.incrementAndGet() > maxSize) {
+				throw new QueryEvaluationException(
+						"Size limited reached inside order operator query, max size is:" + maxSize);
+			}
+		}
+		else if (oldCount > count) {
+			used.decrementAndGet();
+		}
+
+		return put;
 	}
 
 }

@@ -92,7 +92,7 @@ public class SPARQLUpdateDataBlockParser extends TriGParser {
 	}
 
 	@Override
-	protected Resource parseNodeID()
+	protected BNode parseNodeID()
 		throws IOException, RDFParseException
 	{
 		if (isAllowBlankNodes()) {
