@@ -61,9 +61,9 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 
 	static class Factory {
 
-		static List<PropertyShape> getProprtyShapes(Resource ShapeId, SailRepositoryConnection connection, Shape shape) {
+		static List<PropertyShape> getProprtyShapes(Resource ShapeId, ShaclSailConnection connection, Shape shape) {
 
-			try (Stream<Statement> stream = Iterations.stream(connection.getStatements(ShapeId, SHACL.PROPERTY, null))) {
+			try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(ShapeId, SHACL.PROPERTY, null, true))) {
 				return stream
 					.map(Statement::getObject)
 					.map(v -> (Resource) v)
@@ -91,15 +91,15 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 		}
 
 
-		private static boolean hasMinCount(Resource id, SailRepositoryConnection connection) {
+		private static boolean hasMinCount(Resource id, ShaclSailConnection connection) {
 			return connection.hasStatement(id, SHACL.MIN_COUNT, null, true);
 		}
 
-		private static boolean hasMaxCount(Resource id, SailRepositoryConnection connection) {
+		private static boolean hasMaxCount(Resource id, ShaclSailConnection connection) {
 			return connection.hasStatement(id, SHACL.MAX_COUNT, null, true);
 		}
 
-		private static boolean hasDatatype(Resource id, SailRepositoryConnection connection) {
+		private static boolean hasDatatype(Resource id, ShaclSailConnection connection) {
 			return connection.hasStatement(id, SHACL.DATATYPE, null, true);
 		}
 

@@ -24,7 +24,7 @@ public class PathPropertyShape extends PropertyShape {
 
 	Path path;
 
-	PathPropertyShape(Resource id, SailRepositoryConnection connection, Shape shape) {
+	PathPropertyShape(Resource id, ShaclSailConnection connection, Shape shape) {
 		super(id, shape);
 
 		// only simple path is supported. There are also no checks. Any use of paths that are not single predicates is undefined.

@@ -23,20 +23,21 @@ import java.util.List;
  */
 public class ShaclSail extends NotifyingSailWrapper {
 
-	public List<Shape> shapes;
+	private List<Shape> shapes;
 
 	ShaclSailConfig config = new ShaclSailConfig();
 
-	public ShaclSail(NotifyingSail baseSail, SailRepository shaclSail) {
+	public ShaclSail(NotifyingSail baseSail) {
 		super(baseSail);
-		try (SailRepositoryConnection shaclSailConnection = shaclSail.getConnection()) {
-			shapes = Shape.Factory.getShapes(shaclSailConnection);
-		}
+//		try (SailRepositoryConnection shaclSailConnection = shaclSail.getConnection()) {
+//			shapes = Shape.Factory.getShapes(shaclSailConnection);
+//		}
 	}
 
 	@Override
 	public NotifyingSailConnection getConnection()
-		throws SailException {
+		throws SailException
+	{
 		return new ShaclSailConnection(this, super.getConnection(), super.getConnection());
 	}
 
@@ -46,6 +47,13 @@ public class ShaclSail extends NotifyingSailWrapper {
 
 	public void enableValidation() {
 		config.validationEnabled = true;
+	}
+	
+	protected List<Shape> getShapes(ShaclSailConnection conn) {
+		if (shapes == null) {
+			shapes = Shape.Factory.getShapes(conn);
+		}
+		return shapes;
 	}
 
 }

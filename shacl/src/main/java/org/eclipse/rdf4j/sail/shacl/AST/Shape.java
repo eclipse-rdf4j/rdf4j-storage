@@ -37,7 +37,7 @@ public class Shape implements PlanGenerator, RequiresEvalutation, QueryGenerator
 
 	private List<PropertyShape> propertyShapes;
 
-	public Shape(Resource id, SailRepositoryConnection connection) {
+	public Shape(Resource id, ShaclSailConnection connection) {
 		this.id = id;
 		propertyShapes = PropertyShape.Factory.getProprtyShapes(id, connection, this);
 	}
@@ -79,8 +79,8 @@ public class Shape implements PlanGenerator, RequiresEvalutation, QueryGenerator
 
 	public static class Factory {
 
-		public static List<Shape> getShapes(SailRepositoryConnection connection) {
-			try (Stream<Statement> stream = Iterations.stream(connection.getStatements(null, RDF.TYPE, SHACL.SHAPE))) {
+		public static List<Shape> getShapes(ShaclSailConnection connection) {
+			try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(null, RDF.TYPE, SHACL.SHAPE, true))) {
 				return stream.map(Statement::getSubject).map(shapeId -> {
 					if (hasTargetClass(shapeId, connection)) {
 						return new TargetClass(shapeId, connection);
@@ -93,7 +93,7 @@ public class Shape implements PlanGenerator, RequiresEvalutation, QueryGenerator
 			}
 		}
 
-		private static boolean hasTargetClass(Resource shapeId, SailRepositoryConnection connection) {
+		private static boolean hasTargetClass(Resource shapeId, ShaclSailConnection connection) {
 			return connection.hasStatement(shapeId, SHACL.TARGET_CLASS, null, true);
 		}
 	}

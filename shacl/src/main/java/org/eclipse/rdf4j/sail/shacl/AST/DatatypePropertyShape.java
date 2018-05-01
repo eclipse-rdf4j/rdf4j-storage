@@ -34,10 +34,10 @@ public class DatatypePropertyShape extends PathPropertyShape {
 
 	private final Resource datatype;
 
-	DatatypePropertyShape(Resource id, SailRepositoryConnection connection, Shape shape) {
+	DatatypePropertyShape(Resource id, ShaclSailConnection connection, Shape shape) {
 		super(id, connection, shape);
 
-		try (Stream<Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.DATATYPE, null, true))) {
+		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.DATATYPE, null, true))) {
 			datatype = stream.map(Statement::getObject).map(v -> (Resource) v).findAny().orElseThrow(() -> new RuntimeException("Expected to find sh:datatype on " + id));
 		}
 

@@ -38,10 +38,10 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 
 	private long maxCount;
 
-	MaxCountPropertyShape(Resource id, SailRepositoryConnection connection, Shape shape) {
+	MaxCountPropertyShape(Resource id, ShaclSailConnection connection, Shape shape) {
 		super(id, connection, shape);
 
-		try (Stream<Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.MAX_COUNT, null, true))) {
+		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.MAX_COUNT, null, true))) {
 			maxCount = stream.map(Statement::getObject).map(v -> (Literal) v).map(Literal::longValue).findAny().orElseThrow(() -> new RuntimeException("Expected to find sh:maxCount on " + id));
 		}
 

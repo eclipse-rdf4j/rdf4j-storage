@@ -35,10 +35,10 @@ public class TargetClass extends Shape {
 
 	Resource targetClass;
 
-	TargetClass(Resource id, SailRepositoryConnection connection) {
+	TargetClass(Resource id, ShaclSailConnection connection) {
 		super(id, connection);
 
-		try (Stream<Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.TARGET_CLASS, null))) {
+		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.TARGET_CLASS, null, true))) {
 			targetClass = stream.map(Statement::getObject).map(v -> (Resource) v).findAny().orElseThrow(() -> new RuntimeException("Expected to find sh:targetClass on " + id));
 		}
 
