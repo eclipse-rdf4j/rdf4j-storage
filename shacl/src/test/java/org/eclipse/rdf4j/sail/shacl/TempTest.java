@@ -29,10 +29,9 @@ public class TempTest {
 	@Test
 	public void a() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
@@ -72,10 +71,9 @@ public class TempTest {
 	@Test
 	public void b() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 //
@@ -106,10 +104,9 @@ public class TempTest {
 	@Test(expected = RepositoryException.class)
 	public void maxCount() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shaclMax.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 //			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
@@ -146,10 +143,9 @@ public class TempTest {
 	@Test
 	public void minCount() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 //			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
@@ -177,10 +173,9 @@ public class TempTest {
 	@Test
 	public void leftOuterJoin() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.CLASS);
@@ -217,10 +212,9 @@ public class TempTest {
 	@Test(expected = RepositoryException.class)
 	public void testShapeWithoutTargetClassRemove() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacleNoTargetClass.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 			connection.add(RDFS.CLASS, RDFS.LABEL, connection.getValueFactory().createLiteral("class1"));
@@ -240,10 +234,8 @@ public class TempTest {
 	@Test(expected = RepositoryException.class)
 	public void testShapeWithoutTargetClassAdd() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacleNoTargetClass.ttl")));
-		shaclSail.initialize();
-
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 			connection.add(RDFS.CLASS, RDFS.LABEL, connection.getValueFactory().createLiteral("class1"));
@@ -262,10 +254,9 @@ public class TempTest {
 	@Test
 	public void testShapeWithoutTargetClassValid() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacleNoTargetClass.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 			connection.commit();

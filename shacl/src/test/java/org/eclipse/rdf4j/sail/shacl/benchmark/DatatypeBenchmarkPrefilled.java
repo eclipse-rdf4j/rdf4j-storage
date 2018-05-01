@@ -19,7 +19,7 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.shacl.ShaclSail;
-import org.eclipse.rdf4j.sail.shacl.Utils;
+import org.eclipse.rdf4j.sail.shacl.TestUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -88,23 +88,20 @@ public class DatatypeBenchmarkPrefilled {
 		}
 
 
-		ShaclSail shaclRepo = new ShaclSail(new MemoryStore(), Utils.getSailRepository("shaclDatatype.ttl"));
-		this.shaclRepo = new SailRepository(shaclRepo);
-		this.shaclRepo.initialize();
+		this.shaclRepo = TestUtils.getShaclRepository("shaclDatatype.ttl");
 
 		memoryStoreRepo = new SailRepository(new MemoryStore());
 		memoryStoreRepo.initialize();
-
 
 		sparqlQueryMemoryStoreRepo = new SailRepository(new MemoryStore());
 		sparqlQueryMemoryStoreRepo.initialize();
 
 
-		shaclRepo.disableValidation();
+		((ShaclSail)shaclRepo.getSail()).disableValidation();
 		try (SailRepositoryConnection connection = this.shaclRepo.getConnection()) {
 			connection.add(allStatements2);
 		}
-		shaclRepo.enableValidation();
+		((ShaclSail)shaclRepo.getSail()).enableValidation();
 
 		try (SailRepositoryConnection connection = memoryStoreRepo.getConnection()) {
 			connection.add(allStatements2);

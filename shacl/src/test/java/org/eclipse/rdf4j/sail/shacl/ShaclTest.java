@@ -13,6 +13,9 @@ import org.eclipse.rdf4j.common.io.IOUtil;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.repository.util.Repositories;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
 import org.junit.Test;
@@ -35,13 +38,13 @@ import static org.junit.Assert.assertFalse;
 @RunWith(Parameterized.class)
 public class ShaclTest {
 
-	static final List<String> testCasePaths = Arrays.asList(
-		"test-cases/datatype/simple",
-		"test-cases/minCount/simple"
-	);
+	static final List<String> testCasePaths = Arrays.asList("test-cases/datatype/simple",
+			"test-cases/minCount/simple");
 
 	private final String testCasePath;
+
 	private final String path;
+
 	private final ExpectedResult expectedResult;
 
 	public ShaclTest(String testCasePath, String path, ExpectedResult expectedResult) {
@@ -53,8 +56,6 @@ public class ShaclTest {
 	{
 		LoggingNode.loggingEnabled = true;
 	}
-
-
 
 	@Parameterized.Parameters(name = "{2} - {1}")
 	public static Collection<Object[]> data() {
@@ -87,7 +88,8 @@ public class ShaclTest {
 				ret.add(path);
 				try {
 					resourceAsStream.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -97,28 +99,21 @@ public class ShaclTest {
 
 	}
 
-
 	static Collection<Object[]> getTestsToRun() {
 		List<Object[]> ret = new ArrayList<>();
-
 
 		for (String testCasePath : testCasePaths) {
 			for (ExpectedResult baseCase : ExpectedResult.values()) {
 				findTestCases(testCasePath, baseCase.name()).forEach(path -> {
-					Object[] temp = {testCasePath, path, baseCase};
+					Object[] temp = { testCasePath, path, baseCase };
 					ret.add(temp);
 
 				});
 			}
 		}
 
-
 		return ret;
 	}
-
-
-
-
 
 	void runTestCase(String shaclPath, String dataPath, ExpectedResult expectedResult) {
 
@@ -130,12 +125,9 @@ public class ShaclTest {
 			shaclPath = shaclPath + "/";
 		}
 
-
 		String shaclFile = shaclPath + "shacl.ttl";
 		System.out.println(shaclFile);
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository(shaclFile)));
-		shaclSail.initialize();
-
+		SailRepository shaclRepo = TestUtils.getShaclRepository(shaclFile);
 		boolean exception = false;
 		boolean ran = false;
 
@@ -150,15 +142,17 @@ public class ShaclTest {
 			ran = true;
 			System.out.println(name);
 
-			try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+			try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 				String query = IOUtil.readString(resourceAsStream);
 				connection.prepareUpdate(query).execute();
 
-			} catch (RepositoryException sailException) {
+			}
+			catch (RepositoryException sailException) {
 				exception = true;
 				System.out.println(sailException.getMessage());
 
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 
@@ -166,7 +160,8 @@ public class ShaclTest {
 		if (ran) {
 			if (expectedResult == ExpectedResult.valid) {
 				assertFalse(exception);
-			} else {
+			}
+			else {
 				assertTrue(exception);
 			}
 		}
@@ -183,14 +178,13 @@ public class ShaclTest {
 			shaclPath = shaclPath + "/";
 		}
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository(shaclPath + "shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository(shaclPath + "shacl.ttl");
 
 		boolean exception = false;
 		boolean ran = false;
 
-		try (SailRepositoryConnection shaclSailConnection = shaclSail.getConnection()) {
-			shaclSailConnection.begin(IsolationLevels.SNAPSHOT);
+		try (SailRepositoryConnection conn = shaclRepo.getConnection()) {
+			conn.begin(IsolationLevels.SNAPSHOT);
 
 			for (int j = 0; j < 100; j++) {
 
@@ -205,17 +199,19 @@ public class ShaclTest {
 
 				try {
 					String query = IOUtil.readString(resourceAsStream);
-					shaclSailConnection.prepareUpdate(query).execute();
+					conn.prepareUpdate(query).execute();
 
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 
 			try {
-				shaclSailConnection.commit();
+				conn.commit();
 
-			} catch (RepositoryException sailException) {
+			}
+			catch (RepositoryException sailException) {
 				exception = true;
 				System.out.println(sailException.getMessage());
 			}
@@ -223,7 +219,8 @@ public class ShaclTest {
 		if (ran) {
 			if (expectedResult == ExpectedResult.valid) {
 				assertFalse(exception);
-			} else {
+			}
+			else {
 				assertTrue(exception);
 			}
 		}
@@ -231,8 +228,8 @@ public class ShaclTest {
 	}
 
 	enum ExpectedResult {
-		valid, invalid
+		valid,
+		invalid
 	}
-
 
 }

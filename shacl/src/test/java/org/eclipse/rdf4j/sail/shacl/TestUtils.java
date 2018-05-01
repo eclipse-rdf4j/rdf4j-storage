@@ -10,6 +10,7 @@ package org.eclipse.rdf4j.sail.shacl;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -21,27 +22,30 @@ import java.util.UUID;
 /**
  * @author Håvard Ottestad
  */
-public class Utils {
+public class TestUtils {
 
-	public static SailRepository getSailRepository(String resourceName) {
-		SailRepository sailRepository = new SailRepository(new MemoryStore());
-		sailRepository.initialize();
-		try (SailRepositoryConnection connection = sailRepository.getConnection()) {
-			connection.add(Utils.class.getClassLoader().getResourceAsStream(resourceName), "", RDFFormat.TURTLE);
-		} catch (IOException | NullPointerException e) {
-			System.out.println("Error reading: " + resourceName);
+	public static SailRepository getShaclRepository(String shapesFile) {
+		SailRepository shaclRepository = new SailRepository(new ShaclSail(new MemoryStore()));
+		shaclRepository.initialize();
+		try (RepositoryConnection connection = shaclRepository.getConnection()) {
+			connection.add(TestUtils.class.getClassLoader().getResourceAsStream(shapesFile), "", RDFFormat.TURTLE,
+					ShaclSail.SHACL_GRAPH);
+		}
+		catch (IOException | NullPointerException e) {
+			System.out.println("Error reading: " + shapesFile);
 			throw new RuntimeException(e);
 		}
-		return sailRepository;
+		return shaclRepository;
 	}
-
 
 	static class Ex {
 
 		public final static String ns = "http://example.com/ns#";
 
 		public final static IRI Person = createIri("Person");
+
 		public final static IRI ssn = createIri("ssn");
+
 		public final static IRI name = createIri("name");
 
 		public static IRI createIri(String name) {

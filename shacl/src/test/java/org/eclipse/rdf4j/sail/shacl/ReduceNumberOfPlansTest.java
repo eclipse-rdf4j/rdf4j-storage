@@ -8,57 +8,69 @@
 
 package org.eclipse.rdf4j.sail.shacl;
 
+import static junit.framework.TestCase.assertEquals;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static junit.framework.TestCase.assertEquals;
 
 /**
  * @author Håvard Ottestad
  */
 public class ReduceNumberOfPlansTest {
 
+	private SailRepository shaclRepo;
+
+	@Before
+	public void setup() {
+		shaclRepo = TestUtils.getShaclRepository("reduceNumberOfPlansTest/shacl.ttl");
+	}
+
+	@After
+	public void teardown() {
+		shaclRepo.shutDown();
+	}
+
 	@Test
 	public void testAddingTypeStatement() {
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("reduceNumberOfPlansTest/shacl.ttl")));
-		shaclSail.initialize();
-
-
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 
-			ShaclSailConnection sailConnection = (ShaclSailConnection) connection.getSailConnection();
+			ShaclSailConnection sailConnection = (ShaclSailConnection)connection.getSailConnection();
 
 			sailConnection.fillAddedAndRemovedStatementRepositories();
-			List<PlanNode> collect = sailConnection.sail.shapes.stream().flatMap(shape -> shape.generatePlans(sailConnection, shape).stream()).collect(Collectors.toList());
+			List<PlanNode> collect = sailConnection.getShaclSail().getShapes(sailConnection).stream().flatMap(
+					shape -> shape.generatePlans(sailConnection, shape).stream()).collect(
+							Collectors.toList());
 
 			assertEquals(0, collect.size());
 
-			IRI person1 = Utils.Ex.createIri();
-			connection.add(person1, RDF.TYPE, Utils.Ex.Person);
+			IRI person1 = TestUtils.Ex.createIri();
+			connection.add(person1, RDF.TYPE, TestUtils.Ex.Person);
 			sailConnection.fillAddedAndRemovedStatementRepositories();
 
-			List<PlanNode> collect2 = sailConnection.sail.shapes.stream().flatMap(shape -> shape.generatePlans(sailConnection, shape).stream()).collect(Collectors.toList());
+			List<PlanNode> collect2 = sailConnection.getShaclSail().getShapes(
+					sailConnection).stream().flatMap(
+							shape -> shape.generatePlans(sailConnection, shape).stream()).collect(
+									Collectors.toList());
 
 			assertEquals(2, collect2.size());
 			ValueFactory vf = connection.getValueFactory();
-			connection.add(person1, Utils.Ex.ssn, vf.createLiteral("a"));
-			connection.add(person1, Utils.Ex.ssn, vf.createLiteral("b"));
-			connection.add(person1, Utils.Ex.name, vf.createLiteral("c"));
-
+			connection.add(person1, TestUtils.Ex.ssn, vf.createLiteral("a"));
+			connection.add(person1, TestUtils.Ex.ssn, vf.createLiteral("b"));
+			connection.add(person1, TestUtils.Ex.name, vf.createLiteral("c"));
 
 			connection.commit();
-
 
 		}
 
@@ -66,55 +78,55 @@ public class ReduceNumberOfPlansTest {
 
 	@Test
 	public void testRemovingPredicate() {
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("reduceNumberOfPlansTest/shacl.ttl")));
-		shaclSail.initialize();
 
-
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 
-			ShaclSailConnection sailConnection = (ShaclSailConnection) connection.getSailConnection();
+			ShaclSailConnection sailConnection = (ShaclSailConnection)connection.getSailConnection();
 
-			IRI person1 = Utils.Ex.createIri();
+			IRI person1 = TestUtils.Ex.createIri();
 
 			ValueFactory vf = connection.getValueFactory();
-			connection.add(person1, RDF.TYPE, Utils.Ex.Person);
-			connection.add(person1, Utils.Ex.ssn, vf.createLiteral("a"));
-			connection.add(person1, Utils.Ex.ssn, vf.createLiteral("b"));
-			connection.add(person1, Utils.Ex.name, vf.createLiteral("c"));
-
+			connection.add(person1, RDF.TYPE, TestUtils.Ex.Person);
+			connection.add(person1, TestUtils.Ex.ssn, vf.createLiteral("a"));
+			connection.add(person1, TestUtils.Ex.ssn, vf.createLiteral("b"));
+			connection.add(person1, TestUtils.Ex.name, vf.createLiteral("c"));
 
 			connection.commit();
 
-
 			connection.begin();
 
-
-			connection.remove(person1, Utils.Ex.ssn, vf.createLiteral("b"));
+			connection.remove(person1, TestUtils.Ex.ssn, vf.createLiteral("b"));
 
 			sailConnection.fillAddedAndRemovedStatementRepositories();
 
-			List<PlanNode> collect1 = sailConnection.sail.shapes.stream().flatMap(shape -> shape.generatePlans(sailConnection, shape).stream()).collect(Collectors.toList());
+			List<PlanNode> collect1 = sailConnection.getShaclSail().getShapes(
+					sailConnection).stream().flatMap(
+							shape -> shape.generatePlans(sailConnection, shape).stream()).collect(
+									Collectors.toList());
 			assertEquals(1, collect1.size());
 
-			connection.remove(person1, Utils.Ex.ssn, vf.createLiteral("a"));
-
+			connection.remove(person1, TestUtils.Ex.ssn, vf.createLiteral("a"));
 
 			sailConnection.fillAddedAndRemovedStatementRepositories();
 
-			List<PlanNode> collect2 = sailConnection.sail.shapes.stream().flatMap(shape -> shape.generatePlans(sailConnection, shape).stream()).collect(Collectors.toList());
+			List<PlanNode> collect2 = sailConnection.getShaclSail().getShapes(
+					sailConnection).stream().flatMap(
+							shape -> shape.generatePlans(sailConnection, shape).stream()).collect(
+									Collectors.toList());
 			assertEquals(1, collect2.size());
 
-			connection.remove(person1, Utils.Ex.name, vf.createLiteral("c"));
+			connection.remove(person1, TestUtils.Ex.name, vf.createLiteral("c"));
 			sailConnection.fillAddedAndRemovedStatementRepositories();
 
-			List<PlanNode> collect3 = sailConnection.sail.shapes.stream().flatMap(shape -> shape.generatePlans(sailConnection, shape).stream()).collect(Collectors.toList());
+			List<PlanNode> collect3 = sailConnection.getShaclSail().getShapes(
+					sailConnection).stream().flatMap(
+							shape -> shape.generatePlans(sailConnection, shape).stream()).collect(
+									Collectors.toList());
 			assertEquals(2, collect3.size());
 
-
 			connection.rollback();
-
 
 		}
 

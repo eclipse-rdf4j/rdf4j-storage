@@ -35,10 +35,8 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testCleanup() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
-
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("empty.ttl");
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
 
@@ -55,10 +53,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testTransactions() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
@@ -77,10 +74,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testRollback() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
@@ -108,10 +104,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testValidationFailedCleanup() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 
@@ -135,10 +130,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testValidationFailedCausesRollback() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 
@@ -160,10 +154,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testCleanupOnClose() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("shacl.ttl");
 
-		SailRepositoryConnection connection = shaclSail.getConnection();
+		SailRepositoryConnection connection = shaclRepo.getConnection();
 		connection.begin();
 
 		connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
@@ -176,7 +169,7 @@ public class TrackAddedStatementsTest {
 		assertNull(shaclSailConnection.getRemovedStatements());
 
 
-		assertEquals(0, size(shaclSail));
+		assertEquals(0, size(shaclRepo));
 
 
 	}
@@ -185,10 +178,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testAddRemoveAddRemove() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
 
 			connection.begin();
@@ -214,10 +206,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testAdd() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 			connection.begin();
 			//System.out.println(size(connection));
 
@@ -248,10 +239,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testAddRemove() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 			connection.begin();
 //			System.out.println(size(connection));
 
@@ -280,10 +270,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testRemove() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
 
 			connection.begin();
@@ -307,10 +296,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testRemoveWithoutAdding() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 
 			connection.begin();
 
@@ -330,10 +318,9 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testSingleRemove() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
+		SailRepository shaclRepo = TestUtils.getShaclRepository("empty.ttl");
 
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
 
 			connection.begin();
@@ -355,10 +342,8 @@ public class TrackAddedStatementsTest {
 	@Test
 	public void testSingleAdd() {
 
-		SailRepository shaclSail = new SailRepository(new ShaclSail(new MemoryStore(), Utils.getSailRepository("empty.ttl")));
-		shaclSail.initialize();
-
-		try (SailRepositoryConnection connection = shaclSail.getConnection()) {
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("empty.ttl");
+		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 			connection.begin();
 
 			connection.add(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);

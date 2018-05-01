@@ -44,7 +44,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 
 	private Repository removedStatements;
 
-	public final ShaclSail sail;
+	private final ShaclSail sail;
 
 	public Stats stats;
 
@@ -182,7 +182,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 
 		boolean allValid = true;
 
-		for (Shape shape : sail.shapes) {
+		for (Shape shape : sail.getShapes(this)) {
 			List<PlanNode> planNodes = shape.generatePlans(this, shape);
 			for (PlanNode planNode : planNodes) {
 				try (Stream<Tuple> stream = Iterations.stream(planNode.iterator())) {
@@ -206,6 +206,10 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 		return allValid;
 	}
 
+	ShaclSail getShaclSail() {
+		return sail;
+	}
+	
 	void fillAddedAndRemovedStatementRepositories() {
 
 		addedStatements = getNewMemorySail();

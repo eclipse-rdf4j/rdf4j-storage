@@ -8,15 +8,15 @@
 
 package org.eclipse.rdf4j.sail.shacl;
 
-import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import java.util.List;
+
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.helpers.NotifyingSailWrapper;
 import org.eclipse.rdf4j.sail.shacl.AST.Shape;
-
-import java.util.List;
 
 /**
  * @author Heshan Jayasinghe
@@ -25,6 +25,8 @@ public class ShaclSail extends NotifyingSailWrapper {
 
 	private List<Shape> shapes;
 
+	public static final IRI SHACL_GRAPH = SimpleValueFactory.getInstance().createIRI("shacl:graph");
+	
 	ShaclSailConfig config = new ShaclSailConfig();
 
 	public ShaclSail(NotifyingSail baseSail) {
