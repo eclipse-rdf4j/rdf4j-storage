@@ -15,6 +15,7 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SHACL;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
@@ -80,7 +81,7 @@ public class Shape implements PlanGenerator, RequiresEvalutation, QueryGenerator
 	public static class Factory {
 
 		public static List<Shape> getShapes(ShaclSailConnection connection) {
-			try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(null, RDF.TYPE, SHACL.SHAPE, true))) {
+			try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(null, RDF.TYPE, SHACL.SHAPE, true, ShaclSail.SHACL_GRAPH))) {
 				return stream.map(Statement::getSubject).map(shapeId -> {
 					if (hasTargetClass(shapeId, connection)) {
 						return new TargetClass(shapeId, connection);
@@ -94,7 +95,7 @@ public class Shape implements PlanGenerator, RequiresEvalutation, QueryGenerator
 		}
 
 		private static boolean hasTargetClass(Resource shapeId, ShaclSailConnection connection) {
-			return connection.hasStatement(shapeId, SHACL.TARGET_CLASS, null, true);
+			return connection.hasStatement(shapeId, SHACL.TARGET_CLASS, null, true, ShaclSail.SHACL_GRAPH);
 		}
 	}
 

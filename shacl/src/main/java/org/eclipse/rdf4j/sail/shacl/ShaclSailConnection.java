@@ -8,6 +8,7 @@
 
 package org.eclipse.rdf4j.sail.shacl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,8 +16,13 @@ import java.util.stream.Stream;
 
 import org.eclipse.rdf4j.IsolationLevel;
 import org.eclipse.rdf4j.IsolationLevels;
+import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.Iterations;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
@@ -35,10 +41,10 @@ import org.slf4j.LoggerFactory;
  * @author Heshan Jayasinghe
  */
 public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private NotifyingSailConnection previousStateConnection;
+	//	private NotifyingSailConnection previousStateConnection;
 
 	private Repository addedStatements;
 
@@ -52,11 +58,8 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 
 	private HashSet<Statement> removedStatementsSet = new HashSet<>();
 
-	ShaclSailConnection(ShaclSail sail, NotifyingSailConnection connection,
-			NotifyingSailConnection previousStateConnection)
-	{
+	ShaclSailConnection(ShaclSail sail, NotifyingSailConnection connection) {
 		super(connection);
-		this.previousStateConnection = previousStateConnection;
 		this.sail = sail;
 
 		if (sail.config.validationEnabled) {
@@ -85,10 +88,6 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 		}
 	}
 
-	public NotifyingSailConnection getPreviousStateConnection() {
-		return previousStateConnection;
-	}
-
 	public Repository getAddedStatements() {
 		return addedStatements;
 	}
@@ -107,12 +106,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 
 		stats = new Stats();
 
-		// start two transactions, synchronize on underlying sail so that we get two transactions immediatly successivley
-		synchronized (sail) {
-			super.begin(level);
-			previousStateConnection.begin(IsolationLevels.SNAPSHOT);
-		}
-
+		super.begin(level);
 	}
 
 	private SailRepository getNewMemorySail() {
@@ -130,7 +124,6 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 		synchronized (sail) {
 			try {
 				boolean valid = validate();
-				previousStateConnection.commit();
 
 				if (!valid) {
 					rollback();
@@ -151,7 +144,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 		throws SailException
 	{
 		synchronized (sail) {
-			previousStateConnection.commit();
+			//			previousStateConnection.commit();
 			cleanup();
 			super.rollback();
 		}
@@ -209,7 +202,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 	ShaclSail getShaclSail() {
 		return sail;
 	}
-	
+
 	void fillAddedAndRemovedStatementRepositories() {
 
 		addedStatements = getNewMemorySail();
@@ -232,7 +225,29 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 			connection.commit();
 		}
 	}
-
+	
+	@Override
+	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subj, IRI pred,
+			Value obj, boolean includeInferred, Resource... contexts)
+		throws SailException
+	{
+		if (contexts.length == 0) {
+			List<Resource> graphs = new ArrayList<>();
+			graphs.add(null);
+			List<Resource> contextIDs = QueryResults.asList(getContextIDs());
+			for (Resource context: contextIDs) {
+				if (!context.equals(ShaclSail.SHACL_GRAPH)) {
+					graphs.add(context);
+				}
+			}
+			return super.getStatements(subj, pred, obj, includeInferred, graphs.toArray(new Resource[] {}));
+		}
+		else {
+			return super.getStatements(subj, pred, obj, includeInferred, contexts);
+		}
+		
+	}
+	
 	@Override
 	synchronized public void close()
 		throws SailException

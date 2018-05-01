@@ -31,16 +31,13 @@ public class ShaclSail extends NotifyingSailWrapper {
 
 	public ShaclSail(NotifyingSail baseSail) {
 		super(baseSail);
-//		try (SailRepositoryConnection shaclSailConnection = shaclSail.getConnection()) {
-//			shapes = Shape.Factory.getShapes(shaclSailConnection);
-//		}
 	}
 
 	@Override
 	public NotifyingSailConnection getConnection()
 		throws SailException
 	{
-		return new ShaclSailConnection(this, super.getConnection(), super.getConnection());
+		return new ShaclSailConnection(this, super.getConnection());
 	}
 
 	public void disableValidation() {

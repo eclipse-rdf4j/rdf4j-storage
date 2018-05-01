@@ -104,7 +104,7 @@ public class TempTest {
 	@Test(expected = RepositoryException.class)
 	public void maxCount() {
 
-		SailRepository shaclRepo =  TestUtils.getShaclRepository("shacl.ttl");
+		SailRepository shaclRepo =  TestUtils.getShaclRepository("shaclMax.ttl");
 
 		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 

@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.vocabulary.SHACL;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 
@@ -23,7 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The AST (Abstract Syntax Tree) node that represents a property shape without any restrictions. This node should be extended by other nodes.
+ * The AST (Abstract Syntax Tree) node that represents a property shape without any restrictions. This node
+ * should be extended by other nodes.
  *
  * @author Heshan Jayasinghe
  */
@@ -32,7 +34,6 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 	private Resource id;
 
 	Shape shape;
-
 
 	PropertyShape(Resource id, Shape shape) {
 		this.id = id;
@@ -61,50 +62,46 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 
 	static class Factory {
 
-		static List<PropertyShape> getProprtyShapes(Resource ShapeId, ShaclSailConnection connection, Shape shape) {
+		static List<PropertyShape> getProprtyShapes(Resource ShapeId, ShaclSailConnection connection,
+				Shape shape)
+		{
 
-			try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(ShapeId, SHACL.PROPERTY, null, true))) {
-				return stream
-					.map(Statement::getObject)
-					.map(v -> (Resource) v)
-					.flatMap(propertyShapeId -> {
-						List<PropertyShape> propertyShapes = new ArrayList<>(2);
+			try (Stream<? extends Statement> stream = Iterations.stream(
+					connection.getStatements(ShapeId, SHACL.PROPERTY, null, true, ShaclSail.SHACL_GRAPH)))
+			{
+				return stream.map(Statement::getObject).map(v -> (Resource)v).flatMap(propertyShapeId -> {
+					List<PropertyShape> propertyShapes = new ArrayList<>(2);
 
-						if (hasMinCount(propertyShapeId, connection)) {
-							propertyShapes.add(new MinCountPropertyShape(propertyShapeId, connection, shape));
-						}
+					if (hasMinCount(propertyShapeId, connection)) {
+						propertyShapes.add(new MinCountPropertyShape(propertyShapeId, connection, shape));
+					}
 
-						if (hasMaxCount(propertyShapeId, connection)) {
-							propertyShapes.add(new MaxCountPropertyShape(propertyShapeId, connection, shape));
-						}
+					if (hasMaxCount(propertyShapeId, connection)) {
+						propertyShapes.add(new MaxCountPropertyShape(propertyShapeId, connection, shape));
+					}
 
-						if (hasDatatype(propertyShapeId, connection)) {
-							propertyShapes.add(new DatatypePropertyShape(propertyShapeId, connection, shape));
-						}
+					if (hasDatatype(propertyShapeId, connection)) {
+						propertyShapes.add(new DatatypePropertyShape(propertyShapeId, connection, shape));
+					}
 
-						return propertyShapes.stream();
+					return propertyShapes.stream();
 
-					})
-					.collect(Collectors.toList());
+				}).collect(Collectors.toList());
 			}
 
 		}
 
-
 		private static boolean hasMinCount(Resource id, ShaclSailConnection connection) {
-			return connection.hasStatement(id, SHACL.MIN_COUNT, null, true);
+			return connection.hasStatement(id, SHACL.MIN_COUNT, null, true, ShaclSail.SHACL_GRAPH);
 		}
 
 		private static boolean hasMaxCount(Resource id, ShaclSailConnection connection) {
-			return connection.hasStatement(id, SHACL.MAX_COUNT, null, true);
+			return connection.hasStatement(id, SHACL.MAX_COUNT, null, true, ShaclSail.SHACL_GRAPH);
 		}
 
 		private static boolean hasDatatype(Resource id, ShaclSailConnection connection) {
-			return connection.hasStatement(id, SHACL.DATATYPE, null, true);
+			return connection.hasStatement(id, SHACL.DATATYPE, null, true, ShaclSail.SHACL_GRAPH);
 		}
 
 	}
 }
-
-
-

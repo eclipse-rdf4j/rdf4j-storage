@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.planNodes.ExternalTypeFilterNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
@@ -38,7 +39,7 @@ public class TargetClass extends Shape {
 	TargetClass(Resource id, ShaclSailConnection connection) {
 		super(id, connection);
 
-		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.TARGET_CLASS, null, true))) {
+		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.TARGET_CLASS, null, true, ShaclSail.SHACL_GRAPH))) {
 			targetClass = stream.map(Statement::getObject).map(v -> (Resource) v).findAny().orElseThrow(() -> new RuntimeException("Expected to find sh:targetClass on " + id));
 		}
 

@@ -16,6 +16,7 @@ import org.eclipse.rdf4j.model.vocabulary.SHACL;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 
 import java.util.stream.Stream;
@@ -32,7 +33,7 @@ public class SimplePath extends Path {
 	SimplePath(Resource id, ShaclSailConnection connection) {
 		super(id);
 
-		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.PATH, null, true))) {
+		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.PATH, null, true, ShaclSail.SHACL_GRAPH))) {
 			path = stream.map(Statement::getObject).map(v -> (IRI) v).findAny().orElseThrow(() -> new RuntimeException("Expected to find sh:path on " + id));
 		}
 

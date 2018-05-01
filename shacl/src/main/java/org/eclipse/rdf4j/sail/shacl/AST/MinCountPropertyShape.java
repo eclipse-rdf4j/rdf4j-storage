@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.model.vocabulary.SHACL;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BulkedExternalLeftOuterJoin;
 import org.eclipse.rdf4j.sail.shacl.planNodes.DirectTupleFromFilter;
@@ -44,12 +45,15 @@ public class MinCountPropertyShape extends PathPropertyShape {
 	// toggle for switching on and off the optimization used when no statements have been removed in a transaction
 	private boolean optimizeWhenNoStatementsRemoved = true;
 
-
 	MinCountPropertyShape(Resource id, ShaclSailConnection connection, Shape shape) {
 		super(id, connection, shape);
 
-		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.MIN_COUNT, null, true))) {
-			minCount = stream.map(Statement::getObject).map(v -> (Literal) v).map(Literal::longValue).findAny().orElseThrow(() -> new RuntimeException("Expect to find sh:minCount on " + id));
+		try (Stream<? extends Statement> stream = Iterations.stream(
+				connection.getStatements(id, SHACL.MIN_COUNT, null, true, ShaclSail.SHACL_GRAPH)))
+		{
+			minCount = stream.map(Statement::getObject).map(v -> (Literal)v).map(
+					Literal::longValue).findAny().orElseThrow(
+							() -> new RuntimeException("Expect to find sh:minCount on " + id));
 		}
 
 	}
@@ -63,38 +67,44 @@ public class MinCountPropertyShape extends PathPropertyShape {
 
 		PlanNode topNode;
 
-
 		if (!optimizeWhenNoStatementsRemoved || shaclSailConnection.stats.hasRemoved()) {
-			PlanNode planRemovedStatements = new LoggingNode(new TrimTuple(new LoggingNode(super.getPlanRemovedStatements(shaclSailConnection, shape)), 1));
+			PlanNode planRemovedStatements = new LoggingNode(new TrimTuple(
+					new LoggingNode(super.getPlanRemovedStatements(shaclSailConnection, shape)), 1));
 
 			PlanNode filteredPlanRemovedStatements = planRemovedStatements;
 
 			if (shape instanceof TargetClass) {
-				filteredPlanRemovedStatements = new LoggingNode(((TargetClass) shape).getTypeFilterPlan(shaclSailConnection, planRemovedStatements));
+				filteredPlanRemovedStatements = new LoggingNode(
+						((TargetClass)shape).getTypeFilterPlan(shaclSailConnection, planRemovedStatements));
 			}
 
-			PlanNode planAddedStatements = new TrimTuple(new LoggingNode(shape.getPlanAddedStatements(shaclSailConnection, shape)), 1);
+			PlanNode planAddedStatements = new TrimTuple(
+					new LoggingNode(shape.getPlanAddedStatements(shaclSailConnection, shape)), 1);
 
-			PlanNode mergeNode = new LoggingNode(new UnionNode(planAddedStatements, filteredPlanRemovedStatements));
+			PlanNode mergeNode = new LoggingNode(
+					new UnionNode(planAddedStatements, filteredPlanRemovedStatements));
 
 			PlanNode unique = new LoggingNode(new Unique(mergeNode));
 
-			topNode = new LoggingNode(new LeftOuterJoin(unique, super.getPlanAddedStatements(shaclSailConnection, shape)));
+			topNode = new LoggingNode(
+					new LeftOuterJoin(unique, super.getPlanAddedStatements(shaclSailConnection, shape)));
 
 			// BulkedExternalLeftOuterJoin is slower, at least when the super.getPlanAddedStatements only returns statements that have the correct type.
 			// Persumably BulkedExternalLeftOuterJoin will be high if super.getPlanAddedStatements has a high number of statements for other subjects that in "unique"
 			//topNode = new LoggingNode(new BulkedExternalLeftOuterJoin(unique, shaclSailConnection.addedStatements, path.getQuery()));
 
-		} else {
+		}
+		else {
 
-			PlanNode planAddedForShape = new LoggingNode(shape.getPlanAddedStatements(shaclSailConnection, shape));
+			PlanNode planAddedForShape = new LoggingNode(
+					shape.getPlanAddedStatements(shaclSailConnection, shape));
 
-			PlanNode select = new LoggingNode(new Select(shaclSailConnection.getAddedStatements(), path.getQuery()));
+			PlanNode select = new LoggingNode(
+					new Select(shaclSailConnection.getAddedStatements(), path.getQuery()));
 
 			topNode = new LoggingNode(new LeftOuterJoin(planAddedForShape, select));
 
 		}
-
 
 		PlanNode groupBy = new LoggingNode(new GroupByCount(topNode));
 
@@ -105,7 +115,8 @@ public class MinCountPropertyShape extends PathPropertyShape {
 
 		PlanNode trimTuple = new LoggingNode(new TrimTuple(minCountFilter, 1));
 
-		PlanNode bulkedExternalLeftOuterJoin2 = new LoggingNode(new BulkedExternalLeftOuterJoin(trimTuple, shaclSailConnection, path.getQuery()));
+		PlanNode bulkedExternalLeftOuterJoin2 = new LoggingNode(
+				new BulkedExternalLeftOuterJoin(trimTuple, shaclSailConnection, path.getQuery()));
 
 		PlanNode groupBy2 = new LoggingNode(new GroupByCount(bulkedExternalLeftOuterJoin2));
 
@@ -121,11 +132,13 @@ public class MinCountPropertyShape extends PathPropertyShape {
 
 		boolean requiresEvalutation = false;
 		if (shape instanceof TargetClass) {
-			Resource targetClass = ((TargetClass) shape).targetClass;
+			Resource targetClass = ((TargetClass)shape).targetClass;
 			try (RepositoryConnection addedStatementsConnection = addedStatements.getConnection()) {
-				requiresEvalutation = addedStatementsConnection.hasStatement(null, RDF.TYPE, targetClass, false);
+				requiresEvalutation = addedStatementsConnection.hasStatement(null, RDF.TYPE, targetClass,
+						false);
 			}
-		} else {
+		}
+		else {
 			requiresEvalutation = true;
 		}
 

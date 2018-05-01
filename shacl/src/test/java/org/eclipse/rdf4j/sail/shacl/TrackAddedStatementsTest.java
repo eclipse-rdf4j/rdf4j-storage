@@ -8,6 +8,8 @@
 
 package org.eclipse.rdf4j.sail.shacl;
 
+import static org.junit.Assert.fail;
+
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
@@ -140,6 +142,7 @@ public class TrackAddedStatementsTest {
 
 			try {
 				connection.commit();
+				fail("should have thrown validation exception");
 			} catch (Throwable e) {
 				System.out.println(e.getMessage());
 			}

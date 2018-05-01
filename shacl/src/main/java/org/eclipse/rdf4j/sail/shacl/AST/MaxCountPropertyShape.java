@@ -15,6 +15,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.vocabulary.SHACL;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BufferedTupleFromFilter;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BulkedExternalLeftOuterJoin;
@@ -41,8 +42,12 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 	MaxCountPropertyShape(Resource id, ShaclSailConnection connection, Shape shape) {
 		super(id, connection, shape);
 
-		try (Stream<? extends Statement> stream = Iterations.stream(connection.getStatements(id, SHACL.MAX_COUNT, null, true))) {
-			maxCount = stream.map(Statement::getObject).map(v -> (Literal) v).map(Literal::longValue).findAny().orElseThrow(() -> new RuntimeException("Expected to find sh:maxCount on " + id));
+		try (Stream<? extends Statement> stream = Iterations.stream(
+				connection.getStatements(id, SHACL.MAX_COUNT, null, true, ShaclSail.SHACL_GRAPH)))
+		{
+			maxCount = stream.map(Statement::getObject).map(v -> (Literal)v).map(
+					Literal::longValue).findAny().orElseThrow(
+							() -> new RuntimeException("Expected to find sh:maxCount on " + id));
 		}
 
 	}
@@ -54,13 +59,15 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, Shape shape) {
 
+		PlanNode planAddedStatements = new LoggingNode(
+				shape.getPlanAddedStatements(shaclSailConnection, shape));
 
-		PlanNode planAddedStatements = new LoggingNode(shape.getPlanAddedStatements(shaclSailConnection, shape));
-
-		PlanNode planAddedStatements1 = new LoggingNode(super.getPlanAddedStatements(shaclSailConnection, shape));
+		PlanNode planAddedStatements1 = new LoggingNode(
+				super.getPlanAddedStatements(shaclSailConnection, shape));
 
 		if (shape instanceof TargetClass) {
-			planAddedStatements1 = new LoggingNode(((TargetClass) shape).getTypeFilterPlan(shaclSailConnection, planAddedStatements1));
+			planAddedStatements1 = new LoggingNode(
+					((TargetClass)shape).getTypeFilterPlan(shaclSailConnection, planAddedStatements1));
 		}
 
 		PlanNode mergeNode = new LoggingNode(new UnionNode(planAddedStatements, planAddedStatements1));
@@ -76,7 +83,8 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 
 		PlanNode unique = new LoggingNode(new Unique(trimmed));
 
-		PlanNode bulkedExternalLeftOuterJoin = new LoggingNode(new BulkedExternalLeftOuterJoin(unique, shaclSailConnection, path.getQuery()));
+		PlanNode bulkedExternalLeftOuterJoin = new LoggingNode(
+				new BulkedExternalLeftOuterJoin(unique, shaclSailConnection, path.getQuery()));
 
 		PlanNode groupByCount = new LoggingNode(new GroupByCount(bulkedExternalLeftOuterJoin));
 
@@ -84,7 +92,8 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 
 		new MaxCountFilter(groupByCount, null, directTupleFromFilter, maxCount);
 
-		PlanNode mergeNode1 = new UnionNode(new LoggingNode(directTupleFromFilter), new LoggingNode(invalidValues));
+		PlanNode mergeNode1 = new UnionNode(new LoggingNode(directTupleFromFilter),
+				new LoggingNode(invalidValues));
 
 		return new LoggingNode(mergeNode1);
 
