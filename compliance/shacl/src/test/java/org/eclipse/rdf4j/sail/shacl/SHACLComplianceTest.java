@@ -69,32 +69,8 @@ public class SHACLComplianceTest extends AbstractSHACLTest {
 	}
 
 	@Override
-	protected Sail newSail(Model shapesGraph) {
-		SailRepository shapesRep = createShapesRepository();
-		if (shapesGraph != null) {
-			try {
-				upload(shapesRep, shapesGraph);
-			}
-			catch (Exception exc) {
-				try {
-					shapesRep.shutDown();
-					shapesRep = null;
-				}
-				catch (Exception e2) {
-					logger.error(e2.toString(), e2);
-				}
-				throw exc;
-			}
-		}
-		Model infer = new LinkedHashModel();
-		for (Resource subj : shapesGraph.filter(null, RDF.TYPE, SHACL.NODE_SHAPE).subjects()) {
-			infer.add(subj, RDF.TYPE, SHACL.SHAPE);
-		}
-		for (Resource subj : shapesGraph.filter(null, RDF.TYPE, SHACL.PROPERTY_SHAPE).subjects()) {
-			infer.add(subj, RDF.TYPE, SHACL.SHAPE);
-		}
-		upload(shapesRep, infer);
-		return new ShaclSail(newDataSail(), shapesRep);
+	protected Sail newSail() {
+		return new ShaclSail(newDataSail());
 	}
 
 }
