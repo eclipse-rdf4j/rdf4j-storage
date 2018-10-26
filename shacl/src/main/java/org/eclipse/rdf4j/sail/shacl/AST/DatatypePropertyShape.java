@@ -7,6 +7,8 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.sail.shacl.AST;
 
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -15,6 +17,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
+
 import org.eclipse.rdf4j.sail.shacl.planNodes.BufferedSplitter;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BufferedTupleFromFilter;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BulkedExternalInnerJoin;
@@ -35,8 +38,8 @@ public class DatatypePropertyShape extends PathPropertyShape {
 
 	private final Resource datatype;
 
-	DatatypePropertyShape(Resource id, ShaclSailConnection connection, Shape shape) {
-		super(id, connection, shape);
+	DatatypePropertyShape(Resource id, ShaclSailConnection connection, NodeShape nodeShape) {
+		super(id, connection, nodeShape);
 
 		try (Stream<? extends Statement> stream = Iterations.stream(
 				connection.getStatements(id, SHACL.DATATYPE, null, true, ShaclSail.SHACL_GRAPH)))
@@ -48,9 +51,9 @@ public class DatatypePropertyShape extends PathPropertyShape {
 	}
 
 	@Override
-	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, Shape shape) {
+	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape) {
 
-		PlanNode addedByShape = new LoggingNode(shape.getPlanAddedStatements(shaclSailConnection, shape));
+		PlanNode addedByShape = new LoggingNode(nodeShape.getPlanAddedStatements(shaclSailConnection, nodeShape));
 
 		BufferedSplitter bufferedSplitter = new BufferedSplitter(addedByShape);
 
@@ -66,9 +69,9 @@ public class DatatypePropertyShape extends PathPropertyShape {
 		PlanNode top = new LoggingNode(new InnerJoin(bufferedSplitter.getPlanNode(),
 				invalidValuesDirectOnPath, null, discardedRight));
 
-		if (shape instanceof TargetClass) {
+		if (nodeShape instanceof TargetClass) {
 			PlanNode typeFilterPlan = new LoggingNode(
-					((TargetClass)shape).getTypeFilterPlan(shaclSailConnection, discardedRight));
+					((TargetClass)nodeShape).getTypeFilterPlan(shaclSailConnection, discardedRight));
 
 			top = new LoggingNode(new UnionNode(top, typeFilterPlan));
 		}
@@ -81,6 +84,19 @@ public class DatatypePropertyShape extends PathPropertyShape {
 		DirectTupleFromFilter invalidValues = new DirectTupleFromFilter();
 		new DatatypeFilter(top, null, invalidValues, datatype);
 
+		if(shaclSailConnection.sail.isDebugPrintPlans()){
+			System.out.println("digraph  {");
+			System.out.println("labelloc=t;\nfontsize=30;\nlabel=\""+this.getClass().getSimpleName()+"\";");
+
+			invalidValues.printPlan();
+			System.out.println(System.identityHashCode(shaclSailConnection) + " [label=\"" + StringEscapeUtils.escapeJava("Base sail") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getAddedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Added statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getRemovedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Removed statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getPreviousStateConnection()) + " [label=\"" + StringEscapeUtils.escapeJava("Previous state connection") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+
+			System.out.println("}");
+
+		}
 		return new LoggingNode(invalidValues);
 
 	}

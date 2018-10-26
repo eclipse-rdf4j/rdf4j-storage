@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The AST (Abstract Syntax Tree) node that represents a property shape without any restrictions. This node
+ * The AST (Abstract Syntax Tree) node that represents a property nodeShape without any restrictions. This node
  * should be extended by other nodes.
  *
  * @author Heshan Jayasinghe
@@ -33,25 +33,25 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 
 	private Resource id;
 
-	Shape shape;
+	NodeShape nodeShape;
 
-	PropertyShape(Resource id, Shape shape) {
+	PropertyShape(Resource id, NodeShape nodeShape) {
 		this.id = id;
-		this.shape = shape;
+		this.nodeShape = nodeShape;
 	}
 
 	@Override
-	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, Shape shape) {
+	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape) {
 		throw new IllegalStateException("Should never get here!!!");
 	}
 
 	@Override
-	public PlanNode getPlanAddedStatements(ShaclSailConnection shaclSailConnection, Shape shape) {
+	public PlanNode getPlanAddedStatements(ShaclSailConnection shaclSailConnection, NodeShape nodeShape) {
 		throw new IllegalStateException("Should never get here!!!");
 	}
 
 	@Override
-	public PlanNode getPlanRemovedStatements(ShaclSailConnection shaclSailConnection, Shape shape) {
+	public PlanNode getPlanRemovedStatements(ShaclSailConnection shaclSailConnection, NodeShape nodeShape) {
 		throw new IllegalStateException("Should never get here!!!");
 	}
 
@@ -63,7 +63,7 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 	static class Factory {
 
 		static List<PropertyShape> getProprtyShapes(Resource ShapeId, ShaclSailConnection connection,
-				Shape shape)
+				NodeShape nodeShape)
 		{
 
 			try (Stream<? extends Statement> stream = Iterations.stream(
@@ -73,15 +73,15 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 					List<PropertyShape> propertyShapes = new ArrayList<>(2);
 
 					if (hasMinCount(propertyShapeId, connection)) {
-						propertyShapes.add(new MinCountPropertyShape(propertyShapeId, connection, shape));
+							propertyShapes.add(new MinCountPropertyShape(propertyShapeId, connection, nodeShape));
 					}
 
 					if (hasMaxCount(propertyShapeId, connection)) {
-						propertyShapes.add(new MaxCountPropertyShape(propertyShapeId, connection, shape));
+							propertyShapes.add(new MaxCountPropertyShape(propertyShapeId, connection, nodeShape));
 					}
 
 					if (hasDatatype(propertyShapeId, connection)) {
-						propertyShapes.add(new DatatypePropertyShape(propertyShapeId, connection, shape));
+							propertyShapes.add(new DatatypePropertyShape(propertyShapeId, connection, nodeShape));
 					}
 
 					return propertyShapes.stream();

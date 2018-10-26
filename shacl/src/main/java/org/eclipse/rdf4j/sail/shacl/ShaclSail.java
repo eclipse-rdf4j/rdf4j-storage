@@ -16,14 +16,14 @@ import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.helpers.NotifyingSailWrapper;
-import org.eclipse.rdf4j.sail.shacl.AST.Shape;
+import org.eclipse.rdf4j.sail.shacl.AST.NodeShape;
 
 /**
  * @author Heshan Jayasinghe
  */
 public class ShaclSail extends NotifyingSailWrapper {
 
-	private List<Shape> shapes;
+	private List<NodeShape> nodeShapes;
 
 	public static final IRI SHACL_GRAPH = SimpleValueFactory.getInstance().createIRI("shacl:graph");
 	
@@ -55,6 +55,13 @@ public class ShaclSail extends NotifyingSailWrapper {
 		return shapes;
 	}
 
+	public boolean isDebugPrintPlans() {
+		return debugPrintPlans;
+	}
+
+	public void setDebugPrintPlans(boolean debugPrintPlans) {
+		this.debugPrintPlans = debugPrintPlans;
+	}
 }
 
 class ShaclSailConfig {

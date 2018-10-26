@@ -10,12 +10,18 @@ package org.eclipse.rdf4j.query.algebra.evaluation.function.geosparql;
 import java.util.Arrays;
 import java.util.Collections;
 
-import com.spatial4j.core.shape.Point;
-import com.spatial4j.core.shape.Shape;
-import com.spatial4j.core.shape.ShapeCollection;
-import com.spatial4j.core.shape.SpatialRelation;
-import com.spatial4j.core.shape.impl.BufferedLineString;
+import org.locationtech.spatial4j.shape.Point;
+import org.locationtech.spatial4j.shape.Shape;
+import org.locationtech.spatial4j.shape.ShapeCollection;
+import org.locationtech.spatial4j.shape.SpatialRelation;
+import org.locationtech.spatial4j.shape.impl.BufferedLineString;
 
+/**
+ * Default implementation of Spatial Algebra for use in situations where JTS support is not available.
+ * 
+ * @deprecated use {@link JtsSpatialAlgebra} instead.
+ */
+@Deprecated
 final class DefaultSpatialAlgebra implements SpatialAlgebra {
 
 	private <T> T notSupported() {

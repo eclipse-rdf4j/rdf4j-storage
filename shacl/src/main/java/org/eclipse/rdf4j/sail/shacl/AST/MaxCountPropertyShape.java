@@ -8,6 +8,8 @@
 
 package org.eclipse.rdf4j.sail.shacl.AST;
 
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
@@ -17,6 +19,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
+
 import org.eclipse.rdf4j.sail.shacl.planNodes.BufferedTupleFromFilter;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BulkedExternalLeftOuterJoin;
 import org.eclipse.rdf4j.sail.shacl.planNodes.DirectTupleFromFilter;
@@ -31,7 +34,7 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.Unique;
 import java.util.stream.Stream;
 
 /**
- * The AST (Abstract Syntax Tree) node that represents a sh:maxCount property shape restriction.
+ * The AST (Abstract Syntax Tree) node that represents a sh:maxCount property nodeShape restriction.
  *
  * @author Håvard Ottestad
  */
@@ -39,8 +42,8 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 
 	private long maxCount;
 
-	MaxCountPropertyShape(Resource id, ShaclSailConnection connection, Shape shape) {
-		super(id, connection, shape);
+	MaxCountPropertyShape(Resource id, ShaclSailConnection connection, NodeShape nodeShape) {
+		super(id, connection, nodeShape);
 
 		try (Stream<? extends Statement> stream = Iterations.stream(
 				connection.getStatements(id, SHACL.MAX_COUNT, null, true, ShaclSail.SHACL_GRAPH)))
@@ -57,17 +60,18 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 		return "MaxCountPropertyShape{" + "maxCount=" + maxCount + '}';
 	}
 
-	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, Shape shape) {
+	@Override
+	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape) {
 
 		PlanNode planAddedStatements = new LoggingNode(
-				shape.getPlanAddedStatements(shaclSailConnection, shape));
+				nodeShape.getPlanAddedStatements(shaclSailConnection, shape));
 
 		PlanNode planAddedStatements1 = new LoggingNode(
 				super.getPlanAddedStatements(shaclSailConnection, shape));
 
-		if (shape instanceof TargetClass) {
+		if (nodeShape instanceof TargetClass) {
 			planAddedStatements1 = new LoggingNode(
-					((TargetClass)shape).getTypeFilterPlan(shaclSailConnection, planAddedStatements1));
+					((TargetClass)nodeShape).getTypeFilterPlan(shaclSailConnection, planAddedStatements1));
 		}
 
 		PlanNode mergeNode = new LoggingNode(new UnionNode(planAddedStatements, planAddedStatements1));
@@ -94,6 +98,19 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 
 		PlanNode mergeNode1 = new UnionNode(new LoggingNode(directTupleFromFilter),
 				new LoggingNode(invalidValues));
+		if(shaclSailConnection.sail.isDebugPrintPlans()){
+			System.out.println("digraph  {");
+			System.out.println("labelloc=t;\nfontsize=30;\nlabel=\""+this.getClass().getSimpleName()+"\";");
+
+			mergeNode1.printPlan();
+			System.out.println(System.identityHashCode(shaclSailConnection) + " [label=\"" + StringEscapeUtils.escapeJava("Base sail") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getAddedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Added statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getRemovedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Removed statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getPreviousStateConnection()) + " [label=\"" + StringEscapeUtils.escapeJava("Previous state connection") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+
+			System.out.println("}");
+
+		}
 
 		return new LoggingNode(mergeNode1);
 
