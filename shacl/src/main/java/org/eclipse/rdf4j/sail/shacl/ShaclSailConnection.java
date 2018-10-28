@@ -204,7 +204,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper {
 		return allValid;
 	}
 
-	ShaclSail getShaclSail() {
+	public ShaclSail getShaclSail() {
 		return sail;
 	}
 

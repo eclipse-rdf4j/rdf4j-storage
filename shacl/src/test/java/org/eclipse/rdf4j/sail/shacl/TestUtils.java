@@ -37,6 +37,21 @@ public class TestUtils {
 		}
 		return shaclRepository;
 	}
+	
+	public static ShaclSail getShaclSail(String shapesFile) {
+		ShaclSail shaclSail = new ShaclSail(new MemoryStore());
+		SailRepository shaclRepository = new SailRepository(shaclSail);
+		shaclRepository.initialize();
+		try (RepositoryConnection connection = shaclRepository.getConnection()) {
+			connection.add(TestUtils.class.getClassLoader().getResourceAsStream(shapesFile), "", RDFFormat.TURTLE,
+					ShaclSail.SHACL_GRAPH);
+		}
+		catch (IOException | NullPointerException e) {
+			System.out.println("Error reading: " + shapesFile);
+			throw new RuntimeException(e);
+		}
+		return shaclSail;
+	}
 
 	static class Ex {
 

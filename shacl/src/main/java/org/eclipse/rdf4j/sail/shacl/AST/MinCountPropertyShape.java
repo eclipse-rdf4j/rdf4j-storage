@@ -8,7 +8,6 @@
 
 package org.eclipse.rdf4j.sail.shacl.AST;
 
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Literal;
@@ -72,21 +71,20 @@ public class MinCountPropertyShape extends PathPropertyShape {
 		PlanNode topNode;
 
 		if (!optimizeWhenNoStatementsRemoved || shaclSailConnection.stats.hasRemoved()) {
-			PlanNode planRemovedStatements = new LoggingNode(new TrimTuple(
-					new LoggingNode(super.getPlanRemovedStatements(shaclSailConnection, nodeShape)), 1));
+			PlanNode planRemovedStatements = new LoggingNode(
+					new TrimTuple(new LoggingNode(super.getPlanRemovedStatements(shaclSailConnection, nodeShape)), 1));
 
 			PlanNode filteredPlanRemovedStatements = planRemovedStatements;
 
 			if (nodeShape instanceof TargetClass) {
 				filteredPlanRemovedStatements = new LoggingNode(
-						((TargetClass)shape).getTypeFilterPlan(shaclSailConnection, planRemovedStatements));
+						((TargetClass)nodeShape).getTypeFilterPlan(shaclSailConnection, planRemovedStatements));
 			}
 
 			PlanNode planAddedStatements = new TrimTuple(
-					new LoggingNode(shape.getPlanAddedStatements(shaclSailConnection, nodeShape)), 1);
+					new LoggingNode(nodeShape.getPlanAddedStatements(shaclSailConnection, nodeShape)), 1);
 
-			PlanNode mergeNode = new LoggingNode(
-					new UnionNode(planAddedStatements, filteredPlanRemovedStatements));
+			PlanNode mergeNode = new LoggingNode(new UnionNode(planAddedStatements, filteredPlanRemovedStatements));
 
 			PlanNode unique = new LoggingNode(new Unique(mergeNode));
 
@@ -127,15 +125,20 @@ public class MinCountPropertyShape extends PathPropertyShape {
 		DirectTupleFromFilter filteredStatements2 = new DirectTupleFromFilter();
 		new MinCountFilter(groupBy2, null, filteredStatements2, minCount);
 
-		if(shaclSailConnection.sail.isDebugPrintPlans()){
+		if (shaclSailConnection.getShaclSail().isDebugPrintPlans()) {
 			System.out.println("digraph  {");
-			System.out.println("labelloc=t;\nfontsize=30;\nlabel=\""+this.getClass().getSimpleName()+"\";");
+			System.out.println("labelloc=t;\nfontsize=30;\nlabel=\"" + this.getClass().getSimpleName() + "\";");
 
 			filteredStatements2.printPlan();
-			System.out.println(System.identityHashCode(shaclSailConnection) + " [label=\"" + StringEscapeUtils.escapeJava("Base sail") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
-			System.out.println(System.identityHashCode(shaclSailConnection.getAddedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Added statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
-			System.out.println(System.identityHashCode(shaclSailConnection.getRemovedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Removed statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
-			System.out.println(System.identityHashCode(shaclSailConnection.getPreviousStateConnection()) + " [label=\"" + StringEscapeUtils.escapeJava("Previous state connection") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection) + " [label=\""
+					+ StringEscapeUtils.escapeJava("Base sail")
+					+ "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getAddedStatements()) + " [label=\""
+					+ StringEscapeUtils.escapeJava("Added statements")
+					+ "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
+			System.out.println(System.identityHashCode(shaclSailConnection.getRemovedStatements()) + " [label=\""
+					+ StringEscapeUtils.escapeJava("Removed statements")
+					+ "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
 
 			System.out.println("}");
 
@@ -150,10 +153,9 @@ public class MinCountPropertyShape extends PathPropertyShape {
 
 		boolean requiresEvalutation = false;
 		if (nodeShape instanceof TargetClass) {
-			Resource targetClass = ((TargetClass) nodeShape).targetClass;
+			Resource targetClass = ((TargetClass)nodeShape).targetClass;
 			try (RepositoryConnection addedStatementsConnection = addedStatements.getConnection()) {
-				requiresEvalutation = addedStatementsConnection.hasStatement(null, RDF.TYPE, targetClass,
-						false);
+				requiresEvalutation = addedStatementsConnection.hasStatement(null, RDF.TYPE, targetClass, false);
 			}
 		}
 		else {

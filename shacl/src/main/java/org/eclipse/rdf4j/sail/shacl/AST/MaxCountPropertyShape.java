@@ -64,10 +64,10 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape) {
 
 		PlanNode planAddedStatements = new LoggingNode(
-				nodeShape.getPlanAddedStatements(shaclSailConnection, shape));
+				nodeShape.getPlanAddedStatements(shaclSailConnection, nodeShape));
 
 		PlanNode planAddedStatements1 = new LoggingNode(
-				super.getPlanAddedStatements(shaclSailConnection, shape));
+				super.getPlanAddedStatements(shaclSailConnection, nodeShape));
 
 		if (nodeShape instanceof TargetClass) {
 			planAddedStatements1 = new LoggingNode(
@@ -98,7 +98,7 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 
 		PlanNode mergeNode1 = new UnionNode(new LoggingNode(directTupleFromFilter),
 				new LoggingNode(invalidValues));
-		if(shaclSailConnection.sail.isDebugPrintPlans()){
+		if(shaclSailConnection.getShaclSail().isDebugPrintPlans()){
 			System.out.println("digraph  {");
 			System.out.println("labelloc=t;\nfontsize=30;\nlabel=\""+this.getClass().getSimpleName()+"\";");
 
@@ -106,7 +106,6 @@ public class MaxCountPropertyShape extends PathPropertyShape {
 			System.out.println(System.identityHashCode(shaclSailConnection) + " [label=\"" + StringEscapeUtils.escapeJava("Base sail") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
 			System.out.println(System.identityHashCode(shaclSailConnection.getAddedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Added statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
 			System.out.println(System.identityHashCode(shaclSailConnection.getRemovedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Removed statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
-			System.out.println(System.identityHashCode(shaclSailConnection.getPreviousStateConnection()) + " [label=\"" + StringEscapeUtils.escapeJava("Previous state connection") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
 
 			System.out.println("}");
 

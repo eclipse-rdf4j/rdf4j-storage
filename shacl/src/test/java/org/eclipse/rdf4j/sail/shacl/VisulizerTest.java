@@ -5,6 +5,8 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.FOAF;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
@@ -16,9 +18,7 @@ public class VisulizerTest {
 	public void datatype() {
 
 
-		ShaclSail shaclSail = new ShaclSail(new MemoryStore(), Utils.getSailRepository("shaclDatatype.ttl"));
-		shaclSail.initialize();
-
+		ShaclSail shaclSail = TestUtils.getShaclSail("shaclDatatype.ttl");
 
 		try (NotifyingSailConnection connection = shaclSail.getConnection()) {
 			SimpleValueFactory vf = SimpleValueFactory.getInstance();
@@ -46,9 +46,7 @@ public class VisulizerTest {
 	public void maxCount() {
 
 
-		ShaclSail shaclSail = new ShaclSail(new MemoryStore(), Utils.getSailRepository("shaclMax.ttl"));
-		shaclSail.initialize();
-
+		ShaclSail shaclSail = TestUtils.getShaclSail("shaclMax.ttl");
 
 		try (NotifyingSailConnection connection = shaclSail.getConnection()) {
 			SimpleValueFactory vf = SimpleValueFactory.getInstance();
@@ -75,9 +73,7 @@ public class VisulizerTest {
 	public void minCount() {
 
 
-		ShaclSail shaclSail = new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl"));
-		shaclSail.initialize();
-
+		ShaclSail shaclSail = TestUtils.getShaclSail("shacl.ttl");
 
 		try (NotifyingSailConnection connection = shaclSail.getConnection()) {
 			SimpleValueFactory vf = SimpleValueFactory.getInstance();

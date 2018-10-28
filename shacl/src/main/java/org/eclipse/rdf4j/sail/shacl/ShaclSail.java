@@ -29,6 +29,8 @@ public class ShaclSail extends NotifyingSailWrapper {
 	
 	ShaclSailConfig config = new ShaclSailConfig();
 
+	private boolean debugPrintPlans;
+
 	public ShaclSail(NotifyingSail baseSail) {
 		super(baseSail);
 	}
@@ -48,11 +50,11 @@ public class ShaclSail extends NotifyingSailWrapper {
 		config.validationEnabled = true;
 	}
 	
-	protected List<Shape> getShapes(ShaclSailConnection conn) {
-		if (shapes == null) {
-			shapes = Shape.Factory.getShapes(conn);
+	protected List<NodeShape> getShapes(ShaclSailConnection conn) {
+		if (nodeShapes == null) {
+			nodeShapes = NodeShape.Factory.getShapes(conn);
 		}
-		return shapes;
+		return nodeShapes;
 	}
 
 	public boolean isDebugPrintPlans() {

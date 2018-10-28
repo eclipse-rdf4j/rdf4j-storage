@@ -84,7 +84,7 @@ public class DatatypePropertyShape extends PathPropertyShape {
 		DirectTupleFromFilter invalidValues = new DirectTupleFromFilter();
 		new DatatypeFilter(top, null, invalidValues, datatype);
 
-		if(shaclSailConnection.sail.isDebugPrintPlans()){
+		if(shaclSailConnection.getShaclSail().isDebugPrintPlans()){
 			System.out.println("digraph  {");
 			System.out.println("labelloc=t;\nfontsize=30;\nlabel=\""+this.getClass().getSimpleName()+"\";");
 
@@ -92,7 +92,6 @@ public class DatatypePropertyShape extends PathPropertyShape {
 			System.out.println(System.identityHashCode(shaclSailConnection) + " [label=\"" + StringEscapeUtils.escapeJava("Base sail") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
 			System.out.println(System.identityHashCode(shaclSailConnection.getAddedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Added statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
 			System.out.println(System.identityHashCode(shaclSailConnection.getRemovedStatements()) + " [label=\"" + StringEscapeUtils.escapeJava("Removed statements") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
-			System.out.println(System.identityHashCode(shaclSailConnection.getPreviousStateConnection()) + " [label=\"" + StringEscapeUtils.escapeJava("Previous state connection") + "\" nodeShape=pentagon fillcolor=lightblue style=filled];");
 
 			System.out.println("}");
 
