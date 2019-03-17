@@ -1,3 +1,4 @@
+/* @formatter:off */
 /*******************************************************************************
  * Copyright (c) 2019 Eclipse RDF4J contributors.
  * All rights reserved. This program and the accompanying materials
@@ -5,7 +6,6 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
-
 package org.eclipse.rdf4j.sail.memory_readonly;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -25,27 +25,37 @@ import java.util.Set;
 class OrderedPSOIndex {
 
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
-	Statement[] orderedArray;
+	SortableStatement[] orderedArray;
 
 	Map<PsoCompound, ArrayIndex> psoIndex = new HashMap<>();
 	Map<PsCompound, ArrayIndex> psIndex = new HashMap<>();
 	Map<PCompound, ArrayIndex> pIndex = new HashMap<>();
 
+
+
 	OrderedPSOIndex(Set<Statement> statementSet) {
+		this(statementSet
+			.stream()
+			.map(statement -> new SortableStatement(statement, "<" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + "><" + statement.getObject().toString() + ">"))
+			.sorted()
+			.toArray(SortableStatement[]::new), true);
+	}
 
-		orderedArray = statementSet.toArray(new Statement[0]);
-		Arrays.sort(orderedArray, (o1, o2) -> {
+	OrderedPSOIndex(SortableStatement[] sortableStatements, boolean sorted) {
 
-			String o1String = "<" + o1.getPredicate().toString() + "><" + o1.getSubject().toString() + "><"
-				+ o1.getObject().toString() + ">";
-			String o2String = "<" + o2.getPredicate().toString() + "><" + o2.getSubject().toString() + "><"
-				+ o2.getObject().toString() + ">";
+		if(!sorted){
+			sortableStatements = Arrays
+				.stream(sortableStatements)
+				.map(SortableStatement::getStatement)
+				.map(statement -> new SortableStatement(statement, "<" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + "><" + statement.getObject().toString() + ">"))
+				.sorted()
+				.toArray(SortableStatement[]::new);
+		}
 
-			return o1String.compareTo(o2String);
-		});
+		orderedArray = sortableStatements;
 
 		for (int i = 0; i < orderedArray.length; i++) {
-			Statement statement = orderedArray[i];
+			Statement statement = orderedArray[i].getStatement();
 
 			int index = i;
 
@@ -92,7 +102,7 @@ class OrderedPSOIndex {
 					if (arrayIndex == null) {
 						return EMPTY_ARRAY_INDEX_ITERABLE;
 					}
-					if (context == null) {
+					if ((context == null || context.length == 0)) {
 						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							false);
 					} else {
@@ -106,7 +116,7 @@ class OrderedPSOIndex {
 						return EMPTY_ARRAY_INDEX_ITERABLE;
 					}
 
-					if (context == null) {
+					if ((context == null || context.length == 0)) {
 						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							false);
 					} else {
@@ -121,7 +131,7 @@ class OrderedPSOIndex {
 					return EMPTY_ARRAY_INDEX_ITERABLE;
 				}
 
-				if (object == null && context == null) {
+				if (object == null && (context == null || context.length == 0)) {
 					return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 						false);
 				} else {

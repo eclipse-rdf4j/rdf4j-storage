@@ -1,3 +1,4 @@
+/* @formatter:off */
 /*******************************************************************************
  * Copyright (c) 2015 Eclipse RDF4J contributors, Aduna, and others.
  * All rights reserved. This program and the accompanying materials
@@ -6,7 +7,6 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
 package org.eclipse.rdf4j.sail.memory_readonly;
-
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
 
 import java.util.Iterator;

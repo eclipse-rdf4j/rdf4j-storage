@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.eclipse.rdf4j</groupId>
 		<artifactId>rdf4j-storage-parent</artifactId>
-		<version>2.5-SNAPSHOT</version>
+		<version>3.0-SNAPSHOT</version>
 	</parent>
 
 
 	<artifactId>rdf4j-sail-memory-readonly</artifactId>
 
-	<name>RDF4J: MemoryStore new bplus</name>
+	<name>RDF4J: MemoryStore Read Only</name>
 	<description>Sail implementation that stores data in main memory, optionally using a dump-restore file for persistence.</description>
 
 	<dependencies>

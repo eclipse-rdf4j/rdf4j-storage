@@ -1,3 +1,4 @@
+/* @formatter:off */
 /*******************************************************************************
  * Copyright (c) 2019 Eclipse RDF4J contributors.
  * All rights reserved. This program and the accompanying materials
@@ -5,7 +6,6 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
-
 package org.eclipse.rdf4j.sail.memory_readonly;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -26,7 +26,7 @@ class OrderedSPOIndex {
 
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
 
-	Statement[] orderedArray;
+	SortableStatement[] orderedArray;
 
 	Map<SpoCompound, ArrayIndex> spoIndex = new HashMap<>();
 	Map<SpCompound, ArrayIndex> spIndex = new HashMap<>();
@@ -34,19 +34,15 @@ class OrderedSPOIndex {
 
 	OrderedSPOIndex(Set<Statement> statementSet) {
 
-		orderedArray = statementSet.toArray(new Statement[0]);
-		Arrays.sort(orderedArray, (o1, o2) -> {
+		orderedArray = statementSet
+			.stream()
+			.map(statement -> new SortableStatement(statement, "<" + statement.getSubject().toString() + "><" + statement.getPredicate().toString() + "><" + statement.getObject().toString() + ">"))
+			.sorted()
+			.toArray(SortableStatement[]::new);
 
-			String o1String = "<" + o1.getSubject().toString() + "><" + o1.getPredicate().toString() + "><"
-				+ o1.getObject().toString() + ">";
-			String o2String = "<" + o2.getSubject().toString() + "><" + o2.getPredicate().toString() + "><"
-				+ o2.getObject().toString() + ">";
-
-			return o1String.compareTo(o2String);
-		});
 
 		for (int i = 0; i < orderedArray.length; i++) {
-			Statement statement = orderedArray[i];
+			Statement statement = orderedArray[i].getStatement();
 
 			int index = i;
 
@@ -87,6 +83,7 @@ class OrderedSPOIndex {
 	}
 
 	ArrayIndexIterable getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
+
 		if (subject != null) {
 			if (predicate != null) {
 				if (object != null) {
@@ -95,7 +92,7 @@ class OrderedSPOIndex {
 						return EMPTY_ARRAY_INDEX_ITERABLE;
 					}
 
-					if (context == null) {
+					if ((context == null || context.length == 0)) {
 						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							false);
 					} else {
@@ -109,7 +106,7 @@ class OrderedSPOIndex {
 						return EMPTY_ARRAY_INDEX_ITERABLE;
 					}
 
-					if (context == null) {
+					if ((context == null || context.length == 0)) {
 						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							false);
 					} else {
@@ -124,7 +121,7 @@ class OrderedSPOIndex {
 					return EMPTY_ARRAY_INDEX_ITERABLE;
 				}
 
-				if (object == null && context == null) {
+				if (object == null && (context == null || context.length == 0)) {
 					return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 						false);
 				} else {
