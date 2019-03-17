@@ -1,0 +1,24 @@
+@prefix ex: <http://example.com/>.
+
+ex:subA ex:predA ex:objA.
+ex:subA ex:predA ex:objB.
+ex:subA ex:predA ex:objC.
+
+
+ex:subA ex:predB ex:objA.
+ex:subA ex:predB ex:objB.
+ex:subA ex:predB ex:objC.
+
+
+ex:subB ex:predA ex:objA.
+ex:subB ex:predA ex:objB.
+ex:subB ex:predA ex:objC.
+
+
+ex:subB ex:predB ex:objA.
+ex:subB ex:predB ex:objB.
+ex:subB ex:predB ex:objC.
+
+ex:subA ex:subA ex:subA.
+ex:predA ex:predA ex:predA.
+ex:objA ex:objA ex:objA.

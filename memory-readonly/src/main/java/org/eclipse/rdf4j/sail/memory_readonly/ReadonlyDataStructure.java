@@ -27,10 +27,12 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 	private Set<Statement> statementSet;
 
 	private OrderedSPOIndex orderedSPOIndex;
+	private OrderedPSOIndex orderedPSOIndex;
 
 	ReadonlyDataStructure(HashSet<Statement> statements) {
 		statementSet = statements;
 		orderedSPOIndex = new OrderedSPOIndex(statements);
+		orderedPSOIndex = new OrderedPSOIndex(statements);
 	}
 
 	@Override
@@ -45,36 +47,58 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 
 	@Override
 	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subject, IRI predicate,
-			Value object, Resource... context) {
-		return new CloseableIteration<Statement, SailException>() {
+																				Value object, Resource... context) {
+		ArrayIndexIterator iterator;
 
-			Iterator<Statement> iterator = orderedSPOIndex.getStatements(subject, predicate, object, context)
-					.iterator();
+		if (subject == null && predicate != null) {
+			iterator = orderedPSOIndex.getStatements(subject, predicate, object, context);
 
-			@Override
-			public void close() throws SailException {
-				// no-op
-			}
+		} else {
+			iterator = orderedSPOIndex.getStatements(subject, predicate, object, context);
+		}
 
-			@Override
-			public boolean hasNext() throws SailException {
-				return iterator.hasNext();
-			}
+		if(iterator.isNeedsFurtherFiltering()){
 
-			@Override
-			public Statement next() throws SailException {
-				return iterator.next();
-			}
+		}
 
-			@Override
-			public void remove() throws SailException {
-				throw new IllegalStateException();
-			}
-		};
+		return new CloseableIterationOverIterator(iterator.iterator());
+
 	}
 
 	@Override
 	public void flush() {
 		// no-op
 	}
+
 }
+
+class CloseableIterationOverIterator implements CloseableIteration<Statement, SailException> {
+
+	Iterator<Statement> iterator;
+
+	public CloseableIterationOverIterator(Iterator<Statement> iterator) {
+		this.iterator = iterator;
+	}
+
+	@Override
+	public void close() throws SailException {
+		// no-op
+	}
+
+	@Override
+	public boolean hasNext() throws SailException {
+		return iterator.hasNext();
+	}
+
+	@Override
+	public Statement next() throws SailException {
+		return iterator.next();
+	}
+
+	@Override
+	public void remove() throws SailException {
+		throw new IllegalStateException();
+	}
+}
+
+
