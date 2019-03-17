@@ -23,14 +23,14 @@ import java.util.HashSet;
  */
 public class MemorySailStoreReadonly implements SailStore {
 
-	private MemNamespaceStore memNamespaceStore = new MemNamespaceStore();
+	private MemNamespaceStore mns = new MemNamespaceStore();
 
 	private MemorySailSourceReadonly sailSource;
 	private MemorySailSourceReadonly sailSourceInferred;
 
 	MemorySailStoreReadonly(HashSet<Statement> statements, HashSet<Statement> inferredStatements) {
-		sailSource = new MemorySailSourceReadonly(new ReadonlyDataStructure(statements), memNamespaceStore);
-		sailSourceInferred = new MemorySailSourceReadonly(new ReadonlyDataStructure(inferredStatements), memNamespaceStore);
+		sailSource = new MemorySailSourceReadonly(new ReadonlyDataStructure(statements), mns);
+		sailSourceInferred = new MemorySailSourceReadonly(new ReadonlyDataStructure(inferredStatements), mns);
 	}
 
 	@Override

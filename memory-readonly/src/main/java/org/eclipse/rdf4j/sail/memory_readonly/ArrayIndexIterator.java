@@ -39,9 +39,10 @@ public class ArrayIndexIterator implements Iterable<Statement> {
 	public Iterator<Statement> iterator() {
 		return new Iterator<Statement>() {
 			int current = startInclusive;
+
 			@Override
 			public boolean hasNext() {
-				return current<stopExclusive;
+				return current < stopExclusive;
 			}
 
 			@Override

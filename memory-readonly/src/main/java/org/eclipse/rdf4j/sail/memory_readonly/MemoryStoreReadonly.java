@@ -31,79 +31,75 @@ import java.util.List;
  */
 public class MemoryStoreReadonly extends AbstractNotifyingSail implements FederatedServiceResolverClient {
 
-    private MemorySailStoreReadonly sailStore;
+	private MemorySailStoreReadonly sailStore;
 
-    public MemoryStoreReadonly(HashSet<Statement> statements, HashSet<Statement> statementsInferred) {
-        sailStore = new MemorySailStoreReadonly(statements, statementsInferred);
+	public MemoryStoreReadonly(HashSet<Statement> statements, HashSet<Statement> statementsInferred) {
+		sailStore = new MemorySailStoreReadonly(statements, statementsInferred);
 
-    }
+	}
 
-    @Override
-    public List<IsolationLevel> getSupportedIsolationLevels() {
-        return Arrays.asList(IsolationLevels.NONE, IsolationLevels.READ_COMMITTED);
-    }
+	@Override
+	public List<IsolationLevel> getSupportedIsolationLevels() {
+		return Arrays.asList(IsolationLevels.NONE, IsolationLevels.READ_COMMITTED);
+	}
 
-    @Override
-    public IsolationLevel getDefaultIsolationLevel() {
-        return IsolationLevels.NONE;
-    }
+	@Override
+	public IsolationLevel getDefaultIsolationLevel() {
+		return IsolationLevels.NONE;
+	}
 
-    @Override
-    public void setFederatedServiceResolver(FederatedServiceResolver resolver) {
+	@Override
+	public void setFederatedServiceResolver(FederatedServiceResolver resolver) {
 
-    }
+	}
 
-    @Override
-    protected void shutDownInternal() throws SailException {
+	@Override
+	protected void shutDownInternal() throws SailException {
 
-    }
+	}
 
-    @Override
-    protected NotifyingSailConnection getConnectionInternal() throws SailException {
-        return new MemoryStoreReadOnlyConnection(this, sailStore, getEvaluationStrategyFactory());
-    }
+	@Override
+	protected NotifyingSailConnection getConnectionInternal() throws SailException {
+		return new MemoryStoreReadOnlyConnection(this, sailStore, getEvaluationStrategyFactory());
+	}
 
-    @Override
-    public boolean isWritable() throws SailException {
-        return false;
-    }
+	@Override
+	public boolean isWritable() throws SailException {
+		return false;
+	}
 
-    @Override
-    public ValueFactory getValueFactory() {
-        return SimpleValueFactory.getInstance();
-    }
+	@Override
+	public ValueFactory getValueFactory() {
+		return SimpleValueFactory.getInstance();
+	}
 
+	private EvaluationStrategyFactory evalStratFactory;
 
-    private EvaluationStrategyFactory evalStratFactory;
+	public synchronized EvaluationStrategyFactory getEvaluationStrategyFactory() {
+		if (evalStratFactory == null) {
+			evalStratFactory = new StrictEvaluationStrategyFactory(getFederatedServiceResolver());
+		}
+		evalStratFactory.setQuerySolutionCacheThreshold(getIterationCacheSyncThreshold());
+		return evalStratFactory;
+	}
 
-    public synchronized EvaluationStrategyFactory getEvaluationStrategyFactory() {
-        if (evalStratFactory == null) {
-            evalStratFactory = new StrictEvaluationStrategyFactory(getFederatedServiceResolver());
-        }
-        evalStratFactory.setQuerySolutionCacheThreshold(getIterationCacheSyncThreshold());
-        return evalStratFactory;
-    }
+	/**
+	 * independent life cycle
+	 */
+	private FederatedServiceResolver serviceResolver;
 
-    /**
-     * independent life cycle
-     */
-    private FederatedServiceResolver serviceResolver;
+	/**
+	 * dependent life cycle
+	 */
+	private FederatedServiceResolverImpl dependentServiceResolver;
 
-    /**
-     * dependent life cycle
-     */
-    private FederatedServiceResolverImpl dependentServiceResolver;
-
-
-    public synchronized FederatedServiceResolver getFederatedServiceResolver() {
-        if (serviceResolver == null) {
-            if (dependentServiceResolver == null) {
-                dependentServiceResolver = new FederatedServiceResolverImpl();
-            }
-            setFederatedServiceResolver(dependentServiceResolver);
-        }
-        return serviceResolver;
-    }
+	public synchronized FederatedServiceResolver getFederatedServiceResolver() {
+		if (serviceResolver == null) {
+			if (dependentServiceResolver == null) {
+				dependentServiceResolver = new FederatedServiceResolverImpl();
+			}
+			setFederatedServiceResolver(dependentServiceResolver);
+		}
+		return serviceResolver;
+	}
 }
-
-

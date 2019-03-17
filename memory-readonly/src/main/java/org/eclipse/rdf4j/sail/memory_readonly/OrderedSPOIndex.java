@@ -35,8 +35,10 @@ class OrderedSPOIndex {
 		orderedArray = statementSet.toArray(new Statement[0]);
 		Arrays.sort(orderedArray, (o1, o2) -> {
 
-			String o1String = "<" + o1.getSubject().toString() + "><" + o1.getPredicate().toString() + "><" + o1.getObject().toString() + ">";
-			String o2String = "<" + o2.getSubject().toString() + "><" + o2.getPredicate().toString() + "><" + o2.getObject().toString() + ">";
+			String o1String = "<" + o1.getSubject().toString() + "><" + o1.getPredicate().toString() + "><"
+					+ o1.getObject().toString() + ">";
+			String o2String = "<" + o2.getSubject().toString() + "><" + o2.getPredicate().toString() + "><"
+					+ o2.getObject().toString() + ">";
 
 			return o1String.compareTo(o2String);
 		});
@@ -48,32 +50,32 @@ class OrderedSPOIndex {
 
 			SCompound sKey = new SCompound(statement.getSubject());
 			SpCompound spKey = new SpCompound(statement.getSubject(), statement.getPredicate());
-			SpoCompound spoKey = new SpoCompound(statement.getSubject(), statement.getPredicate(), statement.getObject());
-
+			SpoCompound spoKey = new SpoCompound(statement.getSubject(), statement.getPredicate(),
+					statement.getObject());
 
 			sIndex.compute(sKey, (key, value) -> {
-				if(value == null){
+				if (value == null) {
 					return new ArrayIndex(index, index + 1);
-				}else{
-					value.stopExclusive = index+1;
+				} else {
+					value.stopExclusive = index + 1;
 					return value;
 				}
 			});
 
 			spIndex.compute(spKey, (key, value) -> {
-				if(value == null){
+				if (value == null) {
 					return new ArrayIndex(index, index + 1);
-				}else{
-					value.stopExclusive = index+1;
+				} else {
+					value.stopExclusive = index + 1;
 					return value;
 				}
 			});
 
 			spoIndex.compute(spoKey, (key, value) -> {
-				if(value == null){
+				if (value == null) {
 					return new ArrayIndex(index, index + 1);
-				}else{
-					value.stopExclusive = index+1;
+				} else {
+					value.stopExclusive = index + 1;
 					return value;
 				}
 			});
@@ -82,47 +84,49 @@ class OrderedSPOIndex {
 
 	}
 
-	ArrayIndexIterator getStatements(Resource subject, IRI predicate, Value object, Resource... context){
-		if(subject != null){
-			if(predicate != null){
-				if(object != null){
+	ArrayIndexIterator getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
+		if (subject != null) {
+			if (predicate != null) {
+				if (object != null) {
 					ArrayIndex arrayIndex = spoIndex.get(new SpoCompound(subject, predicate, object));
-					if(context == null){
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive, false);
-					}else{
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive, true);
+					if (context == null) {
+						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+								false);
+					} else {
+						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+								true);
 					}
 
-				}else{
+				} else {
 					ArrayIndex arrayIndex = spIndex.get(new SpCompound(subject, predicate));
-					if(context == null){
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive, false);
-					}else{
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive, true);
+					if (context == null) {
+						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+								false);
+					} else {
+						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+								true);
 					}
 				}
 
-
-			}else{
+			} else {
 				ArrayIndex arrayIndex = sIndex.get(new SCompound(subject));
-				if(object == null && context == null){
-					return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive, false);
-				}else{
-					return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive, true);
+				if (object == null && context == null) {
+					return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+							false);
+				} else {
+					return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+							true);
 				}
 			}
 
-
-		}else{
+		} else {
 			return new ArrayIndexIterator(orderedArray, 0, orderedArray.length, true);
 		}
-
 
 	}
 }
 
-
-class SpoCompound{
+class SpoCompound {
 	private Resource subject;
 	private IRI predicate;
 	private Value object;
@@ -143,8 +147,8 @@ class SpoCompound{
 		}
 		SpoCompound that = (SpoCompound) o;
 		return subject.equals(that.subject) &&
-			predicate.equals(that.predicate) &&
-			object.equals(that.object);
+				predicate.equals(that.predicate) &&
+				object.equals(that.object);
 	}
 
 	@Override
@@ -153,7 +157,7 @@ class SpoCompound{
 	}
 }
 
-class SpCompound{
+class SpCompound {
 	private Resource subject;
 	private IRI predicate;
 
@@ -172,7 +176,7 @@ class SpCompound{
 		}
 		SpCompound that = (SpCompound) o;
 		return subject.equals(that.subject) &&
-			predicate.equals(that.predicate);
+				predicate.equals(that.predicate);
 	}
 
 	@Override
@@ -181,7 +185,7 @@ class SpCompound{
 	}
 }
 
-class SCompound{
+class SCompound {
 	private Resource subject;
 
 	SCompound(Resource subject) {
@@ -206,7 +210,7 @@ class SCompound{
 	}
 }
 
-class ArrayIndex{
+class ArrayIndex {
 	int startInclusive;
 	int stopExclusive;
 

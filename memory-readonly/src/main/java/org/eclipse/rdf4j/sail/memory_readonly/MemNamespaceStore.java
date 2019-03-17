@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * An in-memory store for namespace prefix information.
- * 
+ *
  * @author Arjohn Kampman
  */
 class MemNamespaceStore implements Iterable<SimpleNamespace> {
@@ -47,8 +47,7 @@ class MemNamespaceStore implements Iterable<SimpleNamespace> {
 
 		if (ns != null) {
 			ns.setName(name);
-		}
-		else {
+		} else {
 			namespacesMap.put(prefix, new SimpleNamespace(prefix, name));
 		}
 	}

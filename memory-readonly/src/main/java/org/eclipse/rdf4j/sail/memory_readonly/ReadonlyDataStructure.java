@@ -24,11 +24,11 @@ import java.util.Set;
  */
 public class ReadonlyDataStructure extends DataStructureInterface {
 
-	Set<Statement> statementSet;
+	private Set<Statement> statementSet;
 
-	OrderedSPOIndex orderedSPOIndex;
+	private OrderedSPOIndex orderedSPOIndex;
 
-	public ReadonlyDataStructure(HashSet<Statement> statements) {
+	ReadonlyDataStructure(HashSet<Statement> statements) {
 		statementSet = statements;
 		orderedSPOIndex = new OrderedSPOIndex(statements);
 	}
@@ -44,14 +44,16 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 	}
 
 	@Override
-	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
+	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subject, IRI predicate,
+			Value object, Resource... context) {
 		return new CloseableIteration<Statement, SailException>() {
 
-			Iterator<Statement> iterator = orderedSPOIndex.getStatements(subject, predicate, object, context).iterator();
+			Iterator<Statement> iterator = orderedSPOIndex.getStatements(subject, predicate, object, context)
+					.iterator();
 
 			@Override
 			public void close() throws SailException {
-				//no-op
+				// no-op
 			}
 
 			@Override
@@ -73,6 +75,6 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 
 	@Override
 	public void flush() {
-		//no-op
+		// no-op
 	}
 }

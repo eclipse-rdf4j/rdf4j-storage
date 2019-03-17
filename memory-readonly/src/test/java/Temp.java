@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2019 Eclipse RDF4J contributors.
  * All rights reserved. This program and the accompanying materials
@@ -27,13 +28,14 @@ public class Temp {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		SimpleValueFactory vf = SimpleValueFactory.getInstance();
-		HashSet<Statement> statements1 = new HashSet<>(Arrays.asList(vf.createStatement(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE)));
+		HashSet<Statement> statements1 = new HashSet<>(
+				Arrays.asList(vf.createStatement(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE)));
 		SailRepository sail = new SailRepository(new MemoryStoreReadonly(statements1, new HashSet<Statement>()));
 		sail.initialize();
 
 		try (SailRepositoryConnection connection = sail.getConnection()) {
 			try (RepositoryResult<Statement> statements = connection.getStatements(null, null, null)) {
-				while(statements.hasNext()){
+				while (statements.hasNext()) {
 					System.out.println(statements.next());
 				}
 			}
@@ -48,8 +50,6 @@ public class Temp {
 
 		}
 
-
 	}
-
 
 }

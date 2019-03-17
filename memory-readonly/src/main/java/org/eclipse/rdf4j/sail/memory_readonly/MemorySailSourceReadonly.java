@@ -30,196 +30,178 @@ import java.util.Set;
  */
 public class MemorySailSourceReadonly implements SailSource {
 
-    private final DataStructureInterface dataStructure;
+	private final DataStructureInterface dataStructure;
 
-    private final MemNamespaceStore namespaceStore;
+	private final MemNamespaceStore namespaceStore;
 
+	MemorySailSourceReadonly(DataStructureInterface dataStructure, MemNamespaceStore MemNamespaceStore) {
+		this.dataStructure = dataStructure;
+		this.namespaceStore = MemNamespaceStore;
+	}
 
-    MemorySailSourceReadonly(DataStructureInterface dataStructure, MemNamespaceStore MemNamespaceStore) {
-        this.dataStructure = dataStructure;
-        this.namespaceStore = MemNamespaceStore;
-    }
+	@Override
+	public void close() throws SailException {
+	}
 
-    @Override
-    public void close() throws SailException {
-//        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-//        System.out.println(stackTrace[1]);
+	@Override
+	public SailSource fork() {
+		return new MemorySailSourceReadonly(this.dataStructure, namespaceStore);
+	}
 
-    }
+	@Override
+	public SailSink sink(IsolationLevel level) throws SailException {
+		return new SailSink() {
+			@Override
+			public void prepare() throws SailException {
 
-    @Override
-    public SailSource fork() {
+			}
 
-//        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-//        System.out.println(stackTrace[1]);
-//        return new MemorySailSourceReadonly(new ReadCommittedWrapper(this.dataStructure), namespaceStore);
-        return new MemorySailSourceReadonly(this.dataStructure, namespaceStore);
-    }
+			@Override
+			public void flush() throws SailException {
 
-    @Override
-    public SailSink sink(IsolationLevel level) throws SailException {
-        return new SailSink() {
-            @Override
-            public void prepare() throws SailException {
+			}
 
+			@Override
+			public synchronized void setNamespace(String prefix, String name) throws SailException {
+				namespaceStore.setNamespace(prefix, name);
+			}
 
-            }
+			@Override
+			public synchronized void removeNamespace(String prefix) throws SailException {
+				namespaceStore.removeNamespace(prefix);
+			}
 
-            @Override
-            public void flush() throws SailException {
+			@Override
+			public synchronized void clearNamespaces() throws SailException {
+				namespaceStore.clear();
+			}
 
-            }
+			@Override
+			public void clear(Resource... contexts) throws SailException {
 
-            @Override
-            public synchronized void setNamespace(String prefix, String name)
-                    throws SailException {
-                namespaceStore.setNamespace(prefix, name);
-            }
+				try (CloseableIteration<? extends Statement, SailException> statements = dataStructure
+						.getStatements(null, null, null, contexts)) {
+					while (statements.hasNext()) {
+						dataStructure.removeStatement(statements.next());
+					}
+				}
 
-            @Override
-            public synchronized void removeNamespace(String prefix)
-                    throws SailException {
-                namespaceStore.removeNamespace(prefix);
-            }
+			}
 
-            @Override
-            public synchronized void clearNamespaces()
-                    throws SailException {
-                namespaceStore.clear();
-            }
+			@Override
+			public void observe(Resource subj, IRI pred, Value obj, Resource... contexts) throws SailException {
+				throw new RuntimeException("Unsupported operation");
+			}
 
-            @Override
-            public void clear(Resource... contexts) throws SailException {
+			@Override
+			public void approve(Resource subj, IRI pred, Value obj, Resource ctx) throws SailException {
+				Statement statement = SimpleValueFactory.getInstance().createStatement(subj, pred, obj, ctx);
+				dataStructure.addStatement(statement);
+			}
 
-                try (CloseableIteration<? extends Statement, SailException> statements = dataStructure.getStatements(null, null, null, contexts)) {
-                    while (statements.hasNext()) {
-                        dataStructure.removeStatement(statements.next());
-                    }
-                }
+			@Override
+			public void deprecate(Resource subj, IRI pred, Value obj, Resource ctx) throws SailException {
+				Statement statement = SimpleValueFactory.getInstance().createStatement(subj, pred, obj, ctx);
+				dataStructure.removeStatement(statement);
+			}
 
-            }
+			@Override
+			public void close() throws SailException {
 
-            @Override
-            public void observe(Resource subj, IRI pred, Value obj, Resource... contexts) throws SailException {
-                throw new RuntimeException("Unsupported operation");
-            }
+			}
+		};
+	}
 
-            @Override
-            public void approve(Resource subj, IRI pred, Value obj, Resource ctx) throws SailException {
-                Statement statement = SimpleValueFactory.getInstance().createStatement(subj, pred, obj, ctx);
-                dataStructure.addStatement(statement);
-            }
+	@Override
+	public SailDataset dataset(IsolationLevel level) throws SailException {
+		return new SailDataset() {
+			@Override
+			public void close() throws SailException {
 
-            @Override
-            public void deprecate(Resource subj, IRI pred, Value obj, Resource ctx) throws SailException {
-                Statement statement = SimpleValueFactory.getInstance().createStatement(subj, pred, obj, ctx);
-                dataStructure.removeStatement(statement);
-            }
+			}
 
-            @Override
-            public void close() throws SailException {
+			@Override
+			public String getNamespace(String prefix) throws SailException {
+				return namespaceStore.getNamespace(prefix);
+			}
 
-            }
-        };
-    }
+			@Override
+			public CloseableIteration<? extends Namespace, SailException> getNamespaces() {
+				return new CloseableIteratorIteration<Namespace, SailException>(namespaceStore.iterator());
+			}
 
-    @Override
-    public SailDataset dataset(IsolationLevel level) throws SailException {
-        return new SailDataset() {
-            @Override
-            public void close() throws SailException {
+			@Override
+			public CloseableIteration<? extends Resource, SailException> getContextIDs() throws SailException {
+				return new CloseableIteration<Resource, SailException>() {
+					CloseableIteration<? extends Statement, SailException> statements = getStatements(null, null, null);
 
-            }
+					Set<Resource> contexts = new HashSet<>();
 
-            @Override
-            public String getNamespace(String prefix) throws SailException {
-                return namespaceStore.getNamespace(prefix);
-            }
+					Resource next = internalNext();
 
-            @Override
-            public CloseableIteration<? extends Namespace, SailException> getNamespaces() {
-                return new CloseableIteratorIteration<Namespace, SailException>(namespaceStore.iterator());
-            }
+					private Resource internalNext() {
 
-            @Override
-            public CloseableIteration<? extends Resource, SailException> getContextIDs() throws SailException {
-                return new CloseableIteration<Resource, SailException>() {
-                    CloseableIteration<? extends Statement, SailException> statements = getStatements(null, null, null);
+						while (statements.hasNext()) {
+							Statement next = statements.next();
+							if (!contexts.contains(next.getContext())) {
+								contexts.add(next.getContext());
+								return next.getContext();
+							}
+						}
 
-                    Set<Resource> contexts = new HashSet<>();
+						return null;
 
-                    Resource next = internalNext();
+					}
 
-                    private Resource internalNext() {
+					@Override
+					public boolean hasNext() {
+						if (next == null) {
+							next = internalNext();
+						}
+						return next != null;
+					}
 
-                        while (statements.hasNext()) {
-                            Statement next = statements.next();
-                            if (!contexts.contains(next.getContext())) {
-                                contexts.add(next.getContext());
-                                return next.getContext();
-                            }
-                        }
+					@Override
+					public Resource next() {
 
-                        return null;
+						if (next == null) {
+							next = internalNext();
+						}
 
-                    }
+						Resource temp = next;
+						next = null;
 
+						return temp;
+					}
 
-                    @Override
-                    public boolean hasNext() {
-                        if (next == null) {
-                            next = internalNext();
-                        }
-                        return next != null;
-                    }
+					@Override
+					public void remove() {
 
-                    @Override
-                    public Resource next() {
+					}
 
-                        if (next == null) {
-                            next = internalNext();
-                        }
+					@Override
+					public void close() {
+						statements.close();
+					}
+				};
+			}
 
-                        Resource temp = next;
-                        next = null;
+			@Override
+			public CloseableIteration<? extends Statement, SailException> getStatements(Resource subj, IRI pred,
+					Value obj, Resource... contexts) throws SailException {
+				return dataStructure.getStatements(subj, pred, obj, contexts);
+			}
 
-                        return temp;
-                    }
+		};
+	}
 
-                    @Override
-                    public void remove() {
+	@Override
+	public void prepare() throws SailException {
+	}
 
-                    }
-
-                    @Override
-                    public void close() {
-                        statements.close();
-                    }
-                };
-            }
-
-            @Override
-            public CloseableIteration<? extends Statement, SailException> getStatements(Resource subj, IRI pred, Value obj, Resource... contexts) throws SailException {
-                return dataStructure.getStatements(subj, pred, obj, contexts);
-            }
-
-
-        };
-    }
-
-    @Override
-    public void prepare() throws SailException {
-//        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-//        System.out.println(stackTrace[1]);
-    }
-
-    @Override
-    public void flush() throws SailException {
-//        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-//        System.out.println(stackTrace[1]);
-        dataStructure.flush();
-    }
-
-
+	@Override
+	public void flush() throws SailException {
+		dataStructure.flush();
+	}
 
 }
