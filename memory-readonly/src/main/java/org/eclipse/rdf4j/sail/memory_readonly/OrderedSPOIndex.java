@@ -32,7 +32,9 @@ class OrderedSPOIndex {
 	Map<SpCompound, ArrayIndex> spIndex = new HashMap<>();
 	Map<SCompound, ArrayIndex> sIndex = new HashMap<>();
 
-	OrderedSPOIndex(Set<Statement> statementSet) {
+
+
+		OrderedSPOIndex(Set<Statement> statementSet) {
 
 		orderedArray = statementSet
 			.stream()
@@ -153,9 +155,7 @@ class SpoCompound {
 		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
+
 		SpoCompound that = (SpoCompound) o;
 		return subject.equals(that.subject) &&
 			predicate.equals(that.predicate) &&
@@ -191,9 +191,7 @@ class SpCompound {
 		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
+
 		SpCompound that = (SpCompound) o;
 		return subject.equals(that.subject) &&
 			predicate.equals(that.predicate);
@@ -225,9 +223,7 @@ class SCompound {
 		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
+
 		SCompound sCompound = (SCompound) o;
 		return subject.equals(sCompound.subject);
 	}

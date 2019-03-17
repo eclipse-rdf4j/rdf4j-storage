@@ -22,32 +22,32 @@ import java.util.Set;
 /**
  * @author Håvard Mikkelsen Ottestad
  */
-class OrderedPSOIndex {
+class OrderedOPSIndex {
 
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
 	SortableStatement[] orderedArray;
 
-	Map<PsoCompound, ArrayIndex> psoIndex = new HashMap<>();
-	Map<PsCompound, ArrayIndex> psIndex = new HashMap<>();
-	Map<PCompound, ArrayIndex> pIndex = new HashMap<>();
+	Map<OpsCompound, ArrayIndex> opsIndex = new HashMap<>();
+	Map<OpCompound, ArrayIndex> opIndex = new HashMap<>();
+	Map<OCompound, ArrayIndex> oIndex = new HashMap<>();
 
 
 
-	OrderedPSOIndex(Set<Statement> statementSet) {
+	OrderedOPSIndex(Set<Statement> statementSet) {
 		this(statementSet
 			.stream()
-			.map(statement -> new SortableStatement(statement, "<" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + "><" + statement.getObject().toString() + ">"))
+			.map(statement -> new SortableStatement(statement, "<" + statement.getObject().toString() + "><" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + ">"))
 			.sorted()
 			.toArray(SortableStatement[]::new), true);
 	}
 
-	OrderedPSOIndex(SortableStatement[] sortableStatements, boolean sorted) {
+	OrderedOPSIndex(SortableStatement[] sortableStatements, boolean sorted) {
 
 		if(!sorted){
 			sortableStatements = Arrays
 				.stream(sortableStatements)
 				.map(SortableStatement::getStatement)
-				.map(statement -> new SortableStatement(statement, "<" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + "><" + statement.getObject().toString() + ">"))
+				.map(statement -> new SortableStatement(statement, "<" + statement.getObject().toString() + "><" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + ">"))
 				.sorted()
 				.toArray(SortableStatement[]::new);
 		}
@@ -59,11 +59,11 @@ class OrderedPSOIndex {
 
 			int index = i;
 
-			PCompound pKey = new PCompound(statement.getPredicate());
-			PsCompound psKey = new PsCompound(statement.getPredicate(), statement.getSubject());
-			PsoCompound psoKey = new PsoCompound(statement.getPredicate(), statement.getSubject(), statement.getObject());
+			OCompound oKey = new OCompound(statement.getObject());
+			OpCompound opKey = new OpCompound(statement.getObject(), statement.getPredicate());
+			OpsCompound opsKey = new OpsCompound(statement.getObject(), statement.getPredicate(), statement.getSubject());
 
-			pIndex.compute(pKey, (key, value) -> {
+			oIndex.compute(oKey, (key, value) -> {
 				if (value == null) {
 					return new ArrayIndex(index, index + 1);
 				} else {
@@ -72,7 +72,7 @@ class OrderedPSOIndex {
 				}
 			});
 
-			psIndex.compute(psKey, (key, value) -> {
+			opIndex.compute(opKey, (key, value) -> {
 				if (value == null) {
 					return new ArrayIndex(index, index + 1);
 				} else {
@@ -81,7 +81,7 @@ class OrderedPSOIndex {
 				}
 			});
 
-			psoIndex.compute(psoKey, (key, value) -> {
+			opsIndex.compute(opsKey, (key, value) -> {
 				if (value == null) {
 					return new ArrayIndex(index, index + 1);
 				} else {
@@ -95,10 +95,10 @@ class OrderedPSOIndex {
 	}
 
 	ArrayIndexIterable getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
-		if (predicate != null) {
-			if (subject != null) {
-				if (object != null) {
-					ArrayIndex arrayIndex = psoIndex.get(new PsoCompound(predicate, subject, object));
+		if (object != null) {
+			if (predicate != null) {
+				if (subject != null) {
+					ArrayIndex arrayIndex = opsIndex.get(new OpsCompound(object, predicate, subject));
 					if (arrayIndex == null) {
 						return EMPTY_ARRAY_INDEX_ITERABLE;
 					}
@@ -111,7 +111,7 @@ class OrderedPSOIndex {
 					}
 
 				} else {
-					ArrayIndex arrayIndex = psIndex.get(new PsCompound(predicate, subject));
+					ArrayIndex arrayIndex = opIndex.get(new OpCompound(object, predicate));
 					if (arrayIndex == null) {
 						return EMPTY_ARRAY_INDEX_ITERABLE;
 					}
@@ -126,12 +126,12 @@ class OrderedPSOIndex {
 				}
 
 			} else {
-				ArrayIndex arrayIndex = pIndex.get(new PCompound(predicate));
+				ArrayIndex arrayIndex = oIndex.get(new OCompound(object));
 				if (arrayIndex == null) {
 					return EMPTY_ARRAY_INDEX_ITERABLE;
 				}
 
-				if (object == null && (context == null || context.length == 0)) {
+				if (subject == null && (context == null || context.length == 0)) {
 					return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 						false);
 				} else {
@@ -147,49 +147,13 @@ class OrderedPSOIndex {
 	}
 }
 
-class PsoCompound {
-	private IRI predicate;
-	private Resource subject;
+class OpsCompound {
 	private Value object;
-
-	public PsoCompound(IRI predicate, Resource subject, Value object) {
-		this.predicate = predicate;
-		this.subject = subject;
-		this.object = object;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-
-		PsoCompound that = (PsoCompound) o;
-		return predicate.equals(that.predicate) &&
-			subject.equals(that.subject) &&
-			object.equals(that.object);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(predicate, subject, object);
-	}
-
-	@Override
-	public String toString() {
-		return "PsoCompound{" +
-			"predicate=" + predicate +
-			", subject=" + subject +
-			", object=" + object +
-			'}';
-	}
-}
-
-class PsCompound {
 	private IRI predicate;
 	private Resource subject;
 
-	public PsCompound(IRI predicate, Resource subject) {
+	public OpsCompound(Value object, IRI predicate, Resource subject) {
+		this.object = object;
 		this.predicate = predicate;
 		this.subject = subject;
 	}
@@ -200,29 +164,33 @@ class PsCompound {
 			return true;
 		}
 
-		PsCompound that = (PsCompound) o;
-		return predicate.equals(that.predicate) &&
+		OpsCompound that = (OpsCompound) o;
+		return object.equals(that.object) &&
+			predicate.equals(that.predicate) &&
 			subject.equals(that.subject);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(predicate, subject);
+		return Objects.hash(object, predicate, subject);
 	}
 
 	@Override
 	public String toString() {
-		return "PsCompound{" +
-			"predicate=" + predicate +
+		return "OpsCompound{" +
+			"object=" + object +
+			", predicate=" + predicate +
 			", subject=" + subject +
 			'}';
 	}
 }
 
-class PCompound {
+class OpCompound {
+	private Value object;
 	private IRI predicate;
 
-	PCompound(IRI predicate) {
+	public OpCompound(Value object, IRI predicate) {
+		this.object = object;
 		this.predicate = predicate;
 	}
 
@@ -232,19 +200,52 @@ class PCompound {
 			return true;
 		}
 
-		PCompound pCompound = (PCompound) o;
-		return predicate.equals(pCompound.predicate);
+		OpCompound that = (OpCompound) o;
+		return object.equals(that.object) &&
+			predicate.equals(that.predicate);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(predicate);
+		return Objects.hash(object, predicate);
 	}
 
 	@Override
 	public String toString() {
-		return "PCompound{" +
-			"predicate=" + predicate +
+		return "OpCompound{" +
+			"object=" + object +
+			", predicate=" + predicate +
+			'}';
+	}
+}
+
+class OCompound {
+	private Value object;
+
+	public OCompound(Value object) {
+		this.object = object;
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		OCompound oCompound = (OCompound) o;
+		return object.equals(oCompound.object);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(object);
+	}
+
+	@Override
+	public String toString() {
+		return "OCompound{" +
+			"object=" + object +
 			'}';
 	}
 }

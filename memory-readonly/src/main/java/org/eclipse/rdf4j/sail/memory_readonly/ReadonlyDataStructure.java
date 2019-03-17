@@ -9,29 +9,64 @@
 package org.eclipse.rdf4j.sail.memory_readonly;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
+import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.sail.SailException;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Håvard Mikkelsen Ottestad
  */
 public class ReadonlyDataStructure extends DataStructureInterface {
 
-	private Set<Statement> statementSet;
+	ValueFactory vf = SimpleValueFactory.getInstance();
+
 
 	private OrderedSPOIndex orderedSPOIndex;
 	private OrderedPSOIndex orderedPSOIndex;
+	private OrderedOPSIndex orderedOPSIndex;
+
+
+	private Map<Value, Value> valueMap = new HashMap<>();
+
 
 	ReadonlyDataStructure(Set<Statement> statements) {
-		statementSet = statements;
-		orderedSPOIndex = new OrderedSPOIndex(statements);
+
+		statements.forEach(s -> {
+			valueMap.computeIfAbsent(s.getSubject(), a -> s.getSubject());
+			valueMap.computeIfAbsent(s.getPredicate(), a -> s.getPredicate());
+			valueMap.computeIfAbsent(s.getObject(), a -> s.getObject());
+		});
+
+		Set<Statement> collect = statements.stream().map(statement -> {
+			Resource subject = statement.getSubject();
+			IRI predicate = statement.getPredicate();
+			Value object = statement.getObject();
+
+			subject = (Resource) valueMap.get(subject);
+			predicate = (IRI) valueMap.get(predicate);
+			object = valueMap.get(object);
+
+			return vf.createStatement(subject, predicate, object, statement.getContext());
+
+		}).collect(Collectors.toSet());
+
+
+		orderedSPOIndex = new OrderedSPOIndex(collect);
 		orderedPSOIndex = new OrderedPSOIndex(orderedSPOIndex.orderedArray, false);
+		orderedOPSIndex = new OrderedOPSIndex(orderedSPOIndex.orderedArray, false);
 	}
 
 	@Override
@@ -50,7 +85,11 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 		ArrayIndexIterable iterable;
 
 		if (subject == null && predicate != null) {
-			iterable = orderedPSOIndex.getStatements(subject, predicate, object, context);
+			if(object != null){
+				iterable = orderedOPSIndex.getStatements(subject, predicate, object, context);
+			}else{
+				iterable = orderedPSOIndex.getStatements(subject, predicate, object, context);
+			}
 
 		} else {
 			iterable = orderedSPOIndex.getStatements(subject, predicate, object, context);
