@@ -29,7 +29,7 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 	private OrderedSPOIndex orderedSPOIndex;
 	private OrderedPSOIndex orderedPSOIndex;
 
-	ReadonlyDataStructure(HashSet<Statement> statements) {
+	ReadonlyDataStructure(Set<Statement> statements) {
 		statementSet = statements;
 		orderedSPOIndex = new OrderedSPOIndex(statements);
 		orderedPSOIndex = new OrderedPSOIndex(statements);
@@ -48,20 +48,22 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 	@Override
 	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subject, IRI predicate,
 																				Value object, Resource... context) {
-		ArrayIndexIterator iterator;
+		ArrayIndexIterable iterable;
 
 		if (subject == null && predicate != null) {
-			iterator = orderedPSOIndex.getStatements(subject, predicate, object, context);
+			iterable = orderedPSOIndex.getStatements(subject, predicate, object, context);
 
 		} else {
-			iterator = orderedSPOIndex.getStatements(subject, predicate, object, context);
+			iterable = orderedSPOIndex.getStatements(subject, predicate, object, context);
 		}
 
-		if(iterator.isNeedsFurtherFiltering()){
+		CloseableIteration<Statement, SailException> iterator = new CloseableIterationOverIterator(iterable.iterator());
 
+		if (iterable.isNeedsFurtherFiltering()) {
+			iterator = new ComparingIterator(iterator, subject, predicate, object, context);
 		}
 
-		return new CloseableIterationOverIterator(iterator.iterator());
+		return iterator;
 
 	}
 

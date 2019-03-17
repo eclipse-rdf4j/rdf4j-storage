@@ -24,6 +24,7 @@ import java.util.Set;
  */
 class OrderedPSOIndex {
 
+	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
 	Statement[] orderedArray;
 
 	Map<PsoCompound, ArrayIndex> psoIndex = new HashMap<>();
@@ -83,43 +84,54 @@ class OrderedPSOIndex {
 
 	}
 
-	ArrayIndexIterator getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
+	ArrayIndexIterable getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
 		if (predicate != null) {
 			if (subject != null) {
 				if (object != null) {
 					ArrayIndex arrayIndex = psoIndex.get(new PsoCompound(predicate, subject, object));
+					if (arrayIndex == null) {
+						return EMPTY_ARRAY_INDEX_ITERABLE;
+					}
 					if (context == null) {
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							false);
 					} else {
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							true);
 					}
 
 				} else {
 					ArrayIndex arrayIndex = psIndex.get(new PsCompound(predicate, subject));
+					if (arrayIndex == null) {
+						return EMPTY_ARRAY_INDEX_ITERABLE;
+					}
+
 					if (context == null) {
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							false);
 					} else {
-						return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 							true);
 					}
 				}
 
 			} else {
 				ArrayIndex arrayIndex = pIndex.get(new PCompound(predicate));
+				if (arrayIndex == null) {
+					return EMPTY_ARRAY_INDEX_ITERABLE;
+				}
+
 				if (object == null && context == null) {
-					return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+					return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 						false);
 				} else {
-					return new ArrayIndexIterator(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
+					return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
 						true);
 				}
 			}
 
 		} else {
-			return new ArrayIndexIterator(orderedArray, 0, orderedArray.length, true);
+			return new ArrayIndexIterable(orderedArray, 0, orderedArray.length, true);
 		}
 
 	}

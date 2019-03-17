@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.sail.base.SailSource;
 import org.eclipse.rdf4j.sail.base.SailStore;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Håvard Mikkelsen Ottestad
@@ -28,9 +29,14 @@ public class MemorySailStoreReadonly implements SailStore {
 	private MemorySailSourceReadonly sailSource;
 	private MemorySailSourceReadonly sailSourceInferred;
 
-	MemorySailStoreReadonly(HashSet<Statement> statements, HashSet<Statement> inferredStatements) {
+	public MemorySailStoreReadonly(Set<Statement> statements, Set<Statement> inferredStatements) {
 		sailSource = new MemorySailSourceReadonly(new ReadonlyDataStructure(statements), mns);
 		sailSourceInferred = new MemorySailSourceReadonly(new ReadonlyDataStructure(inferredStatements), mns);
+	}
+
+	public MemorySailStoreReadonly(Set<Statement> statements) {
+		sailSource = new MemorySailSourceReadonly(new ReadonlyDataStructure(statements), mns);
+		sailSourceInferred = new MemorySailSourceReadonly(new ReadonlyDataStructure(new HashSet<>()), mns);
 	}
 
 	@Override

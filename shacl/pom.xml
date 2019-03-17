@@ -36,6 +36,12 @@
             <artifactId>rdf4j-sail-memory</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rdf4j-sail-memory-readonly</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>

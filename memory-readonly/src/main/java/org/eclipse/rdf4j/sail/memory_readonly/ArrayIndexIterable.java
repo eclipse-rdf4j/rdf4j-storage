@@ -9,13 +9,14 @@
 package org.eclipse.rdf4j.sail.memory_readonly;
 
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.util.iterators.EmptyIterator;
 
 import java.util.Iterator;
 
 /**
  * @author Håvard Mikkelsen Ottestad
  */
-public class ArrayIndexIterator implements Iterable<Statement> {
+public class ArrayIndexIterable implements Iterable<Statement> {
 
 	private Statement[] array;
 
@@ -24,7 +25,7 @@ public class ArrayIndexIterator implements Iterable<Statement> {
 
 	private final boolean needsFurtherFiltering;
 
-	ArrayIndexIterator(Statement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
+	ArrayIndexIterable(Statement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
 		this.array = array;
 		this.startInclusive = startInclusive;
 		this.stopExclusive = stopExclusive;
@@ -53,4 +54,23 @@ public class ArrayIndexIterator implements Iterable<Statement> {
 			}
 		};
 	}
+
+	static class EmptyArrayIndexIterable extends ArrayIndexIterable{
+
+		EmptyArrayIndexIterable(Statement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
+			super(array, startInclusive, stopExclusive, needsFurtherFiltering);
+		}
+
+		EmptyArrayIndexIterable(){
+			super(null, -1,-1, false);
+		}
+
+		@Override
+		public Iterator<Statement> iterator() {
+			return new EmptyIterator<>();
+		}
+	}
+
 }
+
+

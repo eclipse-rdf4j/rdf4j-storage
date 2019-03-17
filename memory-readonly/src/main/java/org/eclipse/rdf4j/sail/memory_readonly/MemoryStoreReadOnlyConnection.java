@@ -22,13 +22,17 @@ import org.eclipse.rdf4j.sail.helpers.AbstractSail;
  * @author Håvard Mikkelsen Ottestad
  */
 public class MemoryStoreReadOnlyConnection extends SailSourceConnection {
-	protected MemoryStoreReadOnlyConnection(AbstractSail sail, SailStore store, FederatedServiceResolver resolver) {
+	MemoryStoreReadonly sail;
+
+	protected MemoryStoreReadOnlyConnection(MemoryStoreReadonly sail, SailStore store, FederatedServiceResolver resolver) {
 		super(sail, store, resolver);
+		this.sail = sail;
 	}
 
-	protected MemoryStoreReadOnlyConnection(AbstractSail sail, SailStore store,
+	protected MemoryStoreReadOnlyConnection(MemoryStoreReadonly sail, SailStore store,
 			EvaluationStrategyFactory evalStratFactory) {
 		super(sail, store, evalStratFactory);
+		this.sail = sail;
 	}
 
 	@Override
@@ -40,4 +44,9 @@ public class MemoryStoreReadOnlyConnection extends SailSourceConnection {
 			throws SailException {
 
 	}
+
+	public MemoryStoreReadonly getSail() {
+		return sail;
+	}
+
 }

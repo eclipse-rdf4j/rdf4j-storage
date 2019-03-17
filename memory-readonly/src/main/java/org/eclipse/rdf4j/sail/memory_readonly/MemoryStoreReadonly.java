@@ -25,6 +25,7 @@ import org.eclipse.rdf4j.sail.helpers.AbstractNotifyingSail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Håvard Mikkelsen Ottestad
@@ -33,10 +34,16 @@ public class MemoryStoreReadonly extends AbstractNotifyingSail implements Federa
 
 	private MemorySailStoreReadonly sailStore;
 
-	public MemoryStoreReadonly(HashSet<Statement> statements, HashSet<Statement> statementsInferred) {
+	public MemoryStoreReadonly(Set<Statement> statements, Set<Statement> statementsInferred) {
 		sailStore = new MemorySailStoreReadonly(statements, statementsInferred);
 
 	}
+
+	public MemoryStoreReadonly(Set<Statement> statements) {
+		sailStore = new MemorySailStoreReadonly(statements);
+
+	}
+
 
 	@Override
 	public List<IsolationLevel> getSupportedIsolationLevels() {
