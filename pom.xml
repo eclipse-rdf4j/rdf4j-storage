@@ -69,6 +69,7 @@
 		<module>solr</module>
 		<module>spin</module>
 		<module>shacl</module>
+		<module>memory-readonly</module>
 		<module>storage</module>
 	</modules>
 
