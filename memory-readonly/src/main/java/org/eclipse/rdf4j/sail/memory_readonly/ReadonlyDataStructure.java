@@ -84,12 +84,14 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 																				Value object, Resource... context) {
 		ArrayIndexIterable iterable;
 
-		if (subject == null && predicate != null) {
-			if(object != null){
-				iterable = orderedOPSIndex.getStatements(subject, predicate, object, context);
-			}else{
-				iterable = orderedPSOIndex.getStatements(subject, predicate, object, context);
-			}
+		if(subject == null && object != null && predicate != null){
+			iterable = orderedOPSIndex.getStatements(subject, predicate, object, context);
+		}
+		else if(subject == null && predicate == null && object != null){
+			iterable = orderedOPSIndex.getStatements(subject, predicate, object, context);
+
+		}else if(subject == null && predicate != null && object == null){
+			iterable = orderedPSOIndex.getStatements(subject, predicate, object, context);
 
 		} else {
 			iterable = orderedSPOIndex.getStatements(subject, predicate, object, context);

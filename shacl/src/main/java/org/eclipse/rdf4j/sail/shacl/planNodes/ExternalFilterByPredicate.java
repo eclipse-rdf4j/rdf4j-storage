@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
+import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadOnlyConnection;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -133,8 +133,8 @@ public class ExternalFilterByPredicate implements PlanNode {
 				.append("\n");
 		stringBuilder.append(parent.getId() + " -> " + getId()).append("\n");
 
-		if (connection instanceof MemoryStoreConnection) {
-			stringBuilder.append(System.identityHashCode(((MemoryStoreConnection) connection).getSail()) + " -> "
+		if (connection instanceof MemoryStoreReadOnlyConnection) {
+			stringBuilder.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
 					+ getId() + " [label=\"filter source\"]").append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId() + " [label=\"filter source\"]")

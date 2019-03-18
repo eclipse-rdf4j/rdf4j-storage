@@ -19,7 +19,7 @@ import org.eclipse.rdf4j.query.parser.QueryParserFactory;
 import org.eclipse.rdf4j.query.parser.QueryParserRegistry;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
+import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadOnlyConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class Select implements PlanNode {
 
 	public Select(SailConnection connection, String query, String... variables) {
 		this.connection = connection;
-		this.query = "select " + String.join(" ", variables) + " where { " + query + "} order by ?a";
+		this.query = "select " + String.join(" ", variables) + " where { " + query + "} ";
 	}
 
 	@Override
@@ -96,9 +96,9 @@ public class Select implements PlanNode {
 		stringBuilder.append(getId() + " [label=\"" + StringEscapeUtils.escapeJava(this.toString()) + "\"];")
 				.append("\n");
 
-		if (connection instanceof MemoryStoreConnection) {
+		if (connection instanceof MemoryStoreReadOnlyConnection) {
 			stringBuilder
-					.append(System.identityHashCode(((MemoryStoreConnection) connection).getSail()) + " -> " + getId())
+					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> " + getId())
 					.append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId()).append("\n");
@@ -132,10 +132,10 @@ public class Select implements PlanNode {
 		Select select = (Select) o;
 
 		return Objects.equals(
-				connection instanceof MemoryStoreConnection ? ((MemoryStoreConnection) connection).getSail()
+				connection instanceof MemoryStoreReadOnlyConnection ? ((MemoryStoreReadOnlyConnection) connection).getSail()
 						: connection,
-				select.connection instanceof MemoryStoreConnection
-						? ((MemoryStoreConnection) select.connection).getSail()
+				select.connection instanceof MemoryStoreReadOnlyConnection
+						? ((MemoryStoreReadOnlyConnection) select.connection).getSail()
 						: select.connection)
 				&& query.equals(select.query);
 	}
@@ -143,8 +143,8 @@ public class Select implements PlanNode {
 	@Override
 	public int hashCode() {
 
-		if (connection instanceof MemoryStoreConnection) {
-			return Objects.hash(System.identityHashCode(((MemoryStoreConnection) connection).getSail()), query);
+		if (connection instanceof MemoryStoreReadOnlyConnection) {
+			return Objects.hash(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()), query);
 		}
 		return Objects.hash(System.identityHashCode(connection), query);
 

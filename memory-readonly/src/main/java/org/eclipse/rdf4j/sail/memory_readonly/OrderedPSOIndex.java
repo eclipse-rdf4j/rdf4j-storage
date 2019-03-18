@@ -27,10 +27,9 @@ class OrderedPSOIndex {
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
 	SortableStatement[] orderedArray;
 
-	Map<PsoCompound, ArrayIndex> psoIndex = new HashMap<>();
-	Map<PsCompound, ArrayIndex> psIndex = new HashMap<>();
-	Map<PCompound, ArrayIndex> pIndex = new HashMap<>();
-
+	Map<PsoCompound, ArrayIndex> psoIndex;
+	Map<PsCompound, ArrayIndex> psIndex;
+	Map<PCompound, ArrayIndex> pIndex;
 
 
 	OrderedPSOIndex(Set<Statement> statementSet) {
@@ -43,7 +42,11 @@ class OrderedPSOIndex {
 
 	OrderedPSOIndex(SortableStatement[] sortableStatements, boolean sorted) {
 
-		if(!sorted){
+		psoIndex = new HashMap<>(0);
+		psIndex = new HashMap<>(0);
+		pIndex = new HashMap<>(sortableStatements.length / 5, 0.5f);
+
+		if (!sorted) {
 			sortableStatements = Arrays
 				.stream(sortableStatements)
 				.map(SortableStatement::getStatement)
@@ -72,23 +75,23 @@ class OrderedPSOIndex {
 				}
 			});
 
-			psIndex.compute(psKey, (key, value) -> {
-				if (value == null) {
-					return new ArrayIndex(index, index + 1);
-				} else {
-					value.stopExclusive = index + 1;
-					return value;
-				}
-			});
-
-			psoIndex.compute(psoKey, (key, value) -> {
-				if (value == null) {
-					return new ArrayIndex(index, index + 1);
-				} else {
-					value.stopExclusive = index + 1;
-					return value;
-				}
-			});
+//			psIndex.compute(psKey, (key, value) -> {
+//				if (value == null) {
+//					return new ArrayIndex(index, index + 1);
+//				} else {
+//					value.stopExclusive = index + 1;
+//					return value;
+//				}
+//			});
+//
+//			psoIndex.compute(psoKey, (key, value) -> {
+//				if (value == null) {
+//					return new ArrayIndex(index, index + 1);
+//				} else {
+//					value.stopExclusive = index + 1;
+//					return value;
+//				}
+//			});
 
 		}
 
@@ -238,7 +241,7 @@ class PCompound {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(predicate);
+		return predicate.hashCode();
 	}
 
 	@Override

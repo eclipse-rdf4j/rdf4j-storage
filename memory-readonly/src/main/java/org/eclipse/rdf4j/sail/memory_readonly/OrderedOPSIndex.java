@@ -27,9 +27,9 @@ class OrderedOPSIndex {
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
 	SortableStatement[] orderedArray;
 
-	Map<OpsCompound, ArrayIndex> opsIndex = new HashMap<>();
-	Map<OpCompound, ArrayIndex> opIndex = new HashMap<>();
-	Map<OCompound, ArrayIndex> oIndex = new HashMap<>();
+	Map<OpsCompound, ArrayIndex> opsIndex;
+	Map<OpCompound, ArrayIndex> opIndex;
+	Map<OCompound, ArrayIndex> oIndex;
 
 
 
@@ -42,6 +42,10 @@ class OrderedOPSIndex {
 	}
 
 	OrderedOPSIndex(SortableStatement[] sortableStatements, boolean sorted) {
+
+		opsIndex = new HashMap<>(0);
+		opIndex = new HashMap<>(sortableStatements.length/5, 0.5f);
+		oIndex = new HashMap<>(sortableStatements.length/5, 0.5f);
 
 		if(!sorted){
 			sortableStatements = Arrays
@@ -81,14 +85,14 @@ class OrderedOPSIndex {
 				}
 			});
 
-			opsIndex.compute(opsKey, (key, value) -> {
-				if (value == null) {
-					return new ArrayIndex(index, index + 1);
-				} else {
-					value.stopExclusive = index + 1;
-					return value;
-				}
-			});
+//			opsIndex.compute(opsKey, (key, value) -> {
+//				if (value == null) {
+//					return new ArrayIndex(index, index + 1);
+//				} else {
+//					value.stopExclusive = index + 1;
+//					return value;
+//				}
+//			});
 
 		}
 
@@ -239,7 +243,7 @@ class OCompound {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(object);
+		return object.hashCode();
 	}
 
 	@Override

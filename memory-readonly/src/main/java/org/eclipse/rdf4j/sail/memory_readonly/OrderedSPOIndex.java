@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,13 +27,17 @@ class OrderedSPOIndex {
 
 	SortableStatement[] orderedArray;
 
-	Map<SpoCompound, ArrayIndex> spoIndex = new HashMap<>();
-	Map<SpCompound, ArrayIndex> spIndex = new HashMap<>();
-	Map<SCompound, ArrayIndex> sIndex = new HashMap<>();
+	Map<SpoCompound, ArrayIndex> spoIndex;
+	Map<SpCompound, ArrayIndex> spIndex;
+	Map<SCompound, ArrayIndex> sIndex;
 
 
+	OrderedSPOIndex(Set<Statement> statementSet) {
 
-		OrderedSPOIndex(Set<Statement> statementSet) {
+		spoIndex = new HashMap<>(statementSet.size()/5, 0.5f);
+		spIndex = new HashMap<>(statementSet.size()/5, 0.5f);
+		sIndex = new HashMap<>(statementSet.size()/5, 0.5f);
+
 
 		orderedArray = statementSet
 			.stream()
@@ -230,7 +233,7 @@ class SCompound {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(subject);
+		return subject.hashCode();
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import org.eclipse.rdf4j.query.parser.QueryParserFactory;
 import org.eclipse.rdf4j.query.parser.QueryParserRegistry;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
+import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadOnlyConnection;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 
 import java.util.Collections;
@@ -218,8 +218,8 @@ public class BulkedExternalInnerJoin implements PlanNode {
 				.append("\n");
 		stringBuilder.append(leftNode.getId() + " -> " + getId() + " [label=\"left\"]").append("\n");
 
-		if (connection instanceof MemoryStoreConnection) {
-			stringBuilder.append(System.identityHashCode(((MemoryStoreConnection) connection).getSail()) + " -> "
+		if (connection instanceof MemoryStoreReadOnlyConnection) {
+			stringBuilder.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
 					+ getId() + " [label=\"right\"]").append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId() + " [label=\"right\"]")

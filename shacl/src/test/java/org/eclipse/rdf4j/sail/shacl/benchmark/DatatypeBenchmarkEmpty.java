@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.Utils;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -47,9 +48,10 @@ import java.util.stream.Stream;
 @State(Scope.Benchmark)
 @Warmup(iterations = 20)
 @BenchmarkMode({ Mode.AverageTime })
-@Fork(value = 1, jvmArgs = { "-Xms8G", "-Xmx8G", "-Xmn4G", "-XX:+UseSerialGC" })
-//@Fork(value = 1, jvmArgs = {"-Xms8G", "-Xmx8G", "-Xmn4G", "-XX:+UseSerialGC", "-XX:+UnlockCommercialFeatures", "-XX:StartFlightRecording=delay=5s,duration=120s,filename=recording.jfr,settings=profile", "-XX:FlightRecorderOptions=samplethreads=true,stackdepth=1024", "-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints"})
-@Measurement(iterations = 10)
+//@Fork(value = 1, jvmArgs = { "-Xms8G", "-Xmx8G", "-Xmn4G" })
+//@Fork(value = 1, jvmArgs = { "-Xms8G", "-Xmx8G", "-Xmn4G", "-XX:+UseSerialGC" })
+@Fork(value = 1, jvmArgs = {"-Xms8G", "-Xmx8G", "-Xmn4G", "-XX:+UnlockCommercialFeatures", "-XX:StartFlightRecording=delay=5s,duration=120s,filename=recording.jfr,settings=profile", "-XX:FlightRecorderOptions=samplethreads=true,stackdepth=1024", "-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints"})
+@Measurement(iterations = 100)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class DatatypeBenchmarkEmpty {
 
@@ -92,12 +94,13 @@ public class DatatypeBenchmarkEmpty {
 		SailRepository repository = new SailRepository(Utils.getInitializedShaclSail("shaclDatatype.ttl"));
 
 //		((ShaclSail) repository.getSail()).setIgnoreNoShapesLoadedException(true);
-//		((ShaclSail) repository.getSail()).disableValidation();
+		((ShaclSail) repository.getSail()).setCacheSelectNodes(false);
+		((ShaclSail) repository.getSail()).setParallelValidation(false);
 
-		try (SailRepositoryConnection connection = repository.getConnection()) {
-			connection.begin(IsolationLevels.SNAPSHOT);
-			connection.commit();
-		}
+//		try (SailRepositoryConnection connection = repository.getConnection()) {
+//			connection.begin(IsolationLevels.SNAPSHOT);
+//			connection.commit();
+//		}
 
 		try (SailRepositoryConnection connection = repository.getConnection()) {
 			for (List<Statement> statements : allStatements) {

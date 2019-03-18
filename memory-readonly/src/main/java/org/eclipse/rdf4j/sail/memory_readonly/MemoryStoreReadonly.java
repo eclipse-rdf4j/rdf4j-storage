@@ -62,7 +62,7 @@ public class MemoryStoreReadonly extends AbstractNotifyingSail implements Federa
 
 	@Override
 	protected void shutDownInternal() throws SailException {
-
+		sailStore = null;
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class MemoryStoreReadonly extends AbstractNotifyingSail implements Federa
 		if (evalStratFactory == null) {
 			evalStratFactory = new StrictEvaluationStrategyFactory(getFederatedServiceResolver());
 		}
-		evalStratFactory.setQuerySolutionCacheThreshold(getIterationCacheSyncThreshold());
+		evalStratFactory.setQuerySolutionCacheThreshold(0);
 		return evalStratFactory;
 	}
 
