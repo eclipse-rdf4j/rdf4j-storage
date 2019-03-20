@@ -16,7 +16,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
+import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadOnlyConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,9 +103,9 @@ public class UnorderedSelect implements PlanNode {
 		stringBuilder.append(getId() + " [label=\"" + StringEscapeUtils.escapeJava(this.toString()) + "\"];")
 				.append("\n");
 
-		if (connection instanceof MemoryStoreConnection) {
+		if (connection instanceof MemoryStoreReadOnlyConnection) {
 			stringBuilder
-					.append(System.identityHashCode(((MemoryStoreConnection) connection).getSail()) + " -> " + getId())
+					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> " + getId())
 					.append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId()).append("\n");
@@ -143,13 +143,13 @@ public class UnorderedSelect implements PlanNode {
 		UnorderedSelect that = (UnorderedSelect) o;
 
 		Object connection = this.connection;
-		if (connection instanceof MemoryStoreConnection) {
-			connection = ((MemoryStoreConnection) connection).getSail();
+		if (connection instanceof MemoryStoreReadOnlyConnection) {
+			connection = ((MemoryStoreReadOnlyConnection) connection).getSail();
 		}
 
 		Object thatConnection = that.connection;
-		if (thatConnection instanceof MemoryStoreConnection) {
-			thatConnection = ((MemoryStoreConnection) thatConnection).getSail();
+		if (thatConnection instanceof MemoryStoreReadOnlyConnection) {
+			thatConnection = ((MemoryStoreReadOnlyConnection) thatConnection).getSail();
 		}
 
 		return connection.equals(thatConnection) &&
@@ -162,8 +162,8 @@ public class UnorderedSelect implements PlanNode {
 	public int hashCode() {
 
 		Object connection = this.connection;
-		if (connection instanceof MemoryStoreConnection) {
-			connection = ((MemoryStoreConnection) connection).getSail();
+		if (connection instanceof MemoryStoreReadOnlyConnection) {
+			connection = ((MemoryStoreReadOnlyConnection) connection).getSail();
 		}
 
 		return Objects.hash(connection, subject, predicate, object);
