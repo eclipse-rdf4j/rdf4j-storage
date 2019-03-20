@@ -12,8 +12,10 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -25,40 +27,39 @@ import java.util.Set;
 class OrderedPSOIndex {
 
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
-	SortableStatement[] orderedArray;
+	private final Statement[] orderedArray;
 
-	Map<PsoCompound, ArrayIndex> psoIndex;
-	Map<PsCompound, ArrayIndex> psIndex;
-	Map<PCompound, ArrayIndex> pIndex;
+	private final Map<PsoCompound, ArrayIndex> psoIndex;
+	private final Map<PsCompound, ArrayIndex> psIndex;
+	private final Map<PCompound, ArrayIndex> pIndex;
+
+	private static final ValueComparator valueComparator = new ValueComparator();
 
 
 	OrderedPSOIndex(Set<Statement> statementSet) {
 		this(statementSet
 			.stream()
-			.map(statement -> new SortableStatement(statement, "<" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + "><" + statement.getObject().toString() + ">"))
-			.sorted()
-			.toArray(SortableStatement[]::new), true);
+			.sorted(getStatementComparator())
+			.toArray(Statement[]::new), true);
 	}
 
-	OrderedPSOIndex(SortableStatement[] sortableStatements, boolean sorted) {
+	OrderedPSOIndex(Statement[] sortableStatements, boolean sorted) {
 
 		psoIndex = new HashMap<>(0);
 		psIndex = new HashMap<>(0);
 		pIndex = new HashMap<>(sortableStatements.length / 5, 0.5f);
 
-		if (!sorted) {
+		if(!sorted){
 			sortableStatements = Arrays
 				.stream(sortableStatements)
-				.map(SortableStatement::getStatement)
-				.map(statement -> new SortableStatement(statement, "<" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + "><" + statement.getObject().toString() + ">"))
-				.sorted()
-				.toArray(SortableStatement[]::new);
+				.sorted(getStatementComparator())
+				.toArray(Statement[]::new);
 		}
 
 		orderedArray = sortableStatements;
 
 		for (int i = 0; i < orderedArray.length; i++) {
-			Statement statement = orderedArray[i].getStatement();
+			Statement statement = orderedArray[i];
 
 			int index = i;
 
@@ -147,6 +148,20 @@ class OrderedPSOIndex {
 			return new ArrayIndexIterable(orderedArray, 0, orderedArray.length, true);
 		}
 
+	}
+
+	private static Comparator<Statement> getStatementComparator() {
+		return (a, b) -> {
+			int compare = valueComparator.compare(a.getPredicate(), b.getPredicate());
+			if (compare != 0) return compare;
+
+			compare = valueComparator.compare(a.getSubject(), b.getSubject());
+			if (compare != 0) return compare;
+
+
+			compare = valueComparator.compare(a.getObject(), b.getObject());
+			return compare;
+		};
 	}
 }
 

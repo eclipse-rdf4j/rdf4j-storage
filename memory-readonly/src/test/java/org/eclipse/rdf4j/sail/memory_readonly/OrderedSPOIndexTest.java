@@ -56,7 +56,6 @@ public class OrderedSPOIndexTest {
 
 		List<String> sortedByOrderedIndex = Arrays
 			.stream(orderedSPOIndex.orderedArray)
-			.map(SortableStatement::getStatement)
 			.map(Statement::getSubject)
 			.map(Value::stringValue)
 			.distinct()
@@ -87,8 +86,8 @@ public class OrderedSPOIndexTest {
 
 		ArrayIndex arrayIndex = orderedSPOIndex.sIndex.get(new SCompound(subA));
 
-		assertEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getStatement().getSubject());
-		assertNotEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.stopExclusive].getStatement().getSubject());
+		assertEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getSubject());
+		assertNotEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.stopExclusive].getSubject());
 
 	}
 
@@ -101,9 +100,9 @@ public class OrderedSPOIndexTest {
 
 		ArrayIndex arrayIndex = orderedSPOIndex.spIndex.get(new SpCompound(subA, predB));
 
-		assertEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getStatement().getSubject());
-		assertEquals(predB, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getStatement().getPredicate());
-		assertNotEquals(predB, orderedSPOIndex.orderedArray[arrayIndex.stopExclusive].getStatement().getPredicate());
+		assertEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getSubject());
+		assertEquals(predB, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getPredicate());
+		assertNotEquals(predB, orderedSPOIndex.orderedArray[arrayIndex.stopExclusive].getPredicate());
 
 	}
 
@@ -115,10 +114,10 @@ public class OrderedSPOIndexTest {
 
 		ArrayIndex arrayIndex = orderedSPOIndex.spoIndex.get(new SpoCompound(subA, predB, objB));
 
-		assertEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getStatement().getSubject());
-		assertEquals(predB, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getStatement().getPredicate());
-		assertEquals(objB, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getStatement().getObject());
-		assertNotEquals(objB, orderedSPOIndex.orderedArray[arrayIndex.stopExclusive].getStatement().getObject());
+		assertEquals(subA, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getSubject());
+		assertEquals(predB, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getPredicate());
+		assertEquals(objB, orderedSPOIndex.orderedArray[arrayIndex.startInclusive].getObject());
+		assertNotEquals(objB, orderedSPOIndex.orderedArray[arrayIndex.stopExclusive].getObject());
 
 	}
 

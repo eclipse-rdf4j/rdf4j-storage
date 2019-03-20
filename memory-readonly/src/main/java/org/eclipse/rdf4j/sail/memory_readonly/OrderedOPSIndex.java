@@ -12,8 +12,10 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -25,41 +27,42 @@ import java.util.Set;
 class OrderedOPSIndex {
 
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
-	SortableStatement[] orderedArray;
+	Statement[] orderedArray;
 
 	Map<OpsCompound, ArrayIndex> opsIndex;
 	Map<OpCompound, ArrayIndex> opIndex;
 	Map<OCompound, ArrayIndex> oIndex;
 
+	static final ValueComparator valueComparator = new ValueComparator();
 
 
 	OrderedOPSIndex(Set<Statement> statementSet) {
 		this(statementSet
 			.stream()
-			.map(statement -> new SortableStatement(statement, "<" + statement.getObject().toString() + "><" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + ">"))
-			.sorted()
-			.toArray(SortableStatement[]::new), true);
+			.sorted(getStatementComparator())
+			.toArray(Statement[]::new), true);
 	}
 
-	OrderedOPSIndex(SortableStatement[] sortableStatements, boolean sorted) {
+
+
+	OrderedOPSIndex(Statement[] sortableStatements, boolean sorted) {
 
 		opsIndex = new HashMap<>(0);
 		opIndex = new HashMap<>(sortableStatements.length/5, 0.5f);
 		oIndex = new HashMap<>(sortableStatements.length/5, 0.5f);
 
+
 		if(!sorted){
 			sortableStatements = Arrays
 				.stream(sortableStatements)
-				.map(SortableStatement::getStatement)
-				.map(statement -> new SortableStatement(statement, "<" + statement.getObject().toString() + "><" + statement.getPredicate().toString() + "><" + statement.getSubject().toString() + ">"))
-				.sorted()
-				.toArray(SortableStatement[]::new);
+				.sorted(getStatementComparator())
+				.toArray(Statement[]::new);
 		}
 
 		orderedArray = sortableStatements;
 
 		for (int i = 0; i < orderedArray.length; i++) {
-			Statement statement = orderedArray[i].getStatement();
+			Statement statement = orderedArray[i];
 
 			int index = i;
 
@@ -148,6 +151,20 @@ class OrderedOPSIndex {
 			return new ArrayIndexIterable(orderedArray, 0, orderedArray.length, true);
 		}
 
+	}
+
+	private static Comparator<Statement> getStatementComparator() {
+		return (a, b) -> {
+			int compare = valueComparator.compare(a.getObject(), b.getObject());
+			if (compare != 0) return compare;
+
+			compare = valueComparator.compare(a.getPredicate(), b.getPredicate());
+			if (compare != 0) return compare;
+
+
+			compare = valueComparator.compare(a.getSubject(), b.getSubject());
+			return compare;
+		};
 	}
 }
 
@@ -252,6 +269,8 @@ class OCompound {
 			"object=" + object +
 			'}';
 	}
+
+
 }
 
 

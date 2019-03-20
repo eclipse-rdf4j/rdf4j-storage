@@ -18,14 +18,14 @@ import java.util.Iterator;
  */
 public class ArrayIndexIterable implements Iterable<Statement> {
 
-	private SortableStatement[] array;
+	private Statement[] array;
 
 	private int startInclusive;
 	private int stopExclusive;
 
 	private final boolean needsFurtherFiltering;
 
-	ArrayIndexIterable(SortableStatement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
+	ArrayIndexIterable(Statement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
 		this.array = array;
 		this.startInclusive = startInclusive;
 		this.stopExclusive = stopExclusive;
@@ -48,7 +48,7 @@ public class ArrayIndexIterable implements Iterable<Statement> {
 
 			@Override
 			public Statement next() {
-				Statement temp = array[current].getStatement();
+				Statement temp = array[current];
 				current++;
 				return temp;
 			}
@@ -57,7 +57,7 @@ public class ArrayIndexIterable implements Iterable<Statement> {
 
 	static class EmptyArrayIndexIterable extends ArrayIndexIterable{
 
-		EmptyArrayIndexIterable(SortableStatement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
+		EmptyArrayIndexIterable(Statement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
 			super(array, startInclusive, stopExclusive, needsFurtherFiltering);
 		}
 

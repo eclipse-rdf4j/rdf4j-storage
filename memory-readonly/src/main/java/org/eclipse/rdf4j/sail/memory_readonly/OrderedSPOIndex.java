@@ -12,7 +12,10 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -25,12 +28,13 @@ class OrderedSPOIndex {
 
 	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
 
-	SortableStatement[] orderedArray;
+	final Statement[] orderedArray;
 
-	Map<SpoCompound, ArrayIndex> spoIndex;
-	Map<SpCompound, ArrayIndex> spIndex;
-	Map<SCompound, ArrayIndex> sIndex;
+	final Map<SpoCompound, ArrayIndex> spoIndex;
+	final Map<SpCompound, ArrayIndex> spIndex;
+	final Map<SCompound, ArrayIndex> sIndex;
 
+	private static final ValueComparator valueComparator = new ValueComparator();
 
 	OrderedSPOIndex(Set<Statement> statementSet) {
 
@@ -39,15 +43,13 @@ class OrderedSPOIndex {
 		sIndex = new HashMap<>(statementSet.size()/5, 0.5f);
 
 
-		orderedArray = statementSet
-			.stream()
-			.map(statement -> new SortableStatement(statement, "<" + statement.getSubject().toString() + "><" + statement.getPredicate().toString() + "><" + statement.getObject().toString() + ">"))
-			.sorted()
-			.toArray(SortableStatement[]::new);
+		orderedArray = statementSet.stream()
+			.sorted(getStatementComparator())
+			.toArray(Statement[]::new);
 
 
 		for (int i = 0; i < orderedArray.length; i++) {
-			Statement statement = orderedArray[i].getStatement();
+			Statement statement = orderedArray[i];
 
 			int index = i;
 
@@ -139,6 +141,20 @@ class OrderedSPOIndex {
 			return new ArrayIndexIterable(orderedArray, 0, orderedArray.length, true);
 		}
 
+	}
+
+	private static Comparator<Statement> getStatementComparator() {
+		return (a, b) -> {
+			int compare = valueComparator.compare(a.getPredicate(), b.getPredicate());
+			if (compare != 0) return compare;
+
+			compare = valueComparator.compare(a.getSubject(), b.getSubject());
+			if (compare != 0) return compare;
+
+
+			compare = valueComparator.compare(a.getObject(), b.getObject());
+			return compare;
+		};
 	}
 }
 
