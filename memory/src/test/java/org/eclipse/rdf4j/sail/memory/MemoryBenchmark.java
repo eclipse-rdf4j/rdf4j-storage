@@ -6,7 +6,6 @@ import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.FOAF;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -25,14 +24,14 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 @Warmup(iterations = 10)
-@BenchmarkMode({Mode.AverageTime})
+@BenchmarkMode({ Mode.AverageTime })
 //@Fork(value = 1, jvmArgs = {"-Xms4G", "-Xmx4G", "-Xmn2G", "-XX:+UseSerialGC", "-XX:+UnlockCommercialFeatures", "-XX:StartFlightRecording=delay=5s,duration=60s,filename=recording.jfr,settings=profile", "-XX:FlightRecorderOptions=samplethreads=true,stackdepth=1024", "-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints"})
-@Fork(value = 1, jvmArgs = {"-Xms4G", "-Xmx4G", "-Xmn2G", "-XX:+UseSerialGC"})
+@Fork(value = 1, jvmArgs = { "-Xms4G", "-Xmx4G", "-Xmn2G", "-XX:+UseSerialGC" })
 @Measurement(iterations = 10)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class MemoryBenchmark {
 
-	@Param({"NONE", "READ_UNCOMMITTED", "READ_COMMITTED", "SNAPSHOT_READ", "SNAPSHOT", "SERIALIZABLE"})
+	@Param({ "NONE", "READ_UNCOMMITTED", "READ_COMMITTED", "SNAPSHOT_READ", "SNAPSHOT", "SERIALIZABLE" })
 	public String isolationLevel;
 
 	@Setup(Level.Iteration)

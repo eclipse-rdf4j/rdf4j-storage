@@ -40,8 +40,7 @@ public abstract class AbstractForwardChainingInferencer extends NotifyingSailWra
 		IsolationLevel level = super.getDefaultIsolationLevel();
 		if (level.isCompatibleWith(READ_COMMITTED)) {
 			return level;
-		}
-		else {
+		} else {
 			List<IsolationLevel> supported = this.getSupportedIsolationLevels();
 			return IsolationLevels.getCompatibleIsolationLevel(READ_COMMITTED, supported);
 		}
@@ -50,7 +49,7 @@ public abstract class AbstractForwardChainingInferencer extends NotifyingSailWra
 	@Override
 	public List<IsolationLevel> getSupportedIsolationLevels() {
 		List<IsolationLevel> supported = super.getSupportedIsolationLevels();
-		List<IsolationLevel> levels = new ArrayList<IsolationLevel>(supported.size());
+		List<IsolationLevel> levels = new ArrayList<>(supported.size());
 		for (IsolationLevel level : supported) {
 			if (level.isCompatibleWith(READ_COMMITTED)) {
 				levels.add(level);

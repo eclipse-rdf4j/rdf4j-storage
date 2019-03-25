@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.sail.inferencer.fc.ForwardChainingRDFSInferencer;
  * 
  * @author Arjohn Kampman
  */
+@Deprecated
 public class ForwardChainingRDFSInferencerFactory implements SailFactory {
 
 	/**
@@ -30,17 +31,18 @@ public class ForwardChainingRDFSInferencerFactory implements SailFactory {
 	/**
 	 * Returns the Sail's type: <tt>openrdf:ForwardChainingRDFSInferencer</tt>.
 	 */
+	@Override
 	public String getSailType() {
 		return SAIL_TYPE;
 	}
 
+	@Override
 	public SailImplConfig getConfig() {
 		return new ForwardChainingRDFSInferencerConfig();
 	}
 
-	public Sail getSail(SailImplConfig config)
-		throws SailConfigException
-	{
+	@Override
+	public Sail getSail(SailImplConfig config) throws SailConfigException {
 		if (!SAIL_TYPE.equals(config.getType())) {
 			throw new SailConfigException("Invalid Sail type: " + config.getType());
 		}

@@ -32,12 +32,11 @@ class PropertyCache {
 		Set<String> cachedValues = getCachedValues(name);
 		if (cachedValues != null) {
 			found = cachedValues.contains(value);
-		}
-		else {
+		} else {
 			found = false;
 			List<String> docValues = doc.getProperty(name);
 			if (docValues != null) {
-				cachedValues = new HashSet<String>(docValues.size());
+				cachedValues = new HashSet<>(docValues.size());
 				for (String docValue : docValues) {
 					cachedValues.add(docValue);
 					if (docValue.equals(value)) {
@@ -45,8 +44,7 @@ class PropertyCache {
 						// don't break - cache all docValues
 					}
 				}
-			}
-			else {
+			} else {
 				cachedValues = Collections.emptySet();
 			}
 			setCachedValues(name, cachedValues);
@@ -60,7 +58,7 @@ class PropertyCache {
 
 	private void setCachedValues(String name, Set<String> values) {
 		if (cachedProperties == null) {
-			cachedProperties = new HashMap<String, Set<String>>();
+			cachedProperties = new HashMap<>();
 		}
 		cachedProperties.put(name, values);
 	}

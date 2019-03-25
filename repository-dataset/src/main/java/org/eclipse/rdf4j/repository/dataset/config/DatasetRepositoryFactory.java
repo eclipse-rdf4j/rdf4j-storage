@@ -30,17 +30,18 @@ public class DatasetRepositoryFactory implements RepositoryFactory {
 	/**
 	 * Returns the repository's type: <tt>openrdf:DatasetRepository</tt>.
 	 */
+	@Override
 	public String getRepositoryType() {
 		return REPOSITORY_TYPE;
 	}
 
+	@Override
 	public RepositoryImplConfig getConfig() {
 		return new DatasetRepositoryConfig();
 	}
 
-	public Repository getRepository(RepositoryImplConfig config)
-		throws RepositoryConfigException
-	{
+	@Override
+	public Repository getRepository(RepositoryImplConfig config) throws RepositoryConfigException {
 		if (config instanceof DatasetRepositoryConfig) {
 			return new DatasetRepository();
 		}

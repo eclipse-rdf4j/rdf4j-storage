@@ -7,10 +7,9 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.repository.sail.nativerdf;
 
-import org.eclipse.rdf4j.repository.EvaluationStrategyTest;
+import org.eclipse.rdf4j.repository.sail.EvaluationStrategyTest;
 import org.eclipse.rdf4j.sail.base.config.BaseSailConfig;
 import org.eclipse.rdf4j.sail.nativerdf.config.NativeStoreConfig;
-
 
 /**
  * @author jeen

@@ -14,7 +14,6 @@ import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnectionTest;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.sail.federation.Federation;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,9 +33,7 @@ public class FederationConnectionTest extends RepositoryConnectionTest {
 	}
 
 	@Override
-	protected Repository createRepository()
-		throws IOException
-	{
+	protected Repository createRepository() throws IOException {
 		Federation sail = new Federation();
 		sail.addMember(new SailRepository(new MemoryStore()));
 		sail.addMember(new SailRepository(new MemoryStore()));

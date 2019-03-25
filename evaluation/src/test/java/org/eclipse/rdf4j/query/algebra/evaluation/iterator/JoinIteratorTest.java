@@ -36,13 +36,10 @@ public class JoinIteratorTest {
 	private final EvaluationStrategy evaluator = new StrictEvaluationStrategy(null, null);
 
 	/**
-	 * Tests joins between two different BindingSetAssignments with the same BindingSets but ordered
-	 * differently.
+	 * Tests joins between two different BindingSetAssignments with the same BindingSets but ordered differently.
 	 */
 	@Test
-	public void testBindingSetAssignmentJoin()
-		throws QueryEvaluationException
-	{
+	public void testBindingSetAssignmentJoin() throws QueryEvaluationException {
 		testBindingSetAssignmentJoin(5, 5, EmptyBindingSet.getInstance());
 
 		{
@@ -59,11 +56,10 @@ public class JoinIteratorTest {
 	}
 
 	private void testBindingSetAssignmentJoin(int expectedSize, int n, BindingSet bindings)
-		throws QueryEvaluationException
-	{
+			throws QueryEvaluationException {
 		BindingSetAssignment left = new BindingSetAssignment();
 		{
-			List<BindingSet> leftb = new ArrayList<BindingSet>();
+			List<BindingSet> leftb = new ArrayList<>();
 			for (int i = 0; i < n; i++) {
 				QueryBindingSet b = new QueryBindingSet();
 				b.addBinding("a", vf.createLiteral(i));
@@ -74,7 +70,7 @@ public class JoinIteratorTest {
 
 		BindingSetAssignment right = new BindingSetAssignment();
 		{
-			List<BindingSet> rightb = new ArrayList<BindingSet>();
+			List<BindingSet> rightb = new ArrayList<>();
 			for (int i = n; i >= 0; i--) {
 				QueryBindingSet b = new QueryBindingSet();
 				b.addBinding("a", vf.createLiteral(i));

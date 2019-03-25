@@ -8,6 +8,7 @@
 
 package org.eclipse.rdf4j.sail.shacl.benchmark;
 
+import ch.qos.logback.classic.Logger;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -18,6 +19,7 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.shacl.ShaclSail;
+import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.Utils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -31,6 +33,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,23 +44,31 @@ import java.util.stream.Stream;
  * @author Håvard Ottestad
  */
 @State(Scope.Benchmark)
-@Warmup(iterations = 10)
-@BenchmarkMode({Mode.AverageTime})
-@Fork(value = 1, jvmArgs = {"-Xms4G", "-Xmx4G", "-Xmn2G"})
+@Warmup(iterations = 20)
+@BenchmarkMode({ Mode.AverageTime })
+@Fork(value = 1, jvmArgs = { "-Xms8G", "-Xmx8G", "-Xmn4G", "-XX:+UseSerialGC" })
 @Measurement(iterations = 10)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class MinCountBenchmarkPrefilled {
 
-
 	private List<List<Statement>> allStatements;
 
-	SailRepository shaclRepo;
-	SailRepository memoryStoreRepo;
-	SailRepository sparqlQueryMemoryStoreRepo;
-
+	private SailRepository shaclRepo;
+	private SailRepository memoryStoreRepo;
+	private SailRepository sparqlQueryMemoryStoreRepo;
 
 	@Setup(Level.Invocation)
-	public void setUp() {
+	public void setUp() throws Exception {
+		Logger root = (Logger) LoggerFactory.getLogger(ShaclSailConnection.class.getName());
+		root.setLevel(ch.qos.logback.classic.Level.INFO);
+
+		if (shaclRepo != null)
+			shaclRepo.shutDown();
+		if (memoryStoreRepo != null)
+			memoryStoreRepo.shutDown();
+		if (sparqlQueryMemoryStoreRepo != null)
+			sparqlQueryMemoryStoreRepo.shutDown();
+
 		allStatements = new ArrayList<>(10);
 
 		SimpleValueFactory vf = SimpleValueFactory.getInstance();
@@ -65,13 +76,11 @@ public class MinCountBenchmarkPrefilled {
 		for (int j = 0; j < 10; j++) {
 			List<Statement> statements = new ArrayList<>(101);
 			allStatements.add(statements);
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 1000; i++) {
 				statements.add(
-					vf.createStatement(vf.createIRI("http://example.com/" + i + "_" + j), RDF.TYPE, RDFS.RESOURCE)
-				);
-				statements.add(
-					vf.createStatement(vf.createIRI("http://example.com/" + i + "_" + j), RDFS.LABEL, vf.createLiteral("label" + i))
-				);
+						vf.createStatement(vf.createIRI("http://example.com/" + i + "_" + j), RDF.TYPE, RDFS.RESOURCE));
+				statements.add(vf.createStatement(vf.createIRI("http://example.com/" + i + "_" + j), RDFS.LABEL,
+						vf.createLiteral("label" + i)));
 			}
 		}
 
@@ -79,25 +88,19 @@ public class MinCountBenchmarkPrefilled {
 
 		for (int i = 0; i < 100000; i++) {
 			allStatements2.add(
-				vf.createStatement(vf.createIRI("http://example.com/preinserted/" + i), RDF.TYPE, RDFS.RESOURCE)
-			);
-			allStatements2.add(
-				vf.createStatement(vf.createIRI("http://example.com/preinserted/" + i), RDFS.LABEL, vf.createLiteral("label" + i))
-			);
+					vf.createStatement(vf.createIRI("http://example.com/preinserted/" + i), RDF.TYPE, RDFS.RESOURCE));
+			allStatements2.add(vf.createStatement(vf.createIRI("http://example.com/preinserted/" + i), RDFS.LABEL,
+					vf.createLiteral("label" + i)));
 		}
 
-
-		ShaclSail shaclRepo = new ShaclSail(new MemoryStore(), Utils.getSailRepository("shacl.ttl"));
+		ShaclSail shaclRepo = Utils.getInitializedShaclSail("shacl.ttl");
 		this.shaclRepo = new SailRepository(shaclRepo);
-		this.shaclRepo.initialize();
 
 		memoryStoreRepo = new SailRepository(new MemoryStore());
-		memoryStoreRepo.initialize();
-
+		memoryStoreRepo.init();
 
 		sparqlQueryMemoryStoreRepo = new SailRepository(new MemoryStore());
-		sparqlQueryMemoryStoreRepo.initialize();
-
+		sparqlQueryMemoryStoreRepo.init();
 
 		shaclRepo.disableValidation();
 		try (SailRepositoryConnection connection = this.shaclRepo.getConnection()) {
@@ -120,10 +123,8 @@ public class MinCountBenchmarkPrefilled {
 		allStatements.clear();
 	}
 
-
 	@Benchmark
 	public void shacl() {
-
 
 		try (SailRepositoryConnection connection = shaclRepo.getConnection()) {
 			connection.begin();
@@ -139,12 +140,10 @@ public class MinCountBenchmarkPrefilled {
 		}
 
 	}
-
 
 	@Benchmark
 	public void noShacl() {
 
-
 		try (SailRepositoryConnection connection = memoryStoreRepo.getConnection()) {
 			connection.begin();
 			connection.commit();
@@ -159,10 +158,8 @@ public class MinCountBenchmarkPrefilled {
 
 	}
 
-
 	@Benchmark
 	public void sparqlInsteadOfShacl() {
-
 
 		try (SailRepositoryConnection connection = sparqlQueryMemoryStoreRepo.getConnection()) {
 			connection.begin();
@@ -172,7 +169,10 @@ public class MinCountBenchmarkPrefilled {
 			for (List<Statement> statements : allStatements) {
 				connection.begin();
 				connection.add(statements);
-				try (Stream<BindingSet> stream = Iterations.stream(connection.prepareTupleQuery("select * where {?a a <" + RDFS.RESOURCE + ">. FILTER(! EXISTS {?a <" + RDFS.LABEL + "> ?c})}").evaluate())) {
+				try (Stream<BindingSet> stream = Iterations.stream(connection
+						.prepareTupleQuery("select * where {?a a <" + RDFS.RESOURCE + ">. FILTER(! EXISTS {?a <"
+								+ RDFS.LABEL + "> ?c})}")
+						.evaluate())) {
 					stream.forEach(System.out::println);
 				}
 				connection.commit();
@@ -180,6 +180,5 @@ public class MinCountBenchmarkPrefilled {
 		}
 
 	}
-
 
 }

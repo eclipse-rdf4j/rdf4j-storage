@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.query.algebra.evaluation.ValueExprEvaluationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class GeometricUnaryFunctionTest {
@@ -22,13 +22,12 @@ public abstract class GeometricUnaryFunctionTest {
 	Literal amsterdam = SimpleValueFactory.getInstance().createLiteral("POINT(4.9 52.37)", GEO.WKT_LITERAL);
 
 	protected abstract GeometricUnaryFunction testedFunction();
-	
+
 	@Test(expected = ValueExprEvaluationException.class)
 	public void testRelationExceptionHandling() {
 		GeometricUnaryFunction testedFunction = Mockito.spy(testedFunction());
 		Mockito.doThrow(new RuntimeException("forsooth!")).when(testedFunction).operation(Mockito.any());
 		testedFunction.evaluate(SimpleValueFactory.getInstance(), amsterdam);
 	}
-
 
 }

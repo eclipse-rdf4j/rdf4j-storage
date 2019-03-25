@@ -7,6 +7,7 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.query.algebra.evaluation.function.datetime;
 
+import java.math.BigDecimal;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -28,20 +29,20 @@ import org.eclipse.rdf4j.query.algebra.evaluation.function.Function;
  */
 public class Seconds implements Function {
 
+	@Override
 	public String getURI() {
 		return FN.SECONDS_FROM_DATETIME.toString();
 	}
 
-	public Literal evaluate(ValueFactory valueFactory, Value... args)
-		throws ValueExprEvaluationException
-	{
+	@Override
+	public Literal evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
 		if (args.length != 1) {
 			throw new ValueExprEvaluationException("SECONDS requires 1 argument, got " + args.length);
 		}
 
 		Value argValue = args[0];
 		if (argValue instanceof Literal) {
-			Literal literal = (Literal)argValue;
+			Literal literal = (Literal) argValue;
 
 			IRI datatype = literal.getDatatype();
 
@@ -51,22 +52,21 @@ public class Seconds implements Function {
 
 					int seconds = calValue.getSecond();
 					if (DatatypeConstants.FIELD_UNDEFINED != seconds) {
-						return valueFactory.createLiteral(String.valueOf(seconds), XMLSchema.DECIMAL);
+						BigDecimal fraction = calValue.getFractionalSecond();
+						String str = (fraction == null) ? String.valueOf(seconds)
+								: String.valueOf(fraction.doubleValue() + seconds);
+
+						return valueFactory.createLiteral(str, XMLSchema.DECIMAL);
+					} else {
+						throw new ValueExprEvaluationException("can not determine minutes from value: " + argValue);
 					}
-					else {
-						throw new ValueExprEvaluationException(
-								"can not determine minutes from value: " + argValue);
-					}
-				}
-				catch (IllegalArgumentException e) {
+				} catch (IllegalArgumentException e) {
 					throw new ValueExprEvaluationException("illegal calendar value: " + argValue);
 				}
-			}
-			else {
+			} else {
 				throw new ValueExprEvaluationException("unexpected input value for function: " + argValue);
 			}
-		}
-		else {
+		} else {
 			throw new ValueExprEvaluationException("unexpected input value for function: " + args[0]);
 		}
 	}

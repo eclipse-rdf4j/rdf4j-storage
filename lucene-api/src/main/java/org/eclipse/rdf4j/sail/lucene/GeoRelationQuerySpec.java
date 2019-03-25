@@ -11,16 +11,9 @@ import java.util.List;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.query.algebra.EmptySet;
-import org.eclipse.rdf4j.query.algebra.Extension;
-import org.eclipse.rdf4j.query.algebra.ExtensionElem;
-import org.eclipse.rdf4j.query.algebra.Filter;
-import org.eclipse.rdf4j.query.algebra.QueryModelNode;
-import org.eclipse.rdf4j.query.algebra.SingletonSet;
-import org.eclipse.rdf4j.query.algebra.StatementPattern;
-import org.eclipse.rdf4j.query.algebra.Var;
+import org.eclipse.rdf4j.query.algebra.*;
 
-public class GeoRelationQuerySpec implements SearchQueryEvaluator {
+public class GeoRelationQuerySpec extends AbstractSearchQueryEvaluator {
 
 	private String relation;
 
@@ -84,7 +77,7 @@ public class GeoRelationQuerySpec implements SearchQueryEvaluator {
 	}
 
 	public IRI getGeoProperty() {
-		return (IRI)geoStatement.getPredicateVar().getValue();
+		return (IRI) geoStatement.getPredicateVar().getValue();
 	}
 
 	public String getGeoVar() {
@@ -105,26 +98,23 @@ public class GeoRelationQuerySpec implements SearchQueryEvaluator {
 	}
 
 	@Override
-	public void updateQueryModelNodes(boolean hasResult) {
-		QueryModelNode replacementNode = hasResult ? new SingletonSet() : new EmptySet();
-		geoStatement.replaceWith(replacementNode);
+	public QueryModelNode removeQueryPatterns() {
+		final QueryModelNode placeholder = new SingletonSet();
 
-		if (hasResult) {
-			filter.replaceWith(filter.getArg());
-		}
-		else {
-			filter.replaceWith(new EmptySet());
-		}
+		filter.replaceWith(filter.getArg());
+
+		geoStatement.replaceWith(placeholder);
 
 		if (functionParent instanceof ExtensionElem) {
-			Extension extension = (Extension)functionParent.getParentNode();
+			Extension extension = (Extension) functionParent.getParentNode();
 			List<ExtensionElem> elements = extension.getElements();
 			if (elements.size() > 1) {
 				elements.remove(functionParent);
-			}
-			else {
+			} else {
 				extension.replaceWith(extension.getArg());
 			}
 		}
+
+		return placeholder;
 	}
 }

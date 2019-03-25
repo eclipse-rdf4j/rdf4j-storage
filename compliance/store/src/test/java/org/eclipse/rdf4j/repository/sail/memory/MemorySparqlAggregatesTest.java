@@ -16,12 +16,11 @@ import org.junit.BeforeClass;
 public class MemorySparqlAggregatesTest extends SparqlAggregatesTest {
 
 	@BeforeClass
-	public static void setUpClass()
-		throws Exception
-	{
+	public static void setUpClass() throws Exception {
 		System.setProperty("org.eclipse.rdf4j.repository.debug", "true");
 	}
 
+	@Override
 	protected Repository newRepository() {
 		return new SailRepository(new MemoryStore());
 	}

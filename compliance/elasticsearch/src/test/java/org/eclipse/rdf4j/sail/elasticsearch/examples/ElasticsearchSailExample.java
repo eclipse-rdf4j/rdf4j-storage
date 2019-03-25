@@ -39,18 +39,14 @@ public class ElasticsearchSailExample {
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args)
-		throws Exception
-	{
+	public static void main(String[] args) throws Exception {
 		createSimple();
 	}
 
 	/**
 	 * Create a LuceneSail and add some triples to it, ask a query.
 	 */
-	public static void createSimple()
-		throws Exception
-	{
+	public static void createSimple() throws Exception {
 		// create a sesame memory sail
 		MemoryStore memoryStore = new MemoryStore();
 
@@ -65,12 +61,12 @@ public class ElasticsearchSailExample {
 		SailRepository repository = new SailRepository(lucenesail);
 		repository.initialize();
 
-		// add some test data, the FOAF ont
-		SailRepositoryConnection connection = repository.getConnection();
-		try {
+		try ( // add some test data, the FOAF ont
+				SailRepositoryConnection connection = repository.getConnection()) {
 			connection.begin();
-			connection.add(ElasticsearchSailExample.class.getResourceAsStream(
-					"/org/openrdf/sail/lucene/examples/foaf.rdfs"), "", RDFFormat.RDFXML);
+			connection.add(
+					ElasticsearchSailExample.class.getResourceAsStream("/org/openrdf/sail/lucene/examples/foaf.rdfs"),
+					"", RDFFormat.RDFXML);
 			connection.commit();
 
 			// search for resources that mention "person"
@@ -103,26 +99,21 @@ public class ElasticsearchSailExample {
 			queryString = "PREFIX search: <" + LuceneSailSchema.NAMESPACE + "> \n"
 					+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n"
 					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"
-					+ "CONSTRUCT { ?x rdfs:domain foaf:Person } \n" + "WHERE { \n"
-					+ "?x rdfs:domain foaf:Person . \n" + "?x search:matches ?match . \n"
-					+ "?match search:query \"homepage\" ; \n" + "       search:property ?property ; \n"
-					+ "       search:score ?score ; \n" + "       search:snippet ?snippet . \n"
-					+ "} LIMIT 3 \n";
+					+ "CONSTRUCT { ?x rdfs:domain foaf:Person } \n" + "WHERE { \n" + "?x rdfs:domain foaf:Person . \n"
+					+ "?x search:matches ?match . \n" + "?match search:query \"homepage\" ; \n"
+					+ "       search:property ?property ; \n" + "       search:score ?score ; \n"
+					+ "       search:snippet ?snippet . \n" + "} LIMIT 3 \n";
 			graphQuery(queryString, connection);
-		}
-		finally {
-			connection.close();
+		} finally {
 			repository.shutDown();
 		}
 	}
 
 	private static void tupleQuery(String queryString, RepositoryConnection connection)
-		throws QueryEvaluationException, RepositoryException, MalformedQueryException
-	{
+			throws QueryEvaluationException, RepositoryException, MalformedQueryException {
 		System.out.println("Running query: \n" + queryString);
 		TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
-		TupleQueryResult result = query.evaluate();
-		try {
+		try (TupleQueryResult result = query.evaluate()) {
 			// print the results
 			System.out.println("Query results:");
 			while (result.hasNext()) {
@@ -133,27 +124,19 @@ public class ElasticsearchSailExample {
 				}
 			}
 		}
-		finally {
-			result.close();
-		}
 	}
 
 	private static void graphQuery(String queryString, RepositoryConnection connection)
-		throws RepositoryException, MalformedQueryException, QueryEvaluationException
-	{
+			throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		System.out.println("Running query: \n" + queryString);
 		GraphQuery query = connection.prepareGraphQuery(QueryLanguage.SPARQL, queryString);
-		GraphQueryResult result = query.evaluate();
-		try {
+		try (GraphQueryResult result = query.evaluate()) {
 			// print the results
 			while (result.hasNext()) {
 				Statement stmt = result.next();
 				System.out.println("found match: " + stmt.getSubject().stringValue() + "\t"
 						+ stmt.getPredicate().stringValue() + "\t" + stmt.getObject().stringValue());
 			}
-		}
-		finally {
-			result.close();
 		}
 
 	}

@@ -52,15 +52,18 @@ public class NativeIRI extends SimpleIRI implements NativeResource {
 	 * Methods *
 	 *---------*/
 
+	@Override
 	public void setInternalID(int internalID, ValueStoreRevision revision) {
 		this.internalID = internalID;
 		this.revision = revision;
 	}
 
+	@Override
 	public ValueStoreRevision getValueStoreRevision() {
 		return revision;
 	}
 
+	@Override
 	public int getInternalID() {
 		return internalID;
 	}
@@ -72,11 +75,9 @@ public class NativeIRI extends SimpleIRI implements NativeResource {
 		}
 
 		if (o instanceof NativeIRI && internalID != NativeValue.UNKNOWN_ID) {
-			NativeIRI otherNativeURI = (NativeIRI)o;
+			NativeIRI otherNativeURI = (NativeIRI) o;
 
-			if (otherNativeURI.internalID != NativeValue.UNKNOWN_ID
-					&& revision.equals(otherNativeURI.revision))
-			{
+			if (otherNativeURI.internalID != NativeValue.UNKNOWN_ID && revision.equals(otherNativeURI.revision)) {
 				// NativeURI's from the same revision of the same native store, with
 				// both ID's set
 				return internalID == otherNativeURI.internalID;

@@ -24,23 +24,24 @@ public abstract class ExternalSet extends AbstractQueryModelNode implements Tupl
 
 	private static final long serialVersionUID = 3903453394409442226L;
 
+	@Override
 	public Set<String> getBindingNames() {
 		return Collections.emptySet();
 	}
 
+	@Override
 	public Set<String> getAssuredBindingNames() {
 		return Collections.emptySet();
 	}
 
-	public <X extends Exception> void visit(QueryModelVisitor<X> visitor)
-		throws X
-	{
+	@Override
+	public <X extends Exception> void visit(QueryModelVisitor<X> visitor) throws X {
 		visitor.meetOther(this);
 	}
 
 	@Override
 	public ExternalSet clone() {
-		return (ExternalSet)super.clone();
+		return (ExternalSet) super.clone();
 	}
 
 	public double cardinality() {
@@ -48,6 +49,6 @@ public abstract class ExternalSet extends AbstractQueryModelNode implements Tupl
 	}
 
 	public abstract CloseableIteration<BindingSet, QueryEvaluationException> evaluate(BindingSet bindings)
-		throws QueryEvaluationException;
+			throws QueryEvaluationException;
 
 }

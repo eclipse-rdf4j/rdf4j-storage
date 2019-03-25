@@ -36,7 +36,6 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.WriterConfig;
 import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
-import org.eclipse.rdf4j.spin.SpinRenderer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -47,7 +46,7 @@ public class SpinRendererTest {
 
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> testData() {
-		List<Object[]> params = new ArrayList<Object[]>();
+		List<Object[]> params = new ArrayList<>();
 		for (int i = 0;; i++) {
 			String suffix = String.valueOf(i + 1);
 			String testFile = "/testcases/test" + suffix + ".ttl";
@@ -69,15 +68,13 @@ public class SpinRendererTest {
 	}
 
 	@Test
-	public void testSpinRenderer()
-		throws IOException, RDF4JException
-	{
+	public void testSpinRenderer() throws IOException, RDF4JException {
 		StatementCollector expected = new StatementCollector();
 		RDFParser parser = Rio.createParser(RDFFormat.TURTLE);
 		parser.setRDFHandler(expected);
-		InputStream rdfStream = testURL.openStream();
-		parser.parse(rdfStream, testURL.toString());
-		rdfStream.close();
+		try (InputStream rdfStream = testURL.openStream()) {
+			parser.parse(rdfStream, testURL.toString());
+		}
 
 		// get query from sp:text
 		String query = null;
@@ -89,21 +86,18 @@ public class SpinRendererTest {
 		}
 		assertNotNull(query);
 
-		ParsedOperation parsedOp = QueryParserUtil.parseOperation(QueryLanguage.SPARQL, query,
-				testURL.toString());
+		ParsedOperation parsedOp = QueryParserUtil.parseOperation(QueryLanguage.SPARQL, query, testURL.toString());
 
 		StatementCollector actual = new StatementCollector();
 		renderer.render(parsedOp, actual);
 
-		Object operation = (parsedOp instanceof ParsedQuery) ? ((ParsedQuery)parsedOp).getTupleExpr()
-				: ((ParsedUpdate)parsedOp).getUpdateExprs();
-		assertTrue("Operation was\n" + operation + "\nExpected\n" + toRDF(expected) + "\nbut was\n"
-				+ toRDF(actual), Models.isomorphic(actual.getStatements(), expected.getStatements()));
+		Object operation = (parsedOp instanceof ParsedQuery) ? ((ParsedQuery) parsedOp).getTupleExpr()
+				: ((ParsedUpdate) parsedOp).getUpdateExprs();
+		assertTrue("Operation was\n" + operation + "\nExpected\n" + toRDF(expected) + "\nbut was\n" + toRDF(actual),
+				Models.isomorphic(actual.getStatements(), expected.getStatements()));
 	}
 
-	private static String toRDF(StatementCollector stmts)
-		throws RDFHandlerException
-	{
+	private static String toRDF(StatementCollector stmts) throws RDFHandlerException {
 		WriterConfig config = new WriterConfig();
 		config.set(BasicWriterSettings.PRETTY_PRINT, false);
 		StringBuilderWriter writer = new StringBuilderWriter();

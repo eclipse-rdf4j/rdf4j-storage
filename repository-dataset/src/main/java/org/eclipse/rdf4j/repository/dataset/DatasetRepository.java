@@ -26,15 +26,15 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.Rio;
 
 /**
- * A repository that automatically attempts to load the dataset supplied in a (SPARQL) query (using FROM and
- * FROM NAMED clauses).
+ * A repository that automatically attempts to load the dataset supplied in a (SPARQL) query (using FROM and FROM NAMED
+ * clauses).
  *
  * @author Arjohn Kampman
  * @author Jeen Broekstra
  */
 public class DatasetRepository extends RepositoryWrapper {
 
-	private Map<URL, Long> lastModified = new ConcurrentHashMap<URL, Long>();
+	private Map<URL, Long> lastModified = new ConcurrentHashMap<>();
 
 	public DatasetRepository() {
 		super();
@@ -48,41 +48,31 @@ public class DatasetRepository extends RepositoryWrapper {
 	public void setDelegate(Repository delegate) {
 		if (delegate instanceof SailRepository) {
 			super.setDelegate(delegate);
-		}
-		else {
-			throw new IllegalArgumentException(
-					"delegate must be a SailRepository, is: " + delegate.getClass());
+		} else {
+			throw new IllegalArgumentException("delegate must be a SailRepository, is: " + delegate.getClass());
 		}
 	}
 
 	@Override
 	public SailRepository getDelegate() {
-		return (SailRepository)super.getDelegate();
+		return (SailRepository) super.getDelegate();
 	}
 
 	@Override
-	public RepositoryConnection getConnection()
-		throws RepositoryException
-	{
+	public RepositoryConnection getConnection() throws RepositoryException {
 		return new DatasetRepositoryConnection(this, getDelegate().getConnection());
 	}
 
 	/**
-	 * Inspects if the dataset at the supplied URL location has been modified since the last load into this
-	 * repository and if so loads it into the supplied context.
+	 * Inspects if the dataset at the supplied URL location has been modified since the last load into this repository
+	 * and if so loads it into the supplied context.
 	 * 
-	 * @param url
-	 *        the location of the dataset
-	 * @param context
-	 *        the context in which to load the dataset
-	 * @param config
-	 *        parser configuration to use for processing the dataset
-	 * @throws RepositoryException
-	 *         if an error occurred while loading the dataset.
+	 * @param url     the location of the dataset
+	 * @param context the context in which to load the dataset
+	 * @param config  parser configuration to use for processing the dataset
+	 * @throws RepositoryException if an error occurred while loading the dataset.
 	 */
-	public void loadDataset(URL url, IRI context, ParserConfig config)
-		throws RepositoryException
-	{
+	public void loadDataset(URL url, IRI context, ParserConfig config) throws RepositoryException {
 		try {
 			Long since = lastModified.get(url);
 			URLConnection urlCon = url.openConnection();
@@ -92,18 +82,15 @@ public class DatasetRepository extends RepositoryWrapper {
 			if (since == null || since < urlCon.getLastModified()) {
 				load(url, urlCon, context, config);
 			}
-		}
-		catch (RDFParseException e) {
+		} catch (RDFParseException e) {
 			throw new RepositoryException(e);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new RepositoryException(e);
 		}
 	}
 
 	private synchronized void load(URL url, URLConnection urlCon, IRI context, ParserConfig config)
-		throws RepositoryException, RDFParseException, IOException
-	{
+			throws RepositoryException, RDFParseException, IOException {
 		long modified = urlCon.getLastModified();
 		if (lastModified.containsKey(url) && lastModified.get(url) >= modified) {
 			return;
@@ -115,11 +102,10 @@ public class DatasetRepository extends RepositoryWrapper {
 		if (semiColonIdx >= 0) {
 			mimeType = mimeType.substring(0, semiColonIdx);
 		}
-		RDFFormat format = Rio.getParserFormatForMIMEType(mimeType).orElse(
-				Rio.getParserFormatForFileName(url.getPath()).orElseThrow(Rio.unsupportedFormat(mimeType)));
+		RDFFormat format = Rio.getParserFormatForMIMEType(mimeType)
+				.orElse(Rio.getParserFormatForFileName(url.getPath()).orElseThrow(Rio.unsupportedFormat(mimeType)));
 
-		InputStream stream = urlCon.getInputStream();
-		try {
+		try (InputStream stream = urlCon.getInputStream()) {
 			RepositoryConnection repCon = super.getConnection();
 			try {
 				repCon.setParserConfig(config);
@@ -128,13 +114,9 @@ public class DatasetRepository extends RepositoryWrapper {
 				repCon.add(stream, url.toExternalForm(), format, context);
 				repCon.commit();
 				lastModified.put(url, modified);
-			}
-			finally {
+			} finally {
 				repCon.close();
 			}
-		}
-		finally {
-			stream.close();
 		}
 	}
 }

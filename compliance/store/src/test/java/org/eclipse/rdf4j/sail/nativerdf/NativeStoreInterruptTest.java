@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.SailConcurrencyTest;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.SailInterruptTest;
-import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
@@ -34,13 +33,10 @@ public class NativeStoreInterruptTest extends SailInterruptTest {
 	 *---------*/
 
 	@Override
-	protected NotifyingSail createSail()
-		throws SailException
-	{
+	protected NotifyingSail createSail() throws SailException {
 		try {
 			return new NativeStore(tempDir.newFolder("nativestore"), "spoc,posc");
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new AssertionError(e);
 		}
 	}

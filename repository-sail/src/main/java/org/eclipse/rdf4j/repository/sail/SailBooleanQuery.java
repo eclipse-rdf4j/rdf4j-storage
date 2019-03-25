@@ -28,12 +28,11 @@ public class SailBooleanQuery extends SailQuery implements BooleanQuery {
 
 	@Override
 	public ParsedBooleanQuery getParsedQuery() {
-		return (ParsedBooleanQuery)super.getParsedQuery();
+		return (ParsedBooleanQuery) super.getParsedQuery();
 	}
 
-	public boolean evaluate()
-		throws QueryEvaluationException
-	{
+	@Override
+	public boolean evaluate() throws QueryEvaluationException {
 		ParsedBooleanQuery parsedBooleanQuery = getParsedQuery();
 		TupleExpr tupleExpr = parsedBooleanQuery.getTupleExpr();
 		Dataset dataset = getDataset();
@@ -53,18 +52,15 @@ public class SailBooleanQuery extends SailQuery implements BooleanQuery {
 			bindingsIter2 = enforceMaxQueryTime(bindingsIter1);
 
 			return bindingsIter2.hasNext();
-		}
-		catch (SailException e) {
+		} catch (SailException e) {
 			throw new QueryEvaluationException(e.getMessage(), e);
-		}
-		finally {
+		} finally {
 			// Always cleanup all iterators, as they are not persistently visible outside of this method
 			try {
 				if (bindingsIter2 != null) {
 					bindingsIter2.close();
 				}
-			}
-			finally {
+			} finally {
 				if (bindingsIter1 != null) {
 					bindingsIter1.close();
 				}

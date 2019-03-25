@@ -21,13 +21,13 @@ import org.eclipse.rdf4j.query.algebra.evaluation.function.Function;
  */
 public class UUID implements Function {
 
+	@Override
 	public String getURI() {
 		return "UUID";
 	}
 
-	public IRI evaluate(ValueFactory valueFactory, Value... args)
-		throws ValueExprEvaluationException
-	{
+	@Override
+	public IRI evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
 		if (args.length > 0) {
 			throw new ValueExprEvaluationException("UUID requires 0 arguments, got " + args.length);
 		}

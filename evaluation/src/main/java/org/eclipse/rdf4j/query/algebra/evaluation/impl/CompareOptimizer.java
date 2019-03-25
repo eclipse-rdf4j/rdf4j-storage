@@ -31,6 +31,7 @@ public class CompareOptimizer implements QueryOptimizer {
 	/**
 	 * Applies generally applicable optimizations to the supplied query: variable assignments are inlined.
 	 */
+	@Override
 	public void optimize(TupleExpr tupleExpr, Dataset dataset, BindingSet bindings) {
 		tupleExpr.visit(new CompareVisitor());
 	}
@@ -50,9 +51,7 @@ public class CompareOptimizer implements QueryOptimizer {
 				boolean leftIsResource = isResource(leftArg);
 				boolean rightIsResource = isResource(rightArg);
 
-				if (leftIsVar && rightIsResource || leftIsResource && rightIsVar
-						|| leftIsResource && rightIsResource)
-				{
+				if (leftIsVar && rightIsResource || leftIsResource && rightIsVar || leftIsResource && rightIsResource) {
 					SameTerm sameTerm = new SameTerm(leftArg, rightArg);
 					compare.replaceWith(sameTerm);
 				}
@@ -69,12 +68,12 @@ public class CompareOptimizer implements QueryOptimizer {
 
 		protected boolean isResource(ValueExpr valueExpr) {
 			if (valueExpr instanceof ValueConstant) {
-				Value value = ((ValueConstant)valueExpr).getValue();
+				Value value = ((ValueConstant) valueExpr).getValue();
 				return value instanceof Resource;
 			}
 
 			if (valueExpr instanceof Var) {
-				Value value = ((Var)valueExpr).getValue();
+				Value value = ((Var) valueExpr).getValue();
 				return value instanceof Resource;
 			}
 

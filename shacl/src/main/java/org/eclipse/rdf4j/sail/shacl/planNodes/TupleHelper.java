@@ -20,7 +20,6 @@ public class TupleHelper {
 
 		ArrayList<Value> newLine = new ArrayList<>(left.line.size() + right.line.size() - 1);
 
-
 		newLine.addAll(left.line);
 
 		for (int i = 1; i < right.line.size(); i++) {
@@ -30,6 +29,8 @@ public class TupleHelper {
 		Tuple tuple = new Tuple(newLine);
 		tuple.addHistory(left);
 		tuple.addHistory(right);
+		tuple.addAllCausedByPropertyShape(left.getCausedByPropertyShapes());
+		tuple.addAllCausedByPropertyShape(right.getCausedByPropertyShapes());
 		return tuple;
 
 	}

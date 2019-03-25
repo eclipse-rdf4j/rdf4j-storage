@@ -42,17 +42,13 @@ public class OrderIteratorTest extends TestCase {
 		}
 
 		@Override
-		public boolean hasNext()
-			throws QueryEvaluationException
-		{
+		public boolean hasNext() throws QueryEvaluationException {
 			hasNextCount++;
 			return super.hasNext();
 		}
 
 		@Override
-		public BindingSet next()
-			throws QueryEvaluationException
-		{
+		public BindingSet next() throws QueryEvaluationException {
 			nextCount++;
 			return super.next();
 		}
@@ -65,6 +61,7 @@ public class OrderIteratorTest extends TestCase {
 
 	class SizeComparator implements Comparator<BindingSet> {
 
+		@Override
 		public int compare(BindingSet o1, BindingSet o2) {
 			return Integer.valueOf(o1.size()).compareTo(Integer.valueOf(o2.size()));
 		}
@@ -81,26 +78,32 @@ public class OrderIteratorTest extends TestCase {
 			this.size = size;
 		}
 
+		@Override
 		public Binding getBinding(String bindingName) {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public Set<String> getBindingNames() {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public Value getValue(String bindingName) {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public boolean hasBinding(String bindingName) {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public Iterator<Binding> iterator() {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public int size() {
 			return size;
 		}
@@ -129,18 +132,14 @@ public class OrderIteratorTest extends TestCase {
 
 	private SizeComparator cmp;
 
-	public void testFirstHasNext()
-		throws Exception
-	{
+	public void testFirstHasNext() throws Exception {
 		order.hasNext();
 		assertEquals(list.size() + 1, iteration.hasNextCount);
 		assertEquals(list.size(), iteration.nextCount);
 		assertEquals(0, iteration.removeCount);
 	}
 
-	public void testHasNext()
-		throws Exception
-	{
+	public void testHasNext() throws Exception {
 		order.hasNext();
 		order.next();
 		order.hasNext();
@@ -149,18 +148,14 @@ public class OrderIteratorTest extends TestCase {
 		assertEquals(0, iteration.removeCount);
 	}
 
-	public void testFirstNext()
-		throws Exception
-	{
+	public void testFirstNext() throws Exception {
 		order.next();
 		assertEquals(list.size() + 1, iteration.hasNextCount);
 		assertEquals(list.size(), iteration.nextCount);
 		assertEquals(0, iteration.removeCount);
 	}
 
-	public void testNext()
-		throws Exception
-	{
+	public void testNext() throws Exception {
 		order.next();
 		order.next();
 		assertEquals(list.size() + 1, iteration.hasNextCount);
@@ -168,22 +163,17 @@ public class OrderIteratorTest extends TestCase {
 		assertEquals(0, iteration.removeCount);
 	}
 
-	public void testRemove()
-		throws Exception
-	{
+	public void testRemove() throws Exception {
 		try {
 			order.remove();
 			fail();
-		}
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 		}
 
 	}
 
-	public void testSorting()
-		throws Exception
-	{
-		List<BindingSet> sorted = new ArrayList<BindingSet>(list);
+	public void testSorting() throws Exception {
+		List<BindingSet> sorted = new ArrayList<>(list);
 		Collections.sort(sorted, cmp);
 		for (BindingSet b : sorted) {
 			assertEquals(b, order.next());
@@ -192,9 +182,7 @@ public class OrderIteratorTest extends TestCase {
 	}
 
 	@Override
-	protected void setUp()
-		throws Exception
-	{
+	protected void setUp() throws Exception {
 		list = Arrays.asList(b3, b5, b2, b1, b4, b2);
 		cmp = new SizeComparator();
 		iteration = new IterationStub();

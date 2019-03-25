@@ -23,6 +23,7 @@ public class IterativeEvaluationOptimizer implements QueryOptimizer {
 	public IterativeEvaluationOptimizer() {
 	}
 
+	@Override
 	public void optimize(TupleExpr tupleExpr, Dataset dataset, BindingSet bindings) {
 		tupleExpr.visit(new IEOVisitor());
 	}
@@ -37,8 +38,8 @@ public class IterativeEvaluationOptimizer implements QueryOptimizer {
 			TupleExpr rightArg = union.getRightArg();
 
 			if (leftArg instanceof Join && rightArg instanceof Join) {
-				Join leftJoinArg = (Join)leftArg;
-				Join rightJoin = (Join)rightArg;
+				Join leftJoinArg = (Join) leftArg;
+				Join rightJoin = (Join) rightArg;
 
 				if (leftJoinArg.getLeftArg().equals(rightJoin.getLeftArg())) {
 					// factor out the left-most join argument

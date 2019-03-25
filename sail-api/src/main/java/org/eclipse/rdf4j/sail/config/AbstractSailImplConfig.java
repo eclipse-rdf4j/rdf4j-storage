@@ -43,6 +43,7 @@ public abstract class AbstractSailImplConfig implements SailImplConfig {
 		setType(type);
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -51,14 +52,14 @@ public abstract class AbstractSailImplConfig implements SailImplConfig {
 		this.type = type;
 	}
 
-	public void validate()
-		throws SailConfigException
-	{
+	@Override
+	public void validate() throws SailConfigException {
 		if (type == null) {
 			throw new SailConfigException("No type specified for sail implementation");
 		}
 	}
 
+	@Override
 	public Resource export(Model m) {
 		ValueFactory vf = SimpleValueFactory.getInstance();
 		BNode implNode = vf.createBNode();
@@ -74,26 +75,20 @@ public abstract class AbstractSailImplConfig implements SailImplConfig {
 		}
 
 		if (connectionTimeOut > 0) {
-			m.add(implNode, SailConfigSchema.CONNECTION_TIME_OUT,
-					vf.createLiteral(connectionTimeOut));
+			m.add(implNode, SailConfigSchema.CONNECTION_TIME_OUT, vf.createLiteral(connectionTimeOut));
 		}
 		return implNode;
 	}
 
-	public void parse(Model m, Resource implNode)
-		throws SailConfigException
-	{
+	@Override
+	public void parse(Model m, Resource implNode) throws SailConfigException {
 		try {
-			Models.objectLiteral(m.filter(implNode, SAILTYPE, null)).ifPresent(
-					lit -> setType(lit.getLabel()));
-			Models.objectLiteral(
-					m.filter(implNode, SailConfigSchema.ITERATION_CACHE_SYNC_THRESHOLD, null)).ifPresent(
-							lit -> setIterationCacheSyncThreshold(lit.longValue()));
-			Models.objectLiteral(
-					m.filter(implNode, SailConfigSchema.CONNECTION_TIME_OUT, null)).ifPresent(
-							lit -> setConnectionTimeOut(lit.longValue()));
-		}
-		catch (ModelException e) {
+			Models.objectLiteral(m.filter(implNode, SAILTYPE, null)).ifPresent(lit -> setType(lit.getLabel()));
+			Models.objectLiteral(m.filter(implNode, SailConfigSchema.ITERATION_CACHE_SYNC_THRESHOLD, null))
+					.ifPresent(lit -> setIterationCacheSyncThreshold(lit.longValue()));
+			Models.objectLiteral(m.filter(implNode, SailConfigSchema.CONNECTION_TIME_OUT, null))
+					.ifPresent(lit -> setConnectionTimeOut(lit.longValue()));
+		} catch (ModelException e) {
 			throw new SailConfigException(e.getMessage(), e);
 		}
 	}
@@ -101,18 +96,18 @@ public abstract class AbstractSailImplConfig implements SailImplConfig {
 	/**
 	 * @return Returns the iterationCacheSize.
 	 */
+	@Override
 	public long getIterationCacheSyncThreshold() {
 		return iterationCacheSyncThreshold;
 	}
 
 	/**
-	 * @param iterationCacheSyncThreshold
-	 *        The iterationCacheSyncThreshold to set.
+	 * @param iterationCacheSyncThreshold The iterationCacheSyncThreshold to set.
 	 */
 	public void setIterationCacheSyncThreshold(long iterationCacheSyncThreshold) {
 		this.iterationCacheSyncThreshold = iterationCacheSyncThreshold;
 	}
-	
+
 	/**
 	 * Get the connection timeout (in ms).
 	 * 

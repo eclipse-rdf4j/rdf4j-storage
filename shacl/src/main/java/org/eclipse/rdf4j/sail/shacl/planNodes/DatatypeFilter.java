@@ -8,7 +8,6 @@
 
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
-
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 
@@ -19,17 +18,22 @@ public class DatatypeFilter extends FilterPlanNode {
 
 	private final Resource datatype;
 
-	public DatatypeFilter(PlanNode parent, PushBasedPlanNode trueNode, PushBasedPlanNode falseNode, Resource datatype) {
-		super(parent, trueNode, falseNode);
+	public DatatypeFilter(PlanNode parent, Resource datatype) {
+		super(parent);
 		this.datatype = datatype;
 	}
 
 	@Override
 	boolean checkTuple(Tuple t) {
-		if(! (t.line.get(1) instanceof Literal)) return false;
+		if (!(t.line.get(1) instanceof Literal))
+			return false;
 
 		Literal literal = (Literal) t.line.get(1);
 		return literal.getDatatype() == datatype || literal.getDatatype().equals(datatype);
 	}
 
+	@Override
+	public String toString() {
+		return "DatatypeFilter{" + "datatype=" + datatype + '}';
+	}
 }

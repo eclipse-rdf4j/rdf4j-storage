@@ -31,17 +31,18 @@ public class MemoryStoreFactory implements SailFactory {
 	/**
 	 * Returns the Sail's type: <tt>openrdf:MemoryStore</tt>.
 	 */
+	@Override
 	public String getSailType() {
 		return SAIL_TYPE;
 	}
 
+	@Override
 	public SailImplConfig getConfig() {
 		return new MemoryStoreConfig();
 	}
 
-	public Sail getSail(SailImplConfig config)
-		throws SailConfigException
-	{
+	@Override
+	public Sail getSail(SailImplConfig config) throws SailConfigException {
 		if (!SAIL_TYPE.equals(config.getType())) {
 			throw new SailConfigException("Invalid Sail type: " + config.getType());
 		}
@@ -49,7 +50,7 @@ public class MemoryStoreFactory implements SailFactory {
 		MemoryStore memoryStore = new MemoryStore();
 
 		if (config instanceof MemoryStoreConfig) {
-			MemoryStoreConfig memConfig = (MemoryStoreConfig)config;
+			MemoryStoreConfig memConfig = (MemoryStoreConfig) config;
 
 			memoryStore.setPersist(memConfig.getPersist());
 			memoryStore.setSyncDelay(memConfig.getSyncDelay());

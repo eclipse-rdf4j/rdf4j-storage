@@ -20,10 +20,9 @@ class DatasetBooleanQuery extends DatasetQuery implements BooleanQuery {
 		super(con, sailQuery);
 	}
 
-	public boolean evaluate()
-		throws QueryEvaluationException
-	{
+	@Override
+	public boolean evaluate() throws QueryEvaluationException {
 		con.loadDataset(sailQuery.getActiveDataset());
-		return ((BooleanQuery)sailQuery).evaluate();
+		return ((BooleanQuery) sailQuery).evaluate();
 	}
 }

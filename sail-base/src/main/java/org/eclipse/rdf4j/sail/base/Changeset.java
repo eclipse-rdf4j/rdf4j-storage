@@ -25,8 +25,7 @@ import org.eclipse.rdf4j.sail.SailConflictException;
 import org.eclipse.rdf4j.sail.SailException;
 
 /**
- * Set of changes applied to an {@link SailSourceBranch} awaiting to be flushed into its backing
- * {@link SailSource}.
+ * Set of changes applied to an {@link SailSourceBranch} awaiting to be flushed into its backing {@link SailSource}.
  * 
  * @author James Leigh
  */
@@ -39,14 +38,14 @@ abstract class Changeset implements SailSink, ModelFactory {
 	private Set<SailDatasetImpl> refbacks;
 
 	/**
-	 * {@link Changeset}s that have been {@link #flush()}ed to the same {@link SailSourceBranch}, since this
-	 * object was {@link #flush()}ed.
+	 * {@link Changeset}s that have been {@link #flush()}ed to the same {@link SailSourceBranch}, since this object was
+	 * {@link #flush()}ed.
 	 */
 	private Set<Changeset> prepend;
 
 	/**
-	 * When in {@link IsolationLevels#SERIALIZABLE} this contains all the observed {@link StatementPattern}s
-	 * that were observed by {@link ObservingSailDataset}.
+	 * When in {@link IsolationLevels#SERIALIZABLE} this contains all the observed {@link StatementPattern}s that were
+	 * observed by {@link ObservingSailDataset}.
 	 */
 	private Set<StatementPattern> observations;
 
@@ -91,35 +90,29 @@ abstract class Changeset implements SailSink, ModelFactory {
 	private boolean statementCleared;
 
 	@Override
-	public void close()
-		throws SailException
-	{
+	public void close() throws SailException {
 		// no-op
 	}
 
 	@Override
-	public void prepare()
-		throws SailException
-	{
+	public void prepare() throws SailException {
 		if (prepend != null && observations != null) {
 			for (StatementPattern p : observations) {
-				Resource subj = (Resource)p.getSubjectVar().getValue();
-				IRI pred = (IRI)p.getPredicateVar().getValue();
+				Resource subj = (Resource) p.getSubjectVar().getValue();
+				IRI pred = (IRI) p.getPredicateVar().getValue();
 				Value obj = p.getObjectVar().getValue();
 				Var ctxVar = p.getContextVar();
 				Resource[] contexts;
 				if (ctxVar == null) {
 					contexts = new Resource[0];
-				}
-				else {
-					contexts = new Resource[] { (Resource)ctxVar.getValue() };
+				} else {
+					contexts = new Resource[] { (Resource) ctxVar.getValue() };
 				}
 				for (Changeset changeset : prepend) {
 					Model approved = changeset.getApproved();
 					Model deprecated = changeset.getDeprecated();
 					if (approved != null && approved.contains(subj, pred, obj, contexts)
-							|| deprecated != null && deprecated.contains(subj, pred, obj, contexts))
-					{
+							|| deprecated != null && deprecated.contains(subj, pred, obj, contexts)) {
 						throw new SailConflictException("Observed State has Changed");
 					}
 				}
@@ -129,7 +122,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 
 	public synchronized void addRefback(SailDatasetImpl dataset) {
 		if (refbacks == null) {
-			refbacks = new HashSet<SailDatasetImpl>();
+			refbacks = new HashSet<>();
 		}
 		refbacks.add(dataset);
 	}
@@ -146,7 +139,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 
 	public synchronized void prepend(Changeset changeset) {
 		if (prepend == null) {
-			prepend = new HashSet<Changeset>();
+			prepend = new HashSet<>();
 		}
 		prepend.add(changeset);
 	}
@@ -154,11 +147,11 @@ abstract class Changeset implements SailSink, ModelFactory {
 	@Override
 	public synchronized void setNamespace(String prefix, String name) {
 		if (removedPrefixes == null) {
-			removedPrefixes = new HashSet<String>();
+			removedPrefixes = new HashSet<>();
 		}
 		removedPrefixes.add(prefix);
 		if (addedNamespaces == null) {
-			addedNamespaces = new HashMap<String, String>();
+			addedNamespaces = new HashMap<>();
 		}
 		addedNamespaces.put(prefix, name);
 	}
@@ -169,7 +162,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 			addedNamespaces.remove(prefix);
 		}
 		if (removedPrefixes == null) {
-			removedPrefixes = new HashSet<String>();
+			removedPrefixes = new HashSet<>();
 		}
 		removedPrefixes.add(prefix);
 	}
@@ -187,22 +180,19 @@ abstract class Changeset implements SailSink, ModelFactory {
 
 	@Override
 	public synchronized void observe(Resource subj, IRI pred, Value obj, Resource... contexts)
-		throws SailConflictException
-	{
+			throws SailConflictException {
 		if (observations == null) {
-			observations = new HashSet<StatementPattern>();
+			observations = new HashSet<>();
 		}
 		if (contexts == null) {
 			observations.add(new StatementPattern(new Var("s", subj), new Var("p", pred), new Var("o", obj),
 					new Var("g", null)));
-		}
-		else if (contexts.length == 0) {
+		} else if (contexts.length == 0) {
 			observations.add(new StatementPattern(new Var("s", subj), new Var("p", pred), new Var("o", obj)));
-		}
-		else {
+		} else {
 			for (Resource ctx : contexts) {
-				observations.add(new StatementPattern(new Var("s", subj), new Var("p", pred),
-						new Var("o", obj), new Var("g", ctx)));
+				observations.add(new StatementPattern(new Var("s", subj), new Var("p", pred), new Var("o", obj),
+						new Var("g", ctx)));
 			}
 		}
 	}
@@ -217,8 +207,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 				approvedContexts.clear();
 			}
 			statementCleared = true;
-		}
-		else {
+		} else {
 			if (approved != null) {
 				approved.remove(null, null, null, contexts);
 			}
@@ -226,7 +215,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 				approvedContexts.removeAll(Arrays.asList(contexts));
 			}
 			if (deprecatedContexts == null) {
-				deprecatedContexts = new HashSet<Resource>();
+				deprecatedContexts = new HashSet<>();
 			}
 			deprecatedContexts.addAll(Arrays.asList(contexts));
 		}
@@ -243,7 +232,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 		approved.add(subj, pred, obj, ctx);
 		if (ctx != null) {
 			if (approvedContexts == null) {
-				approvedContexts = new HashSet<Resource>();
+				approvedContexts = new HashSet<>();
 			}
 			approvedContexts.add(ctx);
 		}
@@ -258,9 +247,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 			deprecated = createEmptyModel();
 		}
 		deprecated.add(subj, pred, obj, ctx);
-		if (approvedContexts != null && approvedContexts.contains(ctx)
-				&& !approved.contains(null, null, null, ctx))
-		{
+		if (approvedContexts != null && approvedContexts.contains(ctx) && !approved.contains(null, null, null, ctx)) {
 			approvedContexts.remove(ctx);
 		}
 	}
@@ -300,8 +287,7 @@ abstract class Changeset implements SailSink, ModelFactory {
 		}
 		if (sb.length() > 0) {
 			return sb.substring(0, sb.length() - 2);
-		}
-		else {
+		} else {
 			return super.toString();
 		}
 	}

@@ -25,38 +25,33 @@ import org.eclipse.rdf4j.query.algebra.evaluation.util.QueryEvaluationUtil;
  */
 public class SHA256 extends HashFunction {
 
+	@Override
 	public String getURI() {
 		return "SHA256";
 	}
 
-	public Literal evaluate(ValueFactory valueFactory, Value... args)
-		throws ValueExprEvaluationException
-	{
+	@Override
+	public Literal evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
 		if (args.length != 1) {
 			throw new ValueExprEvaluationException("SHA256 requires exactly 1 argument, got " + args.length);
 		}
 
 		if (args[0] instanceof Literal) {
-			Literal literal = (Literal)args[0];
+			Literal literal = (Literal) args[0];
 
-			if (QueryEvaluationUtil.isSimpleLiteral(literal)
-					|| XMLSchema.STRING.equals(literal.getDatatype()))
-			{
+			if (QueryEvaluationUtil.isSimpleLiteral(literal) || XMLSchema.STRING.equals(literal.getDatatype())) {
 				String lexValue = literal.getLabel();
 
 				try {
 					return valueFactory.createLiteral(hash(lexValue, "SHA-256"));
-				}
-				catch (NoSuchAlgorithmException e) {
+				} catch (NoSuchAlgorithmException e) {
 					// SHA256 should always be available.
 					throw new RuntimeException(e);
 				}
-			}
-			else {
+			} else {
 				throw new ValueExprEvaluationException("Invalid argument for SHA256: " + literal);
 			}
-		}
-		else {
+		} else {
 			throw new ValueExprEvaluationException("Invalid argument for SHA256: " + args[0]);
 		}
 	}

@@ -20,6 +20,6 @@ import org.eclipse.rdf4j.repository.config.RepositoryConfigException;
 @Deprecated
 public interface RepositoryResolver extends org.eclipse.rdf4j.repository.RepositoryResolver {
 
-	Repository getRepository(String memberID)
-		throws RepositoryException, RepositoryConfigException;
+	@Override
+	Repository getRepository(String memberID) throws RepositoryException, RepositoryConfigException;
 }

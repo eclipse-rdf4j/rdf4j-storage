@@ -16,9 +16,8 @@ public class LuceneSailTest extends AbstractGenericLuceneTest {
 
 	private LuceneIndex index;
 
-	protected void configure(LuceneSail sail)
-		throws IOException
-	{
+	@Override
+	protected void configure(LuceneSail sail) throws IOException {
 		index = new LuceneIndex(new RAMDirectory(), new StandardAnalyzer());
 		sail.setLuceneIndex(index);
 	}

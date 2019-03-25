@@ -18,8 +18,8 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 
 /**
- * A buffer collecting all transaction operations (triples that need to be added, removed, clear operations)
- * so that they can be executed at once during commit.
+ * A buffer collecting all transaction operations (triples that need to be added, removed, clear operations) so that
+ * they can be executed at once during commit.
  * 
  * @author sauermann
  * @author andriy.nikolov
@@ -63,12 +63,11 @@ public class LuceneSailBuffer {
 			if (this == obj)
 				return true;
 			if (obj instanceof Statement) {
-				Statement other = (Statement)obj;
+				Statement other = (Statement) obj;
 
 				return this.delegate.equals(other)
-						&& ((this.getContext() == null && other.getContext() == null)
-								|| (this.getContext() != null && other.getContext() != null
-										&& this.getContext().equals(other.getContext())));
+						&& ((this.getContext() == null && other.getContext() == null) || (this.getContext() != null
+								&& other.getContext() != null && this.getContext().equals(other.getContext())));
 			}
 			return false;
 		}
@@ -91,9 +90,9 @@ public class LuceneSailBuffer {
 
 	public static class AddRemoveOperation extends Operation {
 
-		HashSet<Statement> added = new HashSet<Statement>();
+		HashSet<Statement> added = new HashSet<>();
 
-		HashSet<Statement> removed = new HashSet<Statement>();
+		HashSet<Statement> removed = new HashSet<>();
 
 		public void add(Statement s) {
 			if (!removed.remove(s))
@@ -142,13 +141,12 @@ public class LuceneSailBuffer {
 
 	}
 
-	private ArrayList<Operation> operations = new ArrayList<Operation>();
+	private ArrayList<Operation> operations = new ArrayList<>();
 
 	/**
 	 * Add this statement to the buffer
 	 * 
-	 * @param s
-	 *        the statement
+	 * @param s the statement
 	 */
 	public synchronized void add(Statement s) {
 		// check if the last operation was adding/Removing triples
@@ -157,15 +155,14 @@ public class LuceneSailBuffer {
 			o = new AddRemoveOperation();
 			operations.add(o);
 		}
-		AddRemoveOperation aro = (AddRemoveOperation)o;
+		AddRemoveOperation aro = (AddRemoveOperation) o;
 		aro.add(new ContextAwareStatementImpl(s));
 	}
 
 	/**
 	 * Remove this statement to the buffer
 	 * 
-	 * @param s
-	 *        the statement
+	 * @param s the statement
 	 */
 	public synchronized void remove(Statement s) {
 		// check if the last operation was adding/Removing triples
@@ -174,7 +171,7 @@ public class LuceneSailBuffer {
 			o = new AddRemoveOperation();
 			operations.add(o);
 		}
-		AddRemoveOperation aro = (AddRemoveOperation)o;
+		AddRemoveOperation aro = (AddRemoveOperation) o;
 		aro.remove(new ContextAwareStatementImpl(s));
 	}
 

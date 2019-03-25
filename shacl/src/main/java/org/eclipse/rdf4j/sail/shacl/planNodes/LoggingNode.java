@@ -8,9 +8,12 @@
 
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.sail.SailException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,14 +25,19 @@ import java.util.stream.Stream;
  */
 public class LoggingNode implements PlanNode {
 
-	PlanNode parent;
+	static private final Logger logger = LoggerFactory.getLogger(LoggingNode.class);
 
-	boolean pullAll = true;
+	PlanNode parent;
+	String message;
+
+	private boolean pullAll = true;
 
 	public static boolean loggingEnabled = false;
 
-	public LoggingNode(PlanNode parent) {
+	public LoggingNode(PlanNode parent, String message) {
 		this.parent = parent;
+		this.message = message;
+		assert message != null;
 	}
 
 	@Override
@@ -39,7 +47,6 @@ public class LoggingNode implements PlanNode {
 		} else {
 			return new CloseableIteration<Tuple, SailException>() {
 
-
 				CloseableIteration<Tuple, SailException> parentIterator = parent.iterator();
 
 				{
@@ -48,39 +55,37 @@ public class LoggingNode implements PlanNode {
 					}
 				}
 
-				private CloseableIteration<Tuple, SailException> cachedIterator(CloseableIteration<Tuple, SailException> fromIterator) {
-					try (Stream<Tuple> stream = Iterations.stream(fromIterator)) {
-						List<Tuple> collect = stream.collect(Collectors.toList());
+				private CloseableIteration<Tuple, SailException> cachedIterator(
+						CloseableIteration<Tuple, SailException> fromIterator) {
+					Stream<Tuple> stream = Iterations.stream(fromIterator);
+					List<Tuple> collect = stream.collect(Collectors.toList());
 
-						return new CloseableIteration<Tuple, SailException>() {
+					return new CloseableIteration<Tuple, SailException>() {
 
-							Iterator<Tuple> iterator = collect.iterator();
+						Iterator<Tuple> iterator = collect.iterator();
 
+						@Override
+						public void close() throws SailException {
 
-							@Override
-							public void close() throws SailException {
+						}
 
-							}
+						@Override
+						public boolean hasNext() throws SailException {
+							return iterator.hasNext();
+						}
 
-							@Override
-							public boolean hasNext() throws SailException {
-								return iterator.hasNext();
-							}
+						@Override
+						public Tuple next() throws SailException {
+							return iterator.next();
+						}
 
-							@Override
-							public Tuple next() throws SailException {
-								return iterator.next();
-							}
+						@Override
+						public void remove() throws SailException {
 
-							@Override
-							public void remove() throws SailException {
+						}
+					};
 
-							}
-						};
-
-					}
 				}
-
 
 				@Override
 				public void close() throws SailException {
@@ -93,19 +98,21 @@ public class LoggingNode implements PlanNode {
 				public boolean hasNext() throws SailException {
 					boolean hasNext = parentIterator.hasNext();
 
-					//System.out.println(leadingSpace()+parent.getClass().getSimpleName()+".hasNext() : "+hasNext);
+//					logger.info(leadingSpace()+parent.getClass().getSimpleName()+".hasNext() : "+hasNext);
 					return hasNext;
 				}
 
 				@Override
 				public Tuple next() throws SailException {
-					assert parentIterator.hasNext() : parentIterator.getClass().getSimpleName() + " does not have any more items but next was still called!!!";
+					assert parentIterator.hasNext() : parentIterator.getClass().getSimpleName()
+							+ " does not have any more items but next was still called!!!";
 
 					Tuple next = parentIterator.next();
 
 					assert next != null;
 
-					System.out.println(leadingSpace() + parent.getClass().getSimpleName() + ".next(): " + " " + next.toString());
+					logger.info(leadingSpace() + message + parent.getClass().getSimpleName() + ".next(): " + " "
+							+ next.toString());
 
 					return next;
 				}
@@ -124,12 +131,23 @@ public class LoggingNode implements PlanNode {
 		return parent.depth() + 1;
 	}
 
-	private String leadingSpace() {
-		StringBuilder ret = new StringBuilder();
-		int depth = depth();
-		while (--depth > 0) {
-			ret.append("    ");
-		}
-		return ret.toString();
+	@Override
+	public void getPlanAsGraphvizDot(StringBuilder stringBuilder) {
+		parent.getPlanAsGraphvizDot(stringBuilder);
 	}
+
+	@Override
+	public String getId() {
+		return parent.getId();
+	}
+
+	@Override
+	public IteratorData getIteratorDataType() {
+		return parent.getIteratorDataType();
+	}
+
+	private String leadingSpace() {
+		return StringUtils.leftPad("", depth(), "    ");
+	}
+
 }

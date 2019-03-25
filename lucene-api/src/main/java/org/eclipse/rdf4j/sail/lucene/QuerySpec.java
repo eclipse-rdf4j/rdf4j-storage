@@ -9,19 +9,15 @@ package org.eclipse.rdf4j.sail.lucene;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.query.algebra.EmptySet;
-import org.eclipse.rdf4j.query.algebra.QueryModelNode;
-import org.eclipse.rdf4j.query.algebra.SingletonSet;
-import org.eclipse.rdf4j.query.algebra.StatementPattern;
-import org.eclipse.rdf4j.query.algebra.Var;
+import org.eclipse.rdf4j.query.algebra.*;
 
-import com.google.common.base.Supplier;
+import java.util.function.Supplier;
 
 /**
- * A QuerySpec holds information extracted from a TupleExpr corresponding with a single Lucene query. Access
- * the patterns or use the get-methods to get the names of the variables to bind.
+ * A QuerySpec holds information extracted from a TupleExpr corresponding with a single Lucene query. Access the
+ * patterns or use the get-methods to get the names of the variables to bind.
  */
-public class QuerySpec implements SearchQueryEvaluator {
+public class QuerySpec extends AbstractSearchQueryEvaluator {
 
 	private final StatementPattern matchesPattern;
 
@@ -49,10 +45,9 @@ public class QuerySpec implements SearchQueryEvaluator {
 
 	private final String snippetVarName;
 
-	public QuerySpec(StatementPattern matchesPattern, StatementPattern queryPattern,
-			StatementPattern propertyPattern, StatementPattern scorePattern, StatementPattern snippetPattern,
-			StatementPattern typePattern, Resource subject, String queryString, IRI propertyURI)
-	{
+	public QuerySpec(StatementPattern matchesPattern, StatementPattern queryPattern, StatementPattern propertyPattern,
+			StatementPattern scorePattern, StatementPattern snippetPattern, StatementPattern typePattern,
+			Resource subject, String queryString, IRI propertyURI) {
 		this.matchesPattern = matchesPattern;
 		this.queryPattern = queryPattern;
 		this.propertyPattern = propertyPattern;
@@ -64,33 +59,28 @@ public class QuerySpec implements SearchQueryEvaluator {
 		this.propertyURI = propertyURI;
 		if (matchesPattern != null) {
 			this.matchesVarName = matchesPattern.getSubjectVar().getName();
-		}
-		else {
+		} else {
 			this.matchesVarName = null;
 		}
 		if (propertyPattern != null) {
 			this.propertyVarName = propertyPattern.getObjectVar().getName();
-		}
-		else {
+		} else {
 			this.propertyVarName = null;
 		}
 		if (scorePattern != null) {
 			this.scoreVarName = scorePattern.getObjectVar().getName();
-		}
-		else {
+		} else {
 			this.scoreVarName = null;
 		}
 		if (snippetPattern != null) {
 			this.snippetVarName = snippetPattern.getObjectVar().getName();
-		}
-		else {
+		} else {
 			this.snippetVarName = null;
 		}
 	}
 
-	public QuerySpec(String matchesVarName, String propertyVarName, String scoreVarName,
-			String snippetVarName, Resource subject, String queryString, IRI propertyURI)
-	{
+	public QuerySpec(String matchesVarName, String propertyVarName, String scoreVarName, String snippetVarName,
+			Resource subject, String queryString, IRI propertyURI) {
 		this.matchesVarName = matchesVarName;
 		this.propertyVarName = propertyVarName;
 		this.scoreVarName = scoreVarName;
@@ -112,40 +102,31 @@ public class QuerySpec implements SearchQueryEvaluator {
 	}
 
 	@Override
-	public void updateQueryModelNodes(boolean hasResult) {
-		Supplier<QueryModelNode> nodeFactory = hasResult ? new Supplier<QueryModelNode>() {
+	public QueryModelNode removeQueryPatterns() {
+		final Supplier<QueryModelNode> replacement = SingletonSet::new;
 
-			@Override
-			public QueryModelNode get() {
-				return new SingletonSet();
-			}
-		} : new Supplier<QueryModelNode>() {
+		replace(getQueryPattern(), replacement);
+		replace(getScorePattern(), replacement);
+		replace(getPropertyPattern(), replacement);
+		replace(getSnippetPattern(), replacement);
+		replace(getTypePattern(), replacement);
 
-			@Override
-			public QueryModelNode get() {
-				return new EmptySet();
-			}
-		};
+		final QueryModelNode placeholder = new SingletonSet();
 
-		replace(getMatchesPattern(), nodeFactory);
-		replace(getQueryPattern(), nodeFactory);
-		replace(getScorePattern(), nodeFactory);
-		replace(getPropertyPattern(), nodeFactory);
-		replace(getSnippetPattern(), nodeFactory);
-		replace(getTypePattern(), nodeFactory);
+		getMatchesPattern().replaceWith(placeholder);
+
+		return placeholder;
 	}
 
 	/**
 	 * Replace the given node with a new instance of the given replacement type.
-	 * 
-	 * @param pattern
-	 *        the pattern to remove
-	 * @param replacement
-	 *        the replacement type
+	 *
+	 * @param pattern     the pattern to remove
+	 * @param replacement the replacement type
 	 */
-	private void replace(QueryModelNode node, Supplier<? extends QueryModelNode> replacement) {
-		if (node != null) {
-			node.replaceWith(replacement.get());
+	private void replace(QueryModelNode pattern, Supplier<QueryModelNode> replacement) {
+		if (pattern != null) {
+			pattern.replaceWith(replacement.get());
 		}
 	}
 
@@ -155,7 +136,7 @@ public class QuerySpec implements SearchQueryEvaluator {
 
 	/**
 	 * return the name of the bound variable that should match the query
-	 * 
+	 *
 	 * @return the name of the variable or null, if no name set
 	 */
 	public String getMatchesVariableName() {
@@ -180,7 +161,7 @@ public class QuerySpec implements SearchQueryEvaluator {
 
 	/**
 	 * The variable name associated with the query score
-	 * 
+	 *
 	 * @return the name or null, if no score is queried in the pattern
 	 */
 	public String getScoreVariableName() {
@@ -200,14 +181,13 @@ public class QuerySpec implements SearchQueryEvaluator {
 	}
 
 	/**
-	 * the type of query, must equal {@link LuceneSailSchema#LUCENE_QUERY}. A null type is possible, but not
-	 * valid.
-	 * 
+	 * the type of query, must equal {@link LuceneSailSchema#LUCENE_QUERY}. A null type is possible, but not valid.
+	 *
 	 * @return the type of the Query or null, if no type assigned.
 	 */
 	public IRI getQueryType() {
 		if (typePattern != null)
-			return (IRI)typePattern.getObjectVar().getValue();
+			return (IRI) typePattern.getObjectVar().getValue();
 		else
 			return null;
 	}
@@ -217,9 +197,8 @@ public class QuerySpec implements SearchQueryEvaluator {
 	}
 
 	/**
-	 * return the literal expression of the query or null, if none set. (null values are possible, but not
-	 * valid).
-	 * 
+	 * return the literal expression of the query or null, if none set. (null values are possible, but not valid).
+	 *
 	 * @return the query or null
 	 */
 	public String getQueryString() {

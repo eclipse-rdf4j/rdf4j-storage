@@ -28,6 +28,7 @@ import org.eclipse.rdf4j.query.algebra.helpers.VarNameCollector;
  */
 public class ConjunctiveConstraintSplitter implements QueryOptimizer {
 
+	@Override
 	public void optimize(TupleExpr tupleExpr, Dataset dataset, BindingSet bindings) {
 		tupleExpr.visit(new ConstraintVisitor(tupleExpr));
 	}
@@ -44,7 +45,7 @@ public class ConjunctiveConstraintSplitter implements QueryOptimizer {
 		public void meet(Filter filter) {
 			super.meet(filter);
 
-			List<ValueExpr> conjunctiveConstraints = new ArrayList<ValueExpr>(16);
+			List<ValueExpr> conjunctiveConstraints = new ArrayList<>(16);
 			getConjunctiveConstraints(filter.getCondition(), conjunctiveConstraints);
 
 			TupleExpr filterArg = filter.getArg();
@@ -63,7 +64,7 @@ public class ConjunctiveConstraintSplitter implements QueryOptimizer {
 			super.meet(node);
 
 			if (node.getCondition() != null) {
-				List<ValueExpr> conjunctiveConstraints = new ArrayList<ValueExpr>(16);
+				List<ValueExpr> conjunctiveConstraints = new ArrayList<>(16);
 				getConjunctiveConstraints(node.getCondition(), conjunctiveConstraints);
 
 				TupleExpr arg = node.getRightArg();
@@ -72,11 +73,9 @@ public class ConjunctiveConstraintSplitter implements QueryOptimizer {
 				for (ValueExpr constraint : conjunctiveConstraints) {
 					if (isWithinBindingScope(constraint, arg)) {
 						arg = new Filter(arg, constraint);
-					}
-					else if (condition == null) {
+					} else if (condition == null) {
 						condition = constraint;
-					}
-					else {
+					} else {
 						condition = new And(condition, constraint);
 					}
 				}
@@ -86,15 +85,12 @@ public class ConjunctiveConstraintSplitter implements QueryOptimizer {
 			}
 		}
 
-		protected void getConjunctiveConstraints(ValueExpr valueExpr,
-				List<ValueExpr> conjunctiveConstraints)
-		{
+		protected void getConjunctiveConstraints(ValueExpr valueExpr, List<ValueExpr> conjunctiveConstraints) {
 			if (valueExpr instanceof And) {
-				And and = (And)valueExpr;
+				And and = (And) valueExpr;
 				getConjunctiveConstraints(and.getLeftArg(), conjunctiveConstraints);
 				getConjunctiveConstraints(and.getRightArg(), conjunctiveConstraints);
-			}
-			else {
+			} else {
 				conjunctiveConstraints.add(valueExpr);
 			}
 		}

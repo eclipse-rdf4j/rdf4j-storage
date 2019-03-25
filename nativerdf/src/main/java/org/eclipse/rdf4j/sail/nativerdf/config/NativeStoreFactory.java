@@ -31,17 +31,18 @@ public class NativeStoreFactory implements SailFactory {
 	/**
 	 * Returns the Sail's type: <tt>openrdf:NativeStore</tt>.
 	 */
+	@Override
 	public String getSailType() {
 		return SAIL_TYPE;
 	}
 
+	@Override
 	public SailImplConfig getConfig() {
 		return new NativeStoreConfig();
 	}
 
-	public Sail getSail(SailImplConfig config)
-		throws SailConfigException
-	{
+	@Override
+	public Sail getSail(SailImplConfig config) throws SailConfigException {
 		if (!SAIL_TYPE.equals(config.getType())) {
 			throw new SailConfigException("Invalid Sail type: " + config.getType());
 		}
@@ -49,7 +50,7 @@ public class NativeStoreFactory implements SailFactory {
 		NativeStore nativeStore = new NativeStore();
 
 		if (config instanceof NativeStoreConfig) {
-			NativeStoreConfig nativeConfig = (NativeStoreConfig)config;
+			NativeStoreConfig nativeConfig = (NativeStoreConfig) config;
 
 			nativeStore.setTripleIndexes(nativeConfig.getTripleIndexes());
 			nativeStore.setForceSync(nativeConfig.getForceSync());

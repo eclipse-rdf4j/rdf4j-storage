@@ -41,10 +41,8 @@ public class MemLiteral extends SimpleLiteral implements MemValue {
 	/**
 	 * Creates a new Literal which will get the supplied label.
 	 * 
-	 * @param creator
-	 *        The object that is creating this MemLiteral.
-	 * @param label
-	 *        The label for this literal.
+	 * @param creator The object that is creating this MemLiteral.
+	 * @param label   The label for this literal.
 	 */
 	public MemLiteral(Object creator, String label) {
 		super(label, XMLSchema.STRING);
@@ -54,12 +52,9 @@ public class MemLiteral extends SimpleLiteral implements MemValue {
 	/**
 	 * Creates a new Literal which will get the supplied label and language code.
 	 * 
-	 * @param creator
-	 *        The object that is creating this MemLiteral.
-	 * @param label
-	 *        The label for this literal.
-	 * @param lang
-	 *        The language code of the supplied label.
+	 * @param creator The object that is creating this MemLiteral.
+	 * @param label   The label for this literal.
+	 * @param lang    The language code of the supplied label.
 	 */
 	public MemLiteral(Object creator, String label, String lang) {
 		super(label, lang);
@@ -69,12 +64,9 @@ public class MemLiteral extends SimpleLiteral implements MemValue {
 	/**
 	 * Creates a new Literal which will get the supplied label and datatype.
 	 * 
-	 * @param creator
-	 *        The object that is creating this MemLiteral.
-	 * @param label
-	 *        The label for this literal.
-	 * @param datatype
-	 *        The datatype of the supplied label.
+	 * @param creator  The object that is creating this MemLiteral.
+	 * @param label    The label for this literal.
+	 * @param datatype The datatype of the supplied label.
 	 */
 	public MemLiteral(Object creator, String label, IRI datatype) {
 		super(label, datatype);
@@ -85,32 +77,35 @@ public class MemLiteral extends SimpleLiteral implements MemValue {
 	 * Methods *
 	 *---------*/
 
+	@Override
 	public Object getCreator() {
 		return creator;
 	}
 
+	@Override
 	public boolean hasStatements() {
 		return objectStatements != null;
 	}
 
+	@Override
 	public MemStatementList getObjectStatementList() {
 		if (objectStatements == null) {
 			return EMPTY_LIST;
-		}
-		else {
+		} else {
 			return objectStatements;
 		}
 	}
 
+	@Override
 	public int getObjectStatementCount() {
 		if (objectStatements == null) {
 			return 0;
-		}
-		else {
+		} else {
 			return objectStatements.size();
 		}
 	}
 
+	@Override
 	public void addObjectStatement(MemStatement st) {
 		if (objectStatements == null) {
 			objectStatements = new MemStatementList(1);
@@ -119,6 +114,7 @@ public class MemLiteral extends SimpleLiteral implements MemValue {
 		objectStatements.add(st);
 	}
 
+	@Override
 	public void removeObjectStatement(MemStatement st) {
 		objectStatements.remove(st);
 
@@ -127,6 +123,7 @@ public class MemLiteral extends SimpleLiteral implements MemValue {
 		}
 	}
 
+	@Override
 	public void cleanSnapshotsFromObjectStatements(int currentSnapshot) {
 		if (objectStatements != null) {
 			objectStatements.cleanSnapshots(currentSnapshot);

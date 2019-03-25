@@ -23,9 +23,8 @@ public class BloomFilterFederationQueryTest extends FederationQueryTest {
 		super(name, pattern);
 	}
 
-	protected void configure(Federation federation)
-		throws Exception
-	{
+	@Override
+	protected void configure(Federation federation) throws Exception {
 		super.configure(federation);
 		List<Repository> members = federation.getMembers();
 		assertThat(members).hasSize(3);

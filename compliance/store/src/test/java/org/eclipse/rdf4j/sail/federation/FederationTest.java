@@ -11,7 +11,6 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.RDFStoreTest;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.federation.Federation;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 /**
@@ -31,9 +30,7 @@ public class FederationTest extends RDFStoreTest {
 	 *---------*/
 
 	@Override
-	protected Sail createSail()
-		throws SailException
-	{
+	protected Sail createSail() throws SailException {
 		Federation sail = new Federation();
 		sail.addMember(new SailRepository(new MemoryStore()));
 		sail.addMember(new SailRepository(new MemoryStore()));

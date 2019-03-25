@@ -50,13 +50,14 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 	 * 
 	 * @throws StoreException
 	 */
+	@Override
 	public void optimize(TupleExpr tupleExpr, Dataset dataset, BindingSet bindings) {
 		tupleExpr.visit(new JoinVisitor());
 	}
 
 	protected class JoinVisitor extends AbstractQueryModelVisitor<RuntimeException> {
 
-		private Set<String> boundVars = new HashSet<String>();
+		private Set<String> boundVars = new HashSet<>();
 
 		@Override
 		public void meet(LeftJoin leftJoin) {
@@ -64,46 +65,40 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 
 			Set<String> origBoundVars = boundVars;
 			try {
-				boundVars = new HashSet<String>(boundVars);
+				boundVars = new HashSet<>(boundVars);
 				boundVars.addAll(leftJoin.getLeftArg().getBindingNames());
 
 				leftJoin.getRightArg().visit(this);
-			}
-			finally {
+			} finally {
 				boundVars = origBoundVars;
 			}
 		}
 
 		@Override
-		public void meetOther(QueryModelNode node)
-			throws RuntimeException
-		{
+		public void meetOther(QueryModelNode node) throws RuntimeException {
 			if (node instanceof NaryJoin) {
-				meetJoin((NaryJoin)node);
-			}
-			else {
+				meetJoin((NaryJoin) node);
+			} else {
 				super.meetOther(node);
 			}
 		}
 
 		@Override
-		public void meet(Join node)
-			throws RuntimeException
-		{
+		public void meet(Join node) throws RuntimeException {
 			meetJoin(node);
 		}
 
 		public void meetJoin(TupleExpr node) {
 			Set<String> origBoundVars = boundVars;
 			try {
-				boundVars = new HashSet<String>(boundVars);
+				boundVars = new HashSet<>(boundVars);
 
 				// Recursively get the join arguments
-				List<TupleExpr> joinArgs = getJoinArgs(node, new ArrayList<TupleExpr>());
+				List<TupleExpr> joinArgs = getJoinArgs(node, new ArrayList<>());
 
 				// Build maps of cardinalities and vars per tuple expression
-				Map<TupleExpr, Double> cardinalityMap = new HashMap<TupleExpr, Double>();
-				Map<TupleExpr, List<Var>> varsMap = new HashMap<TupleExpr, List<Var>>();
+				Map<TupleExpr, Double> cardinalityMap = new HashMap<>();
+				Map<TupleExpr, List<Var>> varsMap = new HashMap<>();
 
 				for (TupleExpr tupleExpr : joinArgs) {
 					cardinalityMap.put(tupleExpr, statistics.getCardinality(tupleExpr));
@@ -111,16 +106,15 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 				}
 
 				// Build map of var frequences
-				Map<Var, Integer> varFreqMap = new HashMap<Var, Integer>();
+				Map<Var, Integer> varFreqMap = new HashMap<>();
 				for (List<Var> varList : varsMap.values()) {
 					getVarFreqMap(varList, varFreqMap);
 				}
 
 				// Reorder the (recursive) join arguments to a more optimal sequence
-				List<TupleExpr> orderedJoinArgs = new ArrayList<TupleExpr>(joinArgs.size());
+				List<TupleExpr> orderedJoinArgs = new ArrayList<>(joinArgs.size());
 				while (!joinArgs.isEmpty()) {
-					TupleExpr tupleExpr = selectNextTupleExpr(joinArgs, cardinalityMap, varsMap, varFreqMap,
-							boundVars);
+					TupleExpr tupleExpr = selectNextTupleExpr(joinArgs, cardinalityMap, varsMap, varFreqMap, boundVars);
 
 					joinArgs.remove(tupleExpr);
 					orderedJoinArgs.add(tupleExpr);
@@ -136,25 +130,22 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 
 				// Replace old join hierarchy
 				node.replaceWith(replacement);
-			}
-			finally {
+			} finally {
 				boundVars = origBoundVars;
 			}
 		}
 
 		protected <L extends List<TupleExpr>> L getJoinArgs(TupleExpr tupleExpr, L joinArgs) {
 			if (tupleExpr instanceof NaryJoin) {
-				NaryJoin join = (NaryJoin)tupleExpr;
+				NaryJoin join = (NaryJoin) tupleExpr;
 				for (TupleExpr arg : join.getArgs()) {
 					getJoinArgs(arg, joinArgs);
 				}
-			}
-			else if (tupleExpr instanceof Join) {
-				Join join = (Join)tupleExpr;
+			} else if (tupleExpr instanceof Join) {
+				Join join = (Join) tupleExpr;
 				getJoinArgs(join.getLeftArg(), joinArgs);
 				getJoinArgs(join.getRightArg(), joinArgs);
-			}
-			else {
+			} else {
 				joinArgs.add(tupleExpr);
 			}
 
@@ -163,7 +154,7 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 
 		protected List<Var> getStatementPatternVars(TupleExpr tupleExpr) {
 			List<StatementPattern> stPatterns = StatementPatternCollector.process(tupleExpr);
-			List<Var> varList = new ArrayList<Var>(stPatterns.size() * 4);
+			List<Var> varList = new ArrayList<>(stPatterns.size() * 4);
 			for (StatementPattern sp : stPatterns) {
 				sp.getVars(varList);
 			}
@@ -180,21 +171,18 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 		}
 
 		/**
-		 * Selects from a list of tuple expressions the next tuple expression that should be evaluated. This
-		 * method selects the tuple expression with highest number of bound variables, preferring variables
-		 * that have been bound in other tuple expressions over variables with a fixed value.
+		 * Selects from a list of tuple expressions the next tuple expression that should be evaluated. This method
+		 * selects the tuple expression with highest number of bound variables, preferring variables that have been
+		 * bound in other tuple expressions over variables with a fixed value.
 		 */
-		protected TupleExpr selectNextTupleExpr(List<TupleExpr> expressions,
-				Map<TupleExpr, Double> cardinalityMap, Map<TupleExpr, List<Var>> varsMap,
-				Map<Var, Integer> varFreqMap, Set<String> boundVars)
-		{
+		protected TupleExpr selectNextTupleExpr(List<TupleExpr> expressions, Map<TupleExpr, Double> cardinalityMap,
+				Map<TupleExpr, List<Var>> varsMap, Map<Var, Integer> varFreqMap, Set<String> boundVars) {
 			double lowestCardinality = Double.MAX_VALUE;
 			TupleExpr result = null;
 
 			for (TupleExpr tupleExpr : expressions) {
 				// Calculate a score for this tuple expression
-				double cardinality = getTupleExprCardinality(tupleExpr, cardinalityMap, varsMap, varFreqMap,
-						boundVars);
+				double cardinality = getTupleExprCardinality(tupleExpr, cardinalityMap, varsMap, varFreqMap, boundVars);
 
 				if (cardinality < lowestCardinality) {
 					// More specific path expression found
@@ -207,8 +195,7 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 		}
 
 		protected double getTupleExprCardinality(TupleExpr tupleExpr, Map<TupleExpr, Double> cardinalityMap,
-				Map<TupleExpr, List<Var>> varsMap, Map<Var, Integer> varFreqMap, Set<String> boundVars)
-		{
+				Map<TupleExpr, List<Var>> varsMap, Map<Var, Integer> varFreqMap, Set<String> boundVars) {
 			double cardinality = cardinalityMap.get(tupleExpr);
 
 			List<Var> vars = varsMap.get(tupleExpr);
@@ -218,7 +205,7 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 			List<Var> constantVars = getConstantVars(vars);
 			int nonConstantCount = vars.size() - constantVars.size();
 			if (nonConstantCount > 0) {
-				double exp = (double)unboundVars.size() / nonConstantCount;
+				double exp = (double) unboundVars.size() / nonConstantCount;
 				cardinality = Math.pow(cardinality, exp);
 			}
 
@@ -227,8 +214,7 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 				if (nonConstantCount > 0) {
 					cardinality /= nonConstantCount;
 				}
-			}
-			else {
+			} else {
 				// Prefer patterns that bind variables from other tuple expressions
 				int foreignVarFreq = getForeignVarFreq(unboundVars, varFreqMap);
 				if (foreignVarFreq > 0) {
@@ -247,7 +233,7 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 		}
 
 		protected List<Var> getConstantVars(Iterable<Var> vars) {
-			List<Var> constantVars = new ArrayList<Var>();
+			List<Var> constantVars = new ArrayList<>();
 
 			for (Var var : vars) {
 				if (var.hasValue()) {
@@ -259,7 +245,7 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 		}
 
 		protected List<Var> getUnboundVars(Iterable<Var> vars) {
-			List<Var> unboundVars = new ArrayList<Var>();
+			List<Var> unboundVars = new ArrayList<>();
 
 			for (Var var : vars) {
 				if (!var.hasValue() && !this.boundVars.contains(var.getName())) {
@@ -273,7 +259,7 @@ public class QueryMultiJoinOptimizer implements QueryOptimizer {
 		protected int getForeignVarFreq(List<Var> ownUnboundVars, Map<Var, Integer> varFreqMap) {
 			int result = 0;
 
-			Map<Var, Integer> ownFreqMap = getVarFreqMap(ownUnboundVars, new HashMap<Var, Integer>());
+			Map<Var, Integer> ownFreqMap = getVarFreqMap(ownUnboundVars, new HashMap<>());
 
 			for (Map.Entry<Var, Integer> entry : ownFreqMap.entrySet()) {
 				Var var = entry.getKey();

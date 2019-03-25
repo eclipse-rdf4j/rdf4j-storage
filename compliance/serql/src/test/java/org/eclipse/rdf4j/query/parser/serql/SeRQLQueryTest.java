@@ -12,28 +12,24 @@ import java.util.List;
 import junit.framework.Test;
 
 import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.parser.serql.SeRQLQueryTestCase;
 import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class SeRQLQueryTest extends SeRQLQueryTestCase {
 
-	public static Test suite()
-		throws Exception
-	{
+	public static Test suite() throws Exception {
 		return SeRQLQueryTestCase.suite(new Factory() {
 
+			@Override
 			public Test createTest(String name, String dataFile, List<String> graphNames, String queryFile,
-					String resultFile, String entailment)
-			{
+					String resultFile, String entailment) {
 				return new SeRQLQueryTest(name, dataFile, graphNames, queryFile, resultFile, entailment);
 			}
 		});
 	}
 
-	public SeRQLQueryTest(String name, String dataFile, List<String> graphNames, String queryFile,
-			String resultFile, String entailment)
-	{
+	public SeRQLQueryTest(String name, String dataFile, List<String> graphNames, String queryFile, String resultFile,
+			String entailment) {
 		super(name, dataFile, graphNames, queryFile, resultFile, entailment);
 	}
 

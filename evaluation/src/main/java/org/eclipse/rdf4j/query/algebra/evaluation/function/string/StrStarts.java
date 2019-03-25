@@ -24,13 +24,13 @@ import org.eclipse.rdf4j.query.algebra.evaluation.util.QueryEvaluationUtil;
  */
 public class StrStarts implements Function {
 
+	@Override
 	public String getURI() {
 		return FN.STARTS_WITH.toString();
 	}
 
-	public Literal evaluate(ValueFactory valueFactory, Value... args)
-		throws ValueExprEvaluationException
-	{
+	@Override
+	public Literal evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
 		if (args.length != 2) {
 			throw new ValueExprEvaluationException("STRSTARTS requires 2 arguments, got " + args.length);
 		}
@@ -39,8 +39,8 @@ public class StrStarts implements Function {
 		Value rightVal = args[1];
 
 		if (leftVal instanceof Literal && rightVal instanceof Literal) {
-			Literal leftLit = (Literal)leftVal;
-			Literal rightLit = (Literal)rightVal;
+			Literal leftLit = (Literal) leftVal;
+			Literal rightLit = (Literal) rightVal;
 
 			if (QueryEvaluationUtil.compatibleArguments(leftLit, rightLit)) {
 
@@ -48,12 +48,10 @@ public class StrStarts implements Function {
 				String rightLexVal = rightLit.getLabel();
 
 				return BooleanLiteral.valueOf(leftLexVal.startsWith(rightLexVal));
-			}
-			else {
+			} else {
 				throw new ValueExprEvaluationException("incompatible operands for STRSTARTS function");
 			}
-		}
-		else {
+		} else {
 			throw new ValueExprEvaluationException("STRSTARTS function expects literal operands");
 		}
 

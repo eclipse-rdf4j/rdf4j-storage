@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link Comparator} on {@link BindingSet}s that imposes a total ordering by examining supplied
- * {@link Order} elements (i.e. the elements of an ORDER BY clause), falling back on a custom predictable
- * ordering for BindingSet elements if no ordering is established on the basis of the Order elements.
+ * A {@link Comparator} on {@link BindingSet}s that imposes a total ordering by examining supplied {@link Order}
+ * elements (i.e. the elements of an ORDER BY clause), falling back on a custom predictable ordering for BindingSet
+ * elements if no ordering is established on the basis of the Order elements.
  * 
  * @author James Leigh
  * @author Jeen Broekstra
@@ -58,6 +58,7 @@ public class OrderComparator implements Comparator<BindingSet>, Serializable {
 		this.cmp = vcmp;
 	}
 
+	@Override
 	public int compare(BindingSet o1, BindingSet o2) {
 
 		try {
@@ -93,15 +94,15 @@ public class OrderComparator implements Comparator<BindingSet>, Serializable {
 				return o1.size() < o2.size() ? 1 : -1;
 			}
 
-			// we create an ordered list of binding names (using natural string order) to use for 
+			// we create an ordered list of binding names (using natural string order) to use for
 			// consistent iteration over binding names and binding values.
-			final ArrayList<String> o1bindingNamesOrdered = new ArrayList<String>(o1.getBindingNames());
+			final ArrayList<String> o1bindingNamesOrdered = new ArrayList<>(o1.getBindingNames());
 			Collections.sort(o1bindingNamesOrdered);
 
 			// binding set sizes are equal. compare on binding names.
 			if (!o1.getBindingNames().equals(o2.getBindingNames())) {
 
-				final ArrayList<String> o2bindingNamesOrdered = new ArrayList<String>(o2.getBindingNames());
+				final ArrayList<String> o2bindingNamesOrdered = new ArrayList<>(o2.getBindingNames());
 				Collections.sort(o2bindingNamesOrdered);
 
 				for (int i = 0; i < o1bindingNamesOrdered.size(); i++) {
@@ -126,38 +127,29 @@ public class OrderComparator implements Comparator<BindingSet>, Serializable {
 			}
 
 			return 0;
-		}
-		catch (QueryEvaluationException e) {
+		} catch (QueryEvaluationException e) {
 			logger.debug(e.getMessage(), e);
 			return 0;
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			logger.debug(e.getMessage(), e);
 			return 0;
 		}
 	}
 
-	private Value evaluate(ValueExpr valueExpr, BindingSet o)
-		throws QueryEvaluationException
-	{
+	private Value evaluate(ValueExpr valueExpr, BindingSet o) throws QueryEvaluationException {
 		try {
 			return strategy.evaluate(valueExpr, o);
-		}
-		catch (ValueExprEvaluationException exc) {
+		} catch (ValueExprEvaluationException exc) {
 			return null;
 		}
 	}
 
-	private void writeObject(ObjectOutputStream out)
-		throws IOException
-	{
+	private void writeObject(ObjectOutputStream out) throws IOException {
 		this.strategyKey = EvaluationStrategies.register(strategy);
 		out.defaultWriteObject();
 	}
 
-	private void readObject(ObjectInputStream in)
-		throws IOException, ClassNotFoundException
-	{
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		this.strategy = EvaluationStrategies.get(this.strategyKey);
 		this.cmp = new ValueComparator();

@@ -14,22 +14,17 @@ public class BTreeTestRuns {
 	 * Test methods *
 	 *--------------*/
 
-	public static void main(String[] args)
-		throws Exception
-	{
+	public static void main(String[] args) throws Exception {
 		System.out.println("Running BTree test...");
 		if (args.length > 2) {
 			runPerformanceTest(args);
-		}
-		else {
+		} else {
 			runDebugTest(args);
 		}
 		System.out.println("Done.");
 	}
 
-	public static void runPerformanceTest(String[] args)
-		throws Exception
-	{
+	public static void runPerformanceTest(String[] args) throws Exception {
 		File dataDir = new File(args[0]);
 		String filenamePrefix = args[1];
 		int valueCount = Integer.parseInt(args[2]);
@@ -44,21 +39,22 @@ public class BTreeTestRuns {
 				random.nextBytes(value);
 				btree.insert(value);
 				if (i % 50000 == 0) {
-					System.out.println("Inserted " + i + " values in "
-							+ (System.currentTimeMillis() - startTime) + " ms");
+					System.out.println(
+							"Inserted " + i + " values in " + (System.currentTimeMillis() - startTime) + " ms");
 				}
 			}
 
 			System.out.println("Iterating over all values in sequential order...");
 			startTime = System.currentTimeMillis();
-			RecordIterator iter = btree.iterateAll();
-			value = iter.next();
-			int count = 0;
-			while (value != null) {
-				count++;
+			int count;
+			try (RecordIterator iter = btree.iterateAll()) {
 				value = iter.next();
+				count = 0;
+				while (value != null) {
+					count++;
+					value = iter.next();
+				}
 			}
-			iter.close();
 			System.out.println("Iteration over " + count + " items finished in "
 					+ (System.currentTimeMillis() - startTime) + " ms");
 
@@ -79,9 +75,7 @@ public class BTreeTestRuns {
 		}
 	}
 
-	public static void runDebugTest(String[] args)
-		throws Exception
-	{
+	public static void runDebugTest(String[] args) throws Exception {
 		File dataDir = new File(args[0]);
 		String filenamePrefix = args[1];
 		try (BTree btree = new BTree(dataDir, filenamePrefix, 28, 1);) {
@@ -98,14 +92,14 @@ public class BTreeTestRuns {
 			 * btree.insert("R".getBytes()); btree.insert("X".getBytes()); btree.insert("Y".getBytes());
 			 * btree.insert("S".getBytes()); btree.commitTransaction(); btree.print(System.out);
 			 * System.out.println("Removing values..."); System.out.println("Removing H..."); btree.remove("
-			 * H".getBytes()); btree.commitTransaction(); btree.print(System.out); System.out.println(
-			 * "Removing T..."); btree.remove("T".getBytes()); btree.commitTransaction();
-			 * btree.print(System.out); System.out.println("Removing R..."); btree.remove("R".getBytes());
-			 * btree.commitTransaction(); btree.print(System.out); System.out.println("Removing E...");
-			 * btree.remove("E".getBytes()); btree.commitTransaction(); btree.print(System.out);
-			 * System.out.println("Values from I to U:"); RecordIterator iter =
-			 * btree.iterateRange("I".getBytes(), "V".getBytes()); byte[] value = iter.next(); while (value !=
-			 * null) { System.out.print(new String(value) + " "); value = iter.next(); } System.out.println();
+			 * H".getBytes()); btree.commitTransaction(); btree.print(System.out); System.out.println( "Removing T...");
+			 * btree.remove("T".getBytes()); btree.commitTransaction(); btree.print(System.out);
+			 * System.out.println("Removing R..."); btree.remove("R".getBytes()); btree.commitTransaction();
+			 * btree.print(System.out); System.out.println("Removing E..."); btree.remove("E".getBytes());
+			 * btree.commitTransaction(); btree.print(System.out); System.out.println("Values from I to U:");
+			 * RecordIterator iter = btree.iterateRange("I".getBytes(), "V".getBytes()); byte[] value = iter.next();
+			 * while (value != null) { System.out.print(new String(value) + " "); value = iter.next(); }
+			 * System.out.println();
 			 */
 		}
 	}

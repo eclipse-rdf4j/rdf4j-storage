@@ -30,17 +30,18 @@ public class DirectTypeHierarchyInferencerFactory implements SailFactory {
 	/**
 	 * Returns the Sail's type: <tt>openrdf:DirectTypeHierarchyInferencer</tt>.
 	 */
+	@Override
 	public String getSailType() {
 		return SAIL_TYPE;
 	}
 
+	@Override
 	public SailImplConfig getConfig() {
 		return new DirectTypeHierarchyInferencerConfig();
 	}
 
-	public Sail getSail(SailImplConfig config)
-		throws SailConfigException
-	{
+	@Override
+	public Sail getSail(SailImplConfig config) throws SailConfigException {
 		if (!SAIL_TYPE.equals(config.getType())) {
 			throw new SailConfigException("Invalid Sail type: " + config.getType());
 		}

@@ -36,6 +36,7 @@ import org.eclipse.rdf4j.query.algebra.helpers.VarNameCollector;
  */
 public class FilterOptimizer implements QueryOptimizer {
 
+	@Override
 	public void optimize(TupleExpr tupleExpr, Dataset dataset, BindingSet bindings) {
 		tupleExpr.visit(new FilterFinder(tupleExpr));
 	}
@@ -82,7 +83,7 @@ public class FilterOptimizer implements QueryOptimizer {
 		protected void meetNode(QueryModelNode node) {
 			// By default, do not traverse
 			assert node instanceof TupleExpr;
-			relocate(filter, (TupleExpr)node);
+			relocate(filter, (TupleExpr) node);
 		}
 
 		@Override
@@ -90,12 +91,10 @@ public class FilterOptimizer implements QueryOptimizer {
 			if (join.getLeftArg().getBindingNames().containsAll(filterVars)) {
 				// All required vars are bound by the left expr
 				join.getLeftArg().visit(this);
-			}
-			else if (join.getRightArg().getBindingNames().containsAll(filterVars)) {
+			} else if (join.getRightArg().getBindingNames().containsAll(filterVars)) {
 				// All required vars are bound by the right expr
 				join.getRightArg().visit(this);
-			}
-			else {
+			} else {
 				relocate(filter, join);
 			}
 		}
@@ -104,8 +103,7 @@ public class FilterOptimizer implements QueryOptimizer {
 		public void meet(LeftJoin leftJoin) {
 			if (leftJoin.getLeftArg().getBindingNames().containsAll(filterVars)) {
 				leftJoin.getLeftArg().visit(this);
-			}
-			else {
+			} else {
 				relocate(filter, leftJoin);
 			}
 		}
@@ -150,8 +148,7 @@ public class FilterOptimizer implements QueryOptimizer {
 		public void meet(Extension node) {
 			if (node.getArg().getBindingNames().containsAll(filterVars)) {
 				node.getArg().visit(this);
-			}
-			else {
+			} else {
 				relocate(filter, node);
 			}
 		}

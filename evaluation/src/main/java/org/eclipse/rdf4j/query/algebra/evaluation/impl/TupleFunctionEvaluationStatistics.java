@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.query.algebra.TupleFunctionCall;
 
 public class TupleFunctionEvaluationStatistics extends EvaluationStatistics {
 
+	@Override
 	protected CardinalityCalculator createCardinalityCalculator() {
 		return new TupleFunctionCardinalityCalculator();
 	}
@@ -23,9 +24,8 @@ public class TupleFunctionEvaluationStatistics extends EvaluationStatistics {
 		@Override
 		protected void meetNode(QueryModelNode node) {
 			if (node instanceof TupleFunctionCall) {
-				cardinality = getCardinality(VAR_CARDINALITY, ((TupleFunctionCall)node).getResultVars());
-			}
-			else {
+				cardinality = getCardinality(VAR_CARDINALITY, ((TupleFunctionCall) node).getResultVars());
+			} else {
 				super.meetNode(node);
 			}
 		}

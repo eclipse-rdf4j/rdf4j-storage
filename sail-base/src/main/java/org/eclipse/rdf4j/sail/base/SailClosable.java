@@ -19,9 +19,8 @@ public interface SailClosable extends AutoCloseable {
 	/**
 	 * Closes this resource, relinquishing any underlying resources.
 	 * 
-	 * @throws SailException
-	 *         if this resource cannot be closed
+	 * @throws SailException if this resource cannot be closed
 	 */
-	void close()
-		throws SailException;
+	@Override
+	void close() throws SailException;
 }

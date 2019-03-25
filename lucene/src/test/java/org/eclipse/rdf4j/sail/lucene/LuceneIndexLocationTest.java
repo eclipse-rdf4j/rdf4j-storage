@@ -7,7 +7,6 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.Sail;
-import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
@@ -21,6 +20,7 @@ import java.util.stream.IntStream;
 
 /**
  * This unit test reproduces issue #41
+ * 
  * @author Jacek Grzebyta
  */
 public class LuceneIndexLocationTest {
@@ -29,7 +29,8 @@ public class LuceneIndexLocationTest {
 
 	private String luceneIndexPath = "sail-index";
 
-	@Rule public TemporaryFolder tmpFolder = new TemporaryFolder();
+	@Rule
+	public TemporaryFolder tmpFolder = new TemporaryFolder();
 
 	Sail sail;
 
@@ -44,9 +45,8 @@ public class LuceneIndexLocationTest {
 	 *
 	 * @throws Exception
 	 */
-	@Before public void setUp()
-			throws Exception
-	{
+	@Before
+	public void setUp() throws Exception {
 		File dataDir = tmpFolder.newFolder();
 
 		sail = new MemoryStore();
@@ -60,27 +60,25 @@ public class LuceneIndexLocationTest {
 		repository.setDataDir(dataDir);
 		repository.initialize();
 
-		// create temporary transaction to load data
-		SailRepositoryConnection cnx = repository.getConnection();
-		cnx.begin();
+		try ( // create temporary transaction to load data
+				SailRepositoryConnection cnx = repository.getConnection()) {
+			cnx.begin();
 
-		IntStream.rangeClosed(0, 50).forEach(i -> cnx.add(
-				vf.createStatement(vf.createIRI("urn:subject" + i), vf.createIRI("urn:predicate:" + i),
-						vf.createLiteral("Value" + i))));
-		cnx.commit();
-		cnx.close();
+			IntStream.rangeClosed(0, 50)
+					.forEach(i -> cnx.add(vf.createStatement(vf.createIRI("urn:subject" + i),
+							vf.createIRI("urn:predicate:" + i), vf.createLiteral("Value" + i))));
+			cnx.commit();
+		}
 		connection = repository.getConnection();
 	}
 
-	@After public void tearDown()
-			throws IOException, RepositoryException
-	{
+	@After
+	public void tearDown() throws IOException, RepositoryException {
 		try {
 			if (connection != null) {
 				connection.close();
 			}
-		}
-		finally {
+		} finally {
 			if (repository != null) {
 				repository.shutDown();
 			}
@@ -89,17 +87,16 @@ public class LuceneIndexLocationTest {
 
 	/**
 	 * Check Lucene index location
+	 * 
 	 * @throws Exception
 	 */
-	@Test public void IndexLocationTest()
-			throws Exception
-	{
+	@Test
+	public void IndexLocationTest() throws Exception {
 		File dataDir = repository.getDataDir();
 		Path lucenePath = repository.getDataDir().toPath().resolve(luceneIndexPath);
 
 		log.info("Lucene index location: {}", lucenePath);
-		Assert.assertEquals(dataDir.getAbsolutePath() + "/" + luceneIndexPath,
-				lucenePath.toAbsolutePath().toString());
+		Assert.assertEquals(dataDir.getAbsolutePath() + "/" + luceneIndexPath, lucenePath.toAbsolutePath().toString());
 
 		Assert.assertTrue(lucenePath.toFile().exists());
 		Assert.assertTrue(lucenePath.toFile().isDirectory());

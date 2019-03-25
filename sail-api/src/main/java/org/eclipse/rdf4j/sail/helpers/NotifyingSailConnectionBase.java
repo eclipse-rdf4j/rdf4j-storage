@@ -20,9 +20,7 @@ import org.eclipse.rdf4j.sail.SailConnectionListener;
  * @author Arjohn Kampman
  * @author jeen
  */
-public abstract class NotifyingSailConnectionBase extends AbstractSailConnection
-		implements NotifyingSailConnection
-{
+public abstract class NotifyingSailConnectionBase extends AbstractSailConnection implements NotifyingSailConnection {
 
 	/*-----------*
 	 * Variables *
@@ -36,7 +34,7 @@ public abstract class NotifyingSailConnectionBase extends AbstractSailConnection
 
 	public NotifyingSailConnectionBase(AbstractSail sailBase) {
 		super(sailBase);
-		listeners = new ArrayList<SailConnectionListener>(0);
+		listeners = new ArrayList<>(0);
 	}
 
 	/*---------*

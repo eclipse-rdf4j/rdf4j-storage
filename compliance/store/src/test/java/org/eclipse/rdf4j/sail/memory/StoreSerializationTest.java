@@ -25,7 +25,6 @@ import org.eclipse.rdf4j.query.parser.ParsedTupleQuery;
 import org.eclipse.rdf4j.query.parser.QueryParserUtil;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 import junit.framework.TestCase;
 
@@ -42,24 +41,18 @@ public class StoreSerializationTest extends TestCase {
 	 *---------*/
 
 	@Override
-	protected void setUp()
-		throws Exception
-	{
+	protected void setUp() throws Exception {
 		super.setUp();
 		dataDir = FileUtil.createTempDir("memorystore");
 	}
 
 	@Override
-	protected void tearDown()
-		throws Exception
-	{
+	protected void tearDown() throws Exception {
 		super.tearDown();
 		FileUtil.deleteDir(dataDir);
 	}
 
-	public void testShortLiterals()
-		throws Exception
-	{
+	public void testShortLiterals() throws Exception {
 		MemoryStore store = new MemoryStore(dataDir);
 		store.initialize();
 
@@ -86,8 +79,7 @@ public class StoreSerializationTest extends TestCase {
 
 		con = store.getConnection();
 
-		CloseableIteration<? extends Statement, SailException> iter = con.getStatements(foo, RDF.VALUE, null,
-				false);
+		CloseableIteration<? extends Statement, SailException> iter = con.getStatements(foo, RDF.VALUE, null, false);
 		assertTrue(iter.hasNext());
 		iter.next();
 		iter.close();
@@ -96,9 +88,7 @@ public class StoreSerializationTest extends TestCase {
 		store.shutDown();
 	}
 
-	public void testSerialization()
-		throws Exception
-	{
+	public void testSerialization() throws Exception {
 		MemoryStore store = new MemoryStore(dataDir);
 		store.initialize();
 
@@ -111,12 +101,12 @@ public class StoreSerializationTest extends TestCase {
 		con.addStatement(foo, RDF.TYPE, bar);
 		con.commit();
 
-		ParsedTupleQuery query = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL,
-				"SELECT X, P, Y FROM {X} P {Y}", null);
+		ParsedTupleQuery query = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, "SELECT X, P, Y FROM {X} P {Y}",
+				null);
 		TupleExpr tupleExpr = query.getTupleExpr();
 
-		CloseableIteration<? extends BindingSet, QueryEvaluationException> iter = con.evaluate(tupleExpr,
-				null, EmptyBindingSet.getInstance(), false);
+		CloseableIteration<? extends BindingSet, QueryEvaluationException> iter = con.evaluate(tupleExpr, null,
+				EmptyBindingSet.getInstance(), false);
 
 		BindingSet bindingSet = iter.next();
 
@@ -154,9 +144,7 @@ public class StoreSerializationTest extends TestCase {
 		store.shutDown();
 	}
 
-	public void testLongLiterals()
-		throws Exception
-	{
+	public void testLongLiterals() throws Exception {
 		MemoryStore store = new MemoryStore(dataDir);
 		store.initialize();
 
@@ -183,8 +171,7 @@ public class StoreSerializationTest extends TestCase {
 
 		con = store.getConnection();
 
-		CloseableIteration<? extends Statement, SailException> iter = con.getStatements(foo, RDF.VALUE, null,
-				false);
+		CloseableIteration<? extends Statement, SailException> iter = con.getStatements(foo, RDF.VALUE, null, false);
 		assertTrue(iter.hasNext());
 		iter.next();
 		iter.close();

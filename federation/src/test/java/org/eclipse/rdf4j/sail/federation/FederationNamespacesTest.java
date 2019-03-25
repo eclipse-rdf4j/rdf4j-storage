@@ -38,68 +38,44 @@ public class FederationNamespacesTest {
 	private static Namespace EXPECTED_NAMESPACE = new SimpleNamespace(PREFIX, EXPECTED_NAME);
 
 	@Test
-	public void testTwoMatchingNamespaces()
-		throws RepositoryException, RDFParseException, IOException
-	{
-		RepositoryConnection con = createFederationWithMemberNamespaces("a", "a");
-		try {
+	public void testTwoMatchingNamespaces() throws RepositoryException, RDFParseException, IOException {
+		try (RepositoryConnection con = createFederationWithMemberNamespaces("a", "a")) {
 			assertThat(con.getNamespace(PREFIX)).isEqualTo(EXPECTED_NAME);
 			List<Namespace> asList = Iterations.asList(con.getNamespaces());
 			assertThat(asList).contains(EXPECTED_NAMESPACE);
 		}
-		finally {
-			con.close();
-		}
 	}
 
 	@Test
-	public void testThreeMatchingNamespaces()
-		throws RepositoryException, RDFParseException, IOException
-	{
-		RepositoryConnection con = createFederationWithMemberNamespaces("a", "a", "a");
-		try {
+	public void testThreeMatchingNamespaces() throws RepositoryException, RDFParseException, IOException {
+		try (RepositoryConnection con = createFederationWithMemberNamespaces("a", "a", "a")) {
 			assertThat(con.getNamespace(PREFIX)).isEqualTo(EXPECTED_NAME);
 			List<Namespace> asList = Iterations.asList(con.getNamespaces());
 			assertThat(asList).contains(EXPECTED_NAMESPACE);
 		}
-		finally {
-			con.close();
-		}
 	}
 
 	@Test
-	public void testTwoMismatchedNamespaces()
-		throws RepositoryException, RDFParseException, IOException
-	{
-		RepositoryConnection con = createFederationWithMemberNamespaces("a", "b");
-		try {
-			assertThat(con.getNamespace(PREFIX)).isNull();;
+	public void testTwoMismatchedNamespaces() throws RepositoryException, RDFParseException, IOException {
+		try (RepositoryConnection con = createFederationWithMemberNamespaces("a", "b")) {
+			assertThat(con.getNamespace(PREFIX)).isNull();
+			;
 			List<Namespace> asList = Iterations.asList(con.getNamespaces());
 			assertThat(asList).doesNotContain(EXPECTED_NAMESPACE);
 		}
-		finally {
-			con.close();
-		}
 	}
 
 	@Test
-	public void testThreeMismatchedNamespaces()
-		throws RepositoryException, RDFParseException, IOException
-	{
-		RepositoryConnection con = createFederationWithMemberNamespaces("a", "b", "c");
-		try {
+	public void testThreeMismatchedNamespaces() throws RepositoryException, RDFParseException, IOException {
+		try (RepositoryConnection con = createFederationWithMemberNamespaces("a", "b", "c")) {
 			assertThat(con.getNamespace(PREFIX)).isNull();
 			List<Namespace> asList = Iterations.asList(con.getNamespaces());
 			assertThat(asList).doesNotContain(EXPECTED_NAMESPACE);
 		}
-		finally {
-			con.close();
-		}
 	}
 
 	private RepositoryConnection createFederationWithMemberNamespaces(String... paths)
-		throws RepositoryException, RDFParseException, IOException
-	{
+			throws RepositoryException, RDFParseException, IOException {
 		Federation federation = new Federation();
 		for (int i = 0; i < paths.length; i++) {
 			federation.addMember(createMember(Integer.toString(i), "http://test/" + paths[i] + "#"));
@@ -110,16 +86,11 @@ public class FederationNamespacesTest {
 	}
 
 	private Repository createMember(String memberID, String name)
-		throws RepositoryException, RDFParseException, IOException
-	{
+			throws RepositoryException, RDFParseException, IOException {
 		SailRepository member = new SailRepository(new MemoryStore());
 		member.initialize();
-		SailRepositoryConnection con = member.getConnection();
-		try {
+		try (SailRepositoryConnection con = member.getConnection()) {
 			con.setNamespace(PREFIX, name);
-		}
-		finally {
-			con.close();
 		}
 		return member;
 	}

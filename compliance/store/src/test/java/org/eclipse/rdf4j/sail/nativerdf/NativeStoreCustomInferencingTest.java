@@ -14,7 +14,6 @@ import java.io.IOException;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.sail.CustomGraphQueryInferencerTest;
 import org.eclipse.rdf4j.sail.NotifyingSail;
-import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
@@ -23,9 +22,7 @@ public class NativeStoreCustomInferencingTest extends CustomGraphQueryInferencer
 	@Rule
 	public TemporaryFolder tempDir = new TemporaryFolder();
 
-	public NativeStoreCustomInferencingTest(String resourceFolder, Expectation testData,
-			QueryLanguage language)
-	{
+	public NativeStoreCustomInferencingTest(String resourceFolder, Expectation testData, QueryLanguage language) {
 		super(resourceFolder, testData, language);
 	}
 
@@ -33,8 +30,7 @@ public class NativeStoreCustomInferencingTest extends CustomGraphQueryInferencer
 	protected NotifyingSail newSail() {
 		try {
 			return new NativeStore(tempDir.newFolder("nativestore"), "spoc,posc");
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			fail(e.getMessage());
 			throw new AssertionError(e);
 		}

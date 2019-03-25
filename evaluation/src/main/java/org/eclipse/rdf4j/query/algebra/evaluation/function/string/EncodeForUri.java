@@ -26,31 +26,28 @@ import org.eclipse.rdf4j.query.algebra.evaluation.util.QueryEvaluationUtil;
  */
 public class EncodeForUri implements Function {
 
+	@Override
 	public String getURI() {
 		return FN.ENCODE_FOR_URI.toString();
 	}
 
-	public Literal evaluate(ValueFactory valueFactory, Value... args)
-		throws ValueExprEvaluationException
-	{
+	@Override
+	public Literal evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
 		if (args.length != 1) {
-			throw new ValueExprEvaluationException(
-					"ENCODE_FOR_URI requires exactly 1 argument, got " + args.length);
+			throw new ValueExprEvaluationException("ENCODE_FOR_URI requires exactly 1 argument, got " + args.length);
 		}
 
 		if (args[0] instanceof Literal) {
-			Literal literal = (Literal)args[0];
+			Literal literal = (Literal) args[0];
 
 			if (QueryEvaluationUtil.isStringLiteral(literal)) {
 				String lexValue = literal.getLabel();
 
 				return valueFactory.createLiteral(encodeUri(lexValue));
-			}
-			else {
+			} else {
 				throw new ValueExprEvaluationException("Invalid argument for ENCODE_FOR_URI: " + literal);
 			}
-		}
-		else {
+		} else {
 			throw new ValueExprEvaluationException("Invalid argument for ENCODE_FOR_URI: " + args[0]);
 		}
 	}
@@ -65,8 +62,7 @@ public class EncodeForUri implements Function {
 
 			if (isUnreserved(c)) {
 				buf.append(c);
-			}
-			else {
+			} else {
 				// use UTF-8 hex encoding for character.
 				try {
 					byte[] utf8 = Character.toString(c).getBytes("UTF-8");
@@ -75,7 +71,7 @@ public class EncodeForUri implements Function {
 						// Escape character
 						buf.append('%');
 
-						char cb = (char)(b & 0xFF);
+						char cb = (char) (b & 0xFF);
 
 						String hexVal = Integer.toHexString(cb).toUpperCase();
 
@@ -87,8 +83,7 @@ public class EncodeForUri implements Function {
 						buf.append(hexVal);
 					}
 
-				}
-				catch (UnsupportedEncodingException e) {
+				} catch (UnsupportedEncodingException e) {
 					// UTF-8 is always supported
 					throw new RuntimeException(e);
 				}
@@ -99,7 +94,7 @@ public class EncodeForUri implements Function {
 	}
 
 	private final boolean isUnreserved(char c) {
-		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-' || c == '.'
-				|| c == '_' || c == '~';
+		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-' || c == '.' || c == '_'
+				|| c == '~';
 	}
 }

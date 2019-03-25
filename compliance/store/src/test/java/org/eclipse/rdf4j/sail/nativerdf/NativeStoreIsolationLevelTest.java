@@ -12,7 +12,6 @@ import java.io.IOException;
 import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.SailIsolationLevelTest;
-import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
@@ -33,13 +32,10 @@ public class NativeStoreIsolationLevelTest extends SailIsolationLevelTest {
 	 *---------*/
 
 	@Override
-	protected NotifyingSail createSail()
-		throws SailException
-	{
+	protected NotifyingSail createSail() throws SailException {
 		try {
 			return new NativeStore(tempDir.newFolder("nativestore"), "spoc,posc");
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new AssertionError(e);
 		}
 	}

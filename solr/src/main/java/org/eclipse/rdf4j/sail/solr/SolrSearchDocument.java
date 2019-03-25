@@ -44,17 +44,17 @@ public class SolrSearchDocument implements SearchDocument {
 
 	@Override
 	public String getId() {
-		return (String)doc.get(SearchFields.ID_FIELD_NAME);
+		return (String) doc.get(SearchFields.ID_FIELD_NAME);
 	}
 
 	@Override
 	public String getResource() {
-		return (String)doc.get(SearchFields.URI_FIELD_NAME);
+		return (String) doc.get(SearchFields.URI_FIELD_NAME);
 	}
 
 	@Override
 	public String getContext() {
-		return (String)doc.get(SearchFields.CONTEXT_FIELD_NAME);
+		return (String) doc.get(SearchFields.CONTEXT_FIELD_NAME);
 	}
 
 	@Override
@@ -104,8 +104,7 @@ public class SolrSearchDocument implements SearchDocument {
 			List<String> newList = makeModifiable(asStringList(oldValue));
 			newList.add(value);
 			newValue = newList;
-		}
-		else {
+		} else {
 			newValue = value;
 		}
 		document.put(name, newValue);
@@ -114,10 +113,9 @@ public class SolrSearchDocument implements SearchDocument {
 	private static List<String> makeModifiable(List<String> l) {
 		List<String> modList;
 		if (!(l instanceof ArrayList<?>)) {
-			modList = new ArrayList<String>(l.size() + 1);
+			modList = new ArrayList<>(l.size() + 1);
 			modList.addAll(l);
-		}
-		else {
+		} else {
 			modList = l;
 		}
 		return modList;
@@ -128,12 +126,10 @@ public class SolrSearchDocument implements SearchDocument {
 		List<String> l;
 		if (value == null) {
 			l = null;
-		}
-		else if (value instanceof List<?>) {
-			l = (List<String>)value;
-		}
-		else {
-			l = Collections.singletonList((String)value);
+		} else if (value instanceof List<?>) {
+			l = (List<String>) value;
+		} else {
+			l = Collections.singletonList((String) value);
 		}
 		return l;
 	}

@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.sail.SailException;
+import org.eclipse.rdf4j.sail.shacl.planNodes.IteratorData;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.Tuple;
 
@@ -33,15 +34,16 @@ public class MockInputPlanNode implements PlanNode {
 
 	public MockInputPlanNode(List<String>... list) {
 
-		initialData = Arrays
-			.stream(list)
-			.map(strings -> strings.stream().map(SimpleValueFactory.getInstance()::createLiteral).map(l -> (Value) l).collect(Collectors.toList()))
-			.map(Tuple::new)
-			.sorted()
-			.collect(Collectors.toList());
+		initialData = Arrays.stream(list)
+				.map(strings -> strings.stream()
+						.map(SimpleValueFactory.getInstance()::createLiteral)
+						.map(l -> (Value) l)
+						.collect(Collectors.toList()))
+				.map(Tuple::new)
+				.sorted()
+				.collect(Collectors.toList());
 
 	}
-
 
 	@Override
 	public CloseableIteration<Tuple, SailException> iterator() {
@@ -50,25 +52,21 @@ public class MockInputPlanNode implements PlanNode {
 			Iterator<Tuple> iterator = initialData.iterator();
 
 			@Override
-			public void close()
-				throws SailException {
+			public void close() throws SailException {
 			}
 
 			@Override
-			public boolean hasNext()
-				throws SailException {
+			public boolean hasNext() throws SailException {
 				return iterator.hasNext();
 			}
 
 			@Override
-			public Tuple next()
-				throws SailException {
+			public Tuple next() throws SailException {
 				return iterator.next();
 			}
 
 			@Override
-			public void remove()
-				throws SailException {
+			public void remove() throws SailException {
 
 			}
 		};
@@ -79,5 +77,19 @@ public class MockInputPlanNode implements PlanNode {
 		return 0;
 	}
 
+	@Override
+	public void getPlanAsGraphvizDot(StringBuilder stringBuilder) {
+
+	}
+
+	@Override
+	public String getId() {
+		return System.identityHashCode(this) + "";
+	}
+
+	@Override
+	public IteratorData getIteratorDataType() {
+		return IteratorData.tripleBased;
+	}
 
 }

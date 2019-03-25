@@ -14,8 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.sail.lucene.AbstractLuceneSailGeoSPARQLTest;
-import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -41,11 +39,7 @@ public class LuceneGeoSPARQLTest extends AbstractLuceneSailGeoSPARQLTest {
 	@Test
 	@Ignore // JTS is required
 	@Override
-	public void testIntersectionQuery()
-		throws RepositoryException,
-		MalformedQueryException,
-		QueryEvaluationException
-	{
+	public void testIntersectionQuery() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		super.testIntersectionQuery();
 	}
 
@@ -53,18 +47,12 @@ public class LuceneGeoSPARQLTest extends AbstractLuceneSailGeoSPARQLTest {
 	@Ignore // JTS is required
 	@Override
 	public void testComplexIntersectionQuery()
-		throws RepositoryException,
-		MalformedQueryException,
-		QueryEvaluationException
-	{
+			throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		super.testComplexIntersectionQuery();
 	}
 
 	@Override
-	public void tearDown()
-		throws IOException,
-		RepositoryException
-	{
+	public void tearDown() throws IOException, RepositoryException {
 		super.tearDown();
 		FileUtils.deleteDirectory(new File(DATA_DIR));
 	}
