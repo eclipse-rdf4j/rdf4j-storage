@@ -116,7 +116,7 @@ public class SubstringTest {
 		Literal pattern = f.createLiteral("motor car");
 		Literal startIndex = f.createLiteral(6);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex);
-		assertEquals(" car", result.getLabel()));
+		assertEquals(" car", result.getLabel());
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(4);
 		Literal length = f.createLiteral(3);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("ada", result.getLabel()));
+		assertEquals("ada", result.getLabel());
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(1.5);
 		Literal length = f.createLiteral(2.6);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("234", result.getLabel()));
+		assertEquals("234", result.getLabel());
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(2);
 		Literal length = f.createLiteral(3);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("234", result.getLabel()));
+		assertEquals("234", result.getLabel());
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(0);
 		Literal length = f.createLiteral(3);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("12", result.getLabel()));
+		assertEquals("12", result.getLabel());
 	}
 
 	@Test
@@ -161,7 +161,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(5);
 		Literal length = f.createLiteral(-3);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("", result.getLabel()));		
+		assertEquals("", result.getLabel());
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(-3);
 		Literal length = f.createLiteral(5);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("1", result.getLabel()));
+		assertEquals("1", result.getLabel());
 	}
 
 	@Test
@@ -179,7 +179,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(1);
 		Literal length = f.createLiteral(Float.NaN);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("", result.getLabel()));
+		assertEquals("", result.getLabel());
 	}
 
 	@Test
@@ -188,7 +188,7 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(-42);
 		Literal length = f.createLiteral(Float.POSITIVE_INFINITY);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("12345", result.getLabel()));
+		assertEquals("12345", result.getLabel());
 	}
 
 	@Test
@@ -197,6 +197,6 @@ public class SubstringTest {
 		Literal startIndex = f.createLiteral(Float.NEGATIVE_INFINITY);
 		Literal length = f.createLiteral(Float.POSITIVE_INFINITY);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("", result.getLabel()));
+		assertEquals("", result.getLabel());
 	}
 }
