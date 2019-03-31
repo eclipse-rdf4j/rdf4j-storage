@@ -133,8 +133,13 @@ public class SubstringTest {
 		Literal pattern = f.createLiteral("12345");
 		Literal startIndex = f.createLiteral(1.5);
 		Literal length = f.createLiteral(2.6);
-		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("234", result.getLabel());
+		try {
+			Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
+			fail("illegal use of float args hould have resulted in error");
+		} catch (ValueExprEvaluationException e) {
+			// do nothing, expected
+			// this is unlike the xpath standard as sparql only allows int input
+		}
 	}
 
 	@Test
@@ -178,15 +183,22 @@ public class SubstringTest {
 		Literal pattern = f.createLiteral("12345");
 		Literal startIndex = f.createLiteral(1);
 		Literal length = f.createLiteral(Float.NaN);
-		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("", result.getLabel());
+		try {
+			Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
+		} catch (ValueExprEvaluationException e) {
+			// do nothing, expected
+			// this is unlike the xpath standard as sparql only allows int input
+		}
 	}
 
 	@Test
-	public void testXpathExamples8() {
+	public void testXpathExample8Inspired() {
 		Literal pattern = f.createLiteral("12345");
 		Literal startIndex = f.createLiteral(-42);
-		Literal length = f.createLiteral(Float.POSITIVE_INFINITY);
+		// This test was inspired by the xpath test cases.
+		// However there is no Integer infinite value in java that
+		// could be used
+		Literal length = f.createLiteral(50);
 		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
 		assertEquals("12345", result.getLabel());
 	}
@@ -196,7 +208,11 @@ public class SubstringTest {
 		Literal pattern = f.createLiteral("12345");
 		Literal startIndex = f.createLiteral(Float.NEGATIVE_INFINITY);
 		Literal length = f.createLiteral(Float.POSITIVE_INFINITY);
-		Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
-		assertEquals("", result.getLabel());
+		try {
+			Literal result = substrFunc.evaluate(f, pattern, startIndex, length);
+			fail("illegal use of float args hould have resulted in error");
+		} catch (ValueExprEvaluationException e) {
+			// do nothing, expected
+		}
 	}
 }

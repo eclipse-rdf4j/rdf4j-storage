@@ -60,7 +60,7 @@ public class Substring implements Function {
 				int startIndex = 0;
 				if (startIndexValue instanceof Literal) {
 					// If it is not an int we need to round it per spec
-					int startLiteral = roundLiteral((Literal) startIndexValue);
+					int startLiteral = intFromLiteral((Literal) startIndexValue);
 
 					try {
 						// xpath:substring startIndex is 1-based.
@@ -80,7 +80,7 @@ public class Substring implements Function {
 				int endIndex = lexicalValue.length();
 				if (lengthValue instanceof Literal) {
 					try {
-						int length = roundLiteral((Literal) lengthValue);
+						int length = intFromLiteral((Literal) lengthValue);
 						if (length < 1) {
 							return convert("", literal, valueFactory);
 						}
@@ -125,7 +125,7 @@ public class Substring implements Function {
 		}
 	}
 
-	public static int roundLiteral(Literal literal) throws ValueExprEvaluationException {
+	public static int intFromLiteral(Literal literal) throws ValueExprEvaluationException {
 
 		IRI datatype = literal.getDatatype();
 
@@ -133,12 +133,6 @@ public class Substring implements Function {
 		if (datatype != null && XMLDatatypeUtil.isNumericDatatype(datatype)) {
 			if (XMLDatatypeUtil.isIntegerDatatype(datatype)) {
 				return literal.intValue();
-			} else if (XMLDatatypeUtil.isDecimalDatatype(datatype)) {
-				BigDecimal rounded = literal.decimalValue().setScale(0, RoundingMode.HALF_UP);
-				return rounded.intValue();
-			} else if (XMLDatatypeUtil.isFloatingPointDatatype(datatype)) {
-				double ceilingValue = Math.round(literal.doubleValue());
-				return (int) ceilingValue;
 			} else {
 				throw new ValueExprEvaluationException("unexpected datatype for function operand: " + literal);
 			}
