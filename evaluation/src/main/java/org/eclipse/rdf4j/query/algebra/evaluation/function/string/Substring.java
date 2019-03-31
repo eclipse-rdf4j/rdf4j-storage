@@ -81,11 +81,13 @@ public class Substring implements Function {
 				if (lengthValue instanceof Literal) {
 					try {
 						int length = roundLiteral((Literal) lengthValue);
-						if (length < 1)
+						if (length < 1) {
 							return convert("", literal, valueFactory);
+						}
 						endIndex = Math.min(startIndex + length, endIndex);
-						if (endIndex < 0)
+						if (endIndex < 0) {
 							return convert("", literal, valueFactory);
+						}
 					} catch (NumberFormatException e) {
 						throw new ValueExprEvaluationException(
 								"illegal length value (expected int value): " + lengthValue);
