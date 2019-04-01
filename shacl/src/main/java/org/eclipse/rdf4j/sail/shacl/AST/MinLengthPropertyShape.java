@@ -79,4 +79,12 @@ public class MinLengthPropertyShape extends PathPropertyShape {
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), minLength);
 	}
+
+	@Override
+	public String toString() {
+		return "MinLengthPropertyShape{" +
+				"minLength=" + minLength +
+				", path=" + path +
+				'}';
+	}
 }

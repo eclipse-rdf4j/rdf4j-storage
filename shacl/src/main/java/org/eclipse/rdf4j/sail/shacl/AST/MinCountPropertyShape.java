@@ -50,11 +50,6 @@ public class MinCountPropertyShape extends PathPropertyShape {
 	}
 
 	@Override
-	public String toString() {
-		return "MinCountPropertyShape{" + "minCount=" + minCount + '}';
-	}
-
-	@Override
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape, boolean printPlans,
 			PlanNode overrideTargetNode) {
 		if (deactivated) {
@@ -169,5 +164,13 @@ public class MinCountPropertyShape extends PathPropertyShape {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), minCount);
+	}
+
+	@Override
+	public String toString() {
+		return "MinCountPropertyShape{" +
+				"minCount=" + minCount +
+				", path=" + path +
+				'}';
 	}
 }

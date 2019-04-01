@@ -80,4 +80,12 @@ public class MaxLengthPropertyShape extends PathPropertyShape {
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), maxLength);
 	}
+
+	@Override
+	public String toString() {
+		return "MaxLengthPropertyShape{" +
+				"maxLength=" + maxLength +
+				", path=" + path +
+				'}';
+	}
 }

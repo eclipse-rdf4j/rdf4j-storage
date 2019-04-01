@@ -107,4 +107,12 @@ public class NodeKindPropertyShape extends PathPropertyShape {
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), nodeKind);
 	}
+
+	@Override
+	public String toString() {
+		return "NodeKindPropertyShape{" +
+				"nodeKind=" + nodeKind +
+				", path=" + path +
+				'}';
+	}
 }

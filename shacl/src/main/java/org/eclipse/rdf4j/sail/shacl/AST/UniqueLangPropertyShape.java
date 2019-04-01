@@ -19,7 +19,6 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.NonUniqueTargetLang;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.TrimTuple;
-import org.eclipse.rdf4j.sail.shacl.planNodes.UnBufferedPlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.UnionNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.Unique;
 import org.slf4j.Logger;
@@ -119,5 +118,13 @@ public class UniqueLangPropertyShape extends PathPropertyShape {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), uniqueLang);
+	}
+
+	@Override
+	public String toString() {
+		return "UniqueLangPropertyShape{" +
+				"uniqueLang=" + uniqueLang +
+				", path=" + path +
+				'}';
 	}
 }

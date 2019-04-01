@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -82,5 +83,13 @@ public class LanguageInPropertyShape extends PathPropertyShape {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), languageIn);
+	}
+
+	@Override
+	public String toString() {
+		return "LanguageInPropertyShape{" +
+				"languageIn=" + Arrays.toString(languageIn.toArray()) +
+				", path=" + path +
+				'}';
 	}
 }

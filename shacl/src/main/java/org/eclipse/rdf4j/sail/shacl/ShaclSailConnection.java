@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDF4J;
+import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
 import org.eclipse.rdf4j.sail.SailConnection;
@@ -89,6 +90,8 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 	boolean validating;
 
 	private long stamp;
+
+	ValueComparator valueComparator = new ValueComparator();
 
 	ShaclSailConnection(ShaclSail sail, NotifyingSailConnection connection,
 			NotifyingSailConnection previousStateConnection, SailRepositoryConnection shapesRepoConnection) {
@@ -303,7 +306,19 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 									+ propertyShape.getId());
 						}
 
+						long before = 0;
+						if (sail.isPerformanceLogging()) {
+							before = System.currentTimeMillis();
+						}
+
 						List<Tuple> collect = stream.collect(Collectors.toList());
+
+						if (sail.isPerformanceLogging()) {
+							long after = System.currentTimeMillis();
+							PropertyShape propertyShape = ((EnrichWithShape) planNode).getPropertyShape();
+							logger.info("Execution of plan took {} ms for {} : {}", (after - before),
+									propertyShape.getNodeShape().toString(), propertyShape.toString());
+						}
 
 						if (LoggingNode.loggingEnabled) {
 							PropertyShape propertyShape = ((EnrichWithShape) planNode).getPropertyShape();

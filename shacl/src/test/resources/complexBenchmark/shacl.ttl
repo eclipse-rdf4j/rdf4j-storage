@@ -133,12 +133,13 @@
                            sh:path  dct:type ;
                            sh:maxCount 1;
                            # sh:severity   sh:Violation
-                   ] ,
-                   [
-                           sh:path  dct:type ;
-                           sh:minCount 1;
-                           # sh:severity   sh:Warning
                    ]
+                   #,
+                   #[
+                   #         sh:path  dct:type ;
+                   #        sh:minCount 1;
+                   #        # sh:severity   sh:Warning
+                   #]
                    .
 []
                    a              sh:NodeShape ;
@@ -204,10 +205,22 @@
 []
                    a              sh:NodeShape ;
                    sh:targetClass  dcat:Dataset ;
+                   sh:or (
+                                [
+                                        sh:path  dct:accessRights ;
+                                        sh:class dct:RightsStatement ;
+                                ]
+
+                                [
+                                        sh:path  dct:accessRights ;
+                                        sh:nodeKind sh:Literal ;
+                                        sh:minLength 1;
+                                ]
+                   ) ;
                    sh:property
                    [
                            sh:minCount   1 ;
-                           sh:minLength 10;
+                           sh:minLength 2;
                            sh:path  dct:description ;
                            sh:nodeKind sh:Literal;
                            # sh:severity   sh:Violation
@@ -215,7 +228,7 @@
                    [
                            sh:minCount   1 ;
                            sh:minLength 1;
-                           sh:maxLength 100;
+                           sh:maxLength 256;
                            sh:path  dct:title ;
                            sh:nodeKind sh:Literal;
                            # sh:severity   sh:Violation
@@ -330,7 +343,6 @@
                    [
                            sh:path  dct:accessRights ;
                            sh:maxCount 1;
-                           sh:class dct:RightsStatement ;
                            # sh:severity   sh:Violation
                    ],
                    [
@@ -379,7 +391,7 @@
                            # sh:severity   sh:Violation
                    ]   ,
                    [
-                           sh:minCount 1;
+                           # sh:minCount 1;
                            sh:path  dcat:distribution ;
                            # sh:severity   sh:Warning
                    ]    ,
@@ -413,12 +425,13 @@
                            sh:maxCount 1;
                            sh:path  dct:type ;
                            # sh:severity   sh:Violation
-                   ]   ,
-                   [
-                           sh:path  dct:subject ;
-                           sh:minCount 1 ;
-                           # sh:severity   sh:Warning
                    ]
+                   #,
+                   #[
+                   #        sh:path  dct:subject ;
+                   #        sh:minCount 1 ;
+                   #        # sh:severity   sh:Warning
+                   #]
                    .
 []
                   a              sh:NodeShape ;
@@ -528,7 +541,7 @@
                    [
                            sh:path  dct:title ;
                            sh:nodeKind sh:Literal;
-                           sh:maxCount 1 ;
+                           sh:uniqueLang true ;
                            # sh:severity   sh:Violation
                    ],
                    [
@@ -538,7 +551,7 @@
                    ],
                    [
                            sh:path  dct:description ;
-                           sh:minCount 1 ;
+                           # sh:minCount 1 ;
                            # sh:severity   sh:Warning
                    ].
 []
@@ -570,7 +583,7 @@
                           # sh:severity   sh:Violation
                   ] ,
                   [
-                          sh:minCount   1 ;
+                          # sh:minCount   1 ;
                           sh:path dct:type ;
                           # sh:severity   sh:Warning
                   ]   .
@@ -579,7 +592,7 @@
                   sh:targetClass  skos:Concept ;
                   sh:property
                   [
-                          sh:minCount   1 ;
+                          # sh:minCount   1 ;
                           sh:path skos:prefLabel ;
                           sh:nodeKind sh:Literal;
                           # sh:severity   sh:Violation
@@ -593,12 +606,14 @@
                           sh:path skos:inScheme ;
                           sh:class skos:ConceptScheme ;
                           # sh:severity   sh:Violation
-                  ]   ,
-                  [
-                          sh:minCount   1 ;
-                          sh:path skos:inScheme ;
-                          # sh:severity   sh:Warning
-                  ]   .
+                  ]
+                 # ,
+                 #[
+                 #        sh:minCount   1 ;
+                 #        sh:path skos:inScheme ;
+                 #        # sh:severity   sh:Warning
+                 #]
+                  .
 []
                   a              sh:NodeShape ;
                   sh:targetClass  skos:ConceptScheme ;

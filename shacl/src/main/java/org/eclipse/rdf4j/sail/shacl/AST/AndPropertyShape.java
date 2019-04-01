@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.Unique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -102,4 +103,12 @@ public class AndPropertyShape extends PropertyShape {
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), and);
 	}
+
+	@Override
+	public String toString() {
+		return "AndPropertyShape{" +
+				"and=" + toString(and) +
+				'}';
+	}
+
 }

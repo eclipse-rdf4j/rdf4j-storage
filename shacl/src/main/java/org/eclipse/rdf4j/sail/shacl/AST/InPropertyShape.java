@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -85,5 +86,13 @@ public class InPropertyShape extends PathPropertyShape {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), in);
+	}
+
+	@Override
+	public String toString() {
+		return "InPropertyShape{" +
+				"in=" + Arrays.toString(in.toArray()) +
+				", path=" + path +
+				'}';
 	}
 }

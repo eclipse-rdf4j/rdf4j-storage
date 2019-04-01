@@ -27,7 +27,7 @@ import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,9 +61,9 @@ public class BulkedExternalLeftOuterJoin implements PlanNode {
 	public CloseableIteration<Tuple, SailException> iterator() {
 		return new CloseableIteration<Tuple, SailException>() {
 
-			LinkedList<Tuple> left = new LinkedList<>();
+			ArrayDeque<Tuple> left = new ArrayDeque<>();
 
-			LinkedList<Tuple> right = new LinkedList<>();
+			ArrayDeque<Tuple> right = new ArrayDeque<>();
 
 			CloseableIteration<Tuple, SailException> leftNodeIterator = leftNode.iterator();
 
