@@ -227,6 +227,8 @@ public class ComplexLargeBenchmark {
 				connection.commit();
 			}
 
+			repository.shutDown();
+
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -234,17 +236,72 @@ public class ComplexLargeBenchmark {
 	}
 
 	@Benchmark
-	public void preloadedRevalidate() {
+	public void noPreloadingRevalidate() {
 
-		((ShaclSail) repository.getSail()).setParallelValidation(false);
-		((ShaclSail) repository.getSail()).setCacheSelectNodes(false);
+		try {
+			SailRepository repository = new SailRepository(Utils.getInitializedShaclSail("complexBenchmark/shacl.ttl"));
 
-		try (SailRepositoryConnection connection = repository.getConnection()) {
+			((ShaclSail) repository.getSail()).setParallelValidation(true);
+			((ShaclSail) repository.getSail()).setCacheSelectNodes(true);
 
-			connection.begin(IsolationLevels.NONE);
-			((ShaclSailConnection) connection.getSailConnection()).revalidate();
-			connection.commit();
+			((ShaclSail) repository.getSail()).disableValidation();
 
+			try (SailRepositoryConnection connection = repository.getConnection()) {
+				connection.begin(IsolationLevels.NONE);
+				try (InputStream resourceAsStream = getData()) {
+					connection.add(resourceAsStream, "", RDFFormat.TURTLE);
+				}
+				connection.commit();
+			}
+
+			((ShaclSail) repository.getSail()).enableValidation();
+
+			try (SailRepositoryConnection connection = repository.getConnection()) {
+				connection.begin(IsolationLevels.NONE);
+				((ShaclSailConnection) connection.getSailConnection()).revalidate();
+				connection.commit();
+			}
+
+			repository.shutDown();
+
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	@Benchmark
+	public void noPreloadingRevalidateNativeStore() {
+
+		try {
+			SailRepository repository = new SailRepository(
+					Utils.getInitializedShaclSailNativeStore("complexBenchmark/shacl.ttl"));
+
+			((ShaclSail) repository.getSail()).setParallelValidation(true);
+			((ShaclSail) repository.getSail()).setCacheSelectNodes(true);
+
+			((ShaclSail) repository.getSail()).disableValidation();
+
+			try (SailRepositoryConnection connection = repository.getConnection()) {
+				connection.begin(IsolationLevels.NONE);
+				try (InputStream resourceAsStream = getData()) {
+					connection.add(resourceAsStream, "", RDFFormat.TURTLE);
+				}
+				connection.commit();
+			}
+
+			((ShaclSail) repository.getSail()).enableValidation();
+
+			try (SailRepositoryConnection connection = repository.getConnection()) {
+				connection.begin(IsolationLevels.NONE);
+				((ShaclSailConnection) connection.getSailConnection()).revalidate();
+				connection.commit();
+			}
+
+			repository.shutDown();
+
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 
 	}
