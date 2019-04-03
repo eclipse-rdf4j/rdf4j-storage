@@ -99,6 +99,7 @@ public class InnerJoin implements MultiStreamPlanNode, PlanNode {
 			Tuple next;
 			Tuple nextLeft;
 			Tuple nextRight;
+			Tuple joinedLeft;
 
 			void calculateNext() {
 				if (next != null) {
@@ -137,13 +138,14 @@ public class InnerJoin implements MultiStreamPlanNode, PlanNode {
 						if (nextLeft.line.get(0) == nextRight.line.get(0)
 								|| nextLeft.line.get(0).equals(nextRight.line.get(0))) {
 							next = TupleHelper.join(nextLeft, nextRight);
+							joinedLeft = nextLeft;
 							nextRight = null;
 						} else {
 
 							int compareTo = nextLeft.compareTo(nextRight);
 
 							if (compareTo < 0) {
-								if (discardedLeft != null) {
+								if (joinedLeft != nextLeft && discardedLeft != null) {
 									if (LoggingNode.loggingEnabled) {
 										logger.info(leadingSpace() + that.getClass().getSimpleName()
 												+ ";discardedLeft: " + " " + nextLeft.toString());
