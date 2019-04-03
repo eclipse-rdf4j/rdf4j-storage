@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Håvard Ottestad
@@ -72,7 +73,7 @@ public class ClassPropertyShape extends PathPropertyShape {
 				});
 
 			} else {
-				planNode = new LoggingNode(new BulkedExternalLeftOuterJoin(overrideTargetNode, shaclSailConnection,
+				planNode = new LoggingNode(new BulkedExternalInnerJoin(overrideTargetNode, shaclSailConnection,
 						path.getQuery("?a", "?c", null), false), "");
 			}
 
@@ -235,5 +236,25 @@ public class ClassPropertyShape extends PathPropertyShape {
 	@Override
 	public SourceConstraintComponent getSourceConstraintComponent() {
 		return SourceConstraintComponent.ClassConstraintComponent;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+		ClassPropertyShape that = (ClassPropertyShape) o;
+		return classResource.equals(that.classResource);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), classResource);
 	}
 }

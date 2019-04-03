@@ -22,7 +22,9 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.Select;
 import org.eclipse.rdf4j.sail.shacl.planNodes.SetFilterNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.TrimTuple;
+import org.eclipse.rdf4j.sail.shacl.planNodes.Unique;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -45,7 +47,7 @@ public class TargetNode extends NodeShape {
 			PlanNode overrideTargetNode) {
 		PlanNode parent = shaclSailConnection.getCachedNodeFor(new Select(shaclSailConnection,
 				getQuery("?a", "?c", shaclSailConnection.getRdfsSubClassOfReasoner()), "*"));
-		return new TrimTuple(new LoggingNode(parent, ""), 0, 1);
+		return new Unique(new TrimTuple(new LoggingNode(parent, ""), 0, 1));
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class TargetNode extends NodeShape {
 			PlaneNodeWrapper planeNodeWrapper) {
 		PlanNode parent = shaclSailConnection.getCachedNodeFor(
 				new Select(shaclSailConnection.getAddedStatements(), getQuery("?a", "?c", null), "*"));
-		return new TrimTuple(new LoggingNode(parent, ""), 0, 1);
+		return new Unique(new TrimTuple(new LoggingNode(parent, ""), 0, 1));
 
 	}
 
@@ -62,7 +64,7 @@ public class TargetNode extends NodeShape {
 			PlaneNodeWrapper planeNodeWrapper) {
 		PlanNode parent = shaclSailConnection.getCachedNodeFor(
 				new Select(shaclSailConnection.getRemovedStatements(), getQuery("?a", "?c", null), "*"));
-		return new TrimTuple(parent, 0, 1);
+		return new Unique(new TrimTuple(parent, 0, 1));
 	}
 
 	@Override
@@ -103,4 +105,23 @@ public class TargetNode extends NodeShape {
 		return new LoggingNode(new SetFilterNode(targetNodeSet, parent, 0, true), "targetNode filter");
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+		TargetNode that = (TargetNode) o;
+		return targetNodeSet.equals(that.targetNodeSet);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), targetNodeSet);
+	}
 }

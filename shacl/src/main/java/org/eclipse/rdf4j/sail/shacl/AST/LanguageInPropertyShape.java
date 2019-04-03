@@ -18,7 +18,10 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class LanguageInPropertyShape extends PathPropertyShape {
 
-	private final List<String> languageIn;
+	private final Set<String> languageIn;
 	private static final Logger logger = LoggerFactory.getLogger(LanguageInPropertyShape.class);
 
 	LanguageInPropertyShape(Resource id, SailRepositoryConnection connection, NodeShape nodeShape, boolean deactivated,
@@ -34,7 +37,7 @@ public class LanguageInPropertyShape extends PathPropertyShape {
 			Resource languageIn) {
 		super(id, connection, nodeShape, deactivated, path);
 
-		this.languageIn = toList(connection, languageIn).stream().map(Value::stringValue).collect(Collectors.toList());
+		this.languageIn = toList(connection, languageIn).stream().map(Value::stringValue).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -59,5 +62,25 @@ public class LanguageInPropertyShape extends PathPropertyShape {
 	@Override
 	public SourceConstraintComponent getSourceConstraintComponent() {
 		return SourceConstraintComponent.LanguageInConstraintComponent;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+		LanguageInPropertyShape that = (LanguageInPropertyShape) o;
+		return languageIn.equals(that.languageIn);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), languageIn);
 	}
 }
