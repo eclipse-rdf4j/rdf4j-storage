@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  * @author Håvard Ottestad
  */
 @State(Scope.Benchmark)
-@Warmup(iterations = 20)
+@Warmup(iterations = 10)
 @BenchmarkMode({ Mode.AverageTime })
 @Fork(value = 1, jvmArgs = { "-Xms8G", "-Xmx8G" })
 //@Fork(value = 1, jvmArgs = {"-Xms8G", "-Xmx8G", "-XX:+UnlockCommercialFeatures", "-XX:StartFlightRecording=delay=15s,duration=120s,filename=recording.jfr,settings=ProfilingAggressive.jfc", "-XX:FlightRecorderOptions=samplethreads=true,stackdepth=1024", "-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints"})
@@ -116,7 +116,7 @@ public class ComplexLargeBenchmark {
 	}
 
 	@Benchmark
-	public void shaclParallelCachePreloaded() {
+	public void shaclParallelCacheTwoTransactionPreloaded() {
 
 		((ShaclSail) repository.getSail()).setParallelValidation(true);
 		((ShaclSail) repository.getSail()).setCacheSelectNodes(true);
@@ -152,7 +152,7 @@ public class ComplexLargeBenchmark {
 	}
 
 	@Benchmark
-	public void shaclParallelPreloaded() {
+	public void shaclParallelTwoTransactionPreloaded() {
 
 		((ShaclSail) repository.getSail()).setParallelValidation(true);
 		((ShaclSail) repository.getSail()).setCacheSelectNodes(false);
@@ -172,7 +172,7 @@ public class ComplexLargeBenchmark {
 	}
 
 	@Benchmark
-	public void shaclCachePreloaded() {
+	public void shaclCacheTwoTransactionPreloaded() {
 
 		((ShaclSail) repository.getSail()).setParallelValidation(false);
 
@@ -191,7 +191,7 @@ public class ComplexLargeBenchmark {
 	}
 
 	@Benchmark
-	public void shaclPreloaded() {
+	public void shaclTwoTransactionPreloaded() {
 
 		((ShaclSail) repository.getSail()).setParallelValidation(false);
 		((ShaclSail) repository.getSail()).setCacheSelectNodes(false);
@@ -212,6 +212,31 @@ public class ComplexLargeBenchmark {
 
 	@Benchmark
 	public void noPreloading() {
+
+		try {
+			SailRepository repository = new SailRepository(Utils.getInitializedShaclSail("complexBenchmark/shacl.ttl"));
+
+			((ShaclSail) repository.getSail()).setParallelValidation(false);
+			((ShaclSail) repository.getSail()).setCacheSelectNodes(true);
+
+			try (SailRepositoryConnection connection = repository.getConnection()) {
+				connection.begin(IsolationLevels.NONE);
+				try (InputStream resourceAsStream = getData()) {
+					connection.add(resourceAsStream, "", RDFFormat.TURTLE);
+				}
+				connection.commit();
+			}
+
+			repository.shutDown();
+
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	@Benchmark
+	public void noPreloadingParallel() {
 
 		try {
 			SailRepository repository = new SailRepository(Utils.getInitializedShaclSail("complexBenchmark/shacl.ttl"));
@@ -338,9 +363,42 @@ public class ComplexLargeBenchmark {
 
 	}
 
+	@Benchmark
+	public void shaclCacheDeletionPreloaded() {
+
+		((ShaclSail) repository.getSail()).setParallelValidation(false);
+		((ShaclSail) repository.getSail()).setCacheSelectNodes(true);
+
+		try (SailRepositoryConnection connection = repository.getConnection()) {
+
+			connection.begin(IsolationLevels.SNAPSHOT);
+			connection.prepareUpdate(transaction3).execute();
+			connection.commit();
+
+		}
+
+	}
+
+	@Benchmark
+	public void shaclCacheUpdatePreloaded() {
+
+		((ShaclSail) repository.getSail()).setParallelValidation(false);
+		((ShaclSail) repository.getSail()).setCacheSelectNodes(true);
+
+		try (SailRepositoryConnection connection = repository.getConnection()) {
+
+			connection.begin(IsolationLevels.SNAPSHOT);
+			connection.prepareUpdate(transaction4).execute();
+			connection.commit();
+
+		}
+
+	}
+
 	private static BufferedInputStream getData() {
 		ClassLoader classLoader = ComplexLargeBenchmark.class.getClassLoader();
-		return new BufferedInputStream(classLoader.getResourceAsStream("complexBenchmark/datagovbe-valid.ttl"));
+		return new BufferedInputStream(classLoader.getResourceAsStream("complexBenchmark/generated.ttl"));
+//		return new BufferedInputStream(classLoader.getResourceAsStream("complexBenchmark/datagovbe-valid.ttl"));
 	}
 
 }

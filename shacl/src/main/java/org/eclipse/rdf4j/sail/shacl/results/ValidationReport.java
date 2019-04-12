@@ -72,8 +72,8 @@ public class ValidationReport implements ModelInterface {
 	@Override
 	public String toString() {
 		return "ValidationReport{" +
-			"conforms=" + conforms +
-			", validationResult=" + Arrays.toString(validationResult.toArray()) +
-			'}';
+				"conforms=" + conforms +
+				", validationResult=" + Arrays.toString(validationResult.toArray()) +
+				'}';
 	}
 }
