@@ -32,6 +32,7 @@ public class ValueInFilter extends FilterPlanNode {
 
 	@Override
 	public String toString() {
-		return "ValueInFilter{" + "valueSet=" + Arrays.toString(valueSet.toArray()) + '}';
+		return "ValueInFilter{" + "valueSet=" + Arrays.toString(valueSet.stream().map(Formatter::prefix).toArray())
+				+ '}';
 	}
 }
