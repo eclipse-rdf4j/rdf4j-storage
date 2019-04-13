@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -159,6 +160,7 @@ public class ShaclSail extends NotifyingSailWrapper {
 	private boolean validationEnabled = ShaclSailConfig.VALIDATION_ENABLED_DEFAULT;
 	private boolean cacheSelectNodes = ShaclSailConfig.CACHE_SELECT_NODES_DEFAULT;
 	private boolean rdfsSubClassReasoning = ShaclSailConfig.RDFS_SUB_CLASS_REASONING_DEFAULT;
+	private boolean performanceLogging = false;
 
 	static {
 		try {
@@ -176,7 +178,7 @@ public class ShaclSail extends NotifyingSailWrapper {
 	}
 
 	private static String resourceAsString(String s) throws IOException {
-		return IOUtils.toString(ShaclSail.class.getClassLoader().getResourceAsStream(s), "UTF-8");
+		return IOUtils.toString(ShaclSail.class.getClassLoader().getResourceAsStream(s), StandardCharsets.UTF_8);
 	}
 
 	public ShaclSail(NotifyingSail baseSail) {
@@ -532,6 +534,26 @@ public class ShaclSail extends NotifyingSailWrapper {
 	 */
 	public void setLogValidationPlans(boolean logValidationPlans) {
 		this.logValidationPlans = logValidationPlans;
+	}
+
+	public boolean isPerformanceLogging() {
+		return performanceLogging;
+	}
+
+	// @formatter:off
+
+	/**
+	 * Log (INFO) the execution time per shape. Recommended to disable the following:
+	 * <ul>
+	 * 		<li>setParallelValidation(false)</li>
+	 * 		<li>setCacheSelectNodes(false)</li>
+	 * </ul>
+	 *
+	 * @param performanceLogging default false
+	 */
+	// @formatter:on
+	public void setPerformanceLogging(boolean performanceLogging) {
+		this.performanceLogging = performanceLogging;
 	}
 
 	public void setNodeShapes(List<NodeShape> nodeShapes) {

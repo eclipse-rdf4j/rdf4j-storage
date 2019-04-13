@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.GroupByCount;
 import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.MinCountFilter;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
+import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNodeProvider;
 import org.eclipse.rdf4j.sail.shacl.planNodes.TrimTuple;
 import org.eclipse.rdf4j.sail.shacl.planNodes.UnBufferedPlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.UnionNode;
@@ -50,19 +51,14 @@ public class MinCountPropertyShape extends PathPropertyShape {
 	}
 
 	@Override
-	public String toString() {
-		return "MinCountPropertyShape{" + "minCount=" + minCount + '}';
-	}
-
-	@Override
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape, boolean printPlans,
-			PlanNode overrideTargetNode) {
+			PlanNodeProvider overrideTargetNode) {
 		if (deactivated) {
 			return null;
 		}
 
 		if (overrideTargetNode != null) {
-			PlanNode allStatements = new LoggingNode(new BulkedExternalLeftOuterJoin(overrideTargetNode,
+			PlanNode allStatements = new LoggingNode(new BulkedExternalLeftOuterJoin(overrideTargetNode.getPlanNode(),
 					shaclSailConnection, path.getQuery("?a", "?c", null), false), "");
 			PlanNode groupBy = new LoggingNode(new GroupByCount(allStatements), "");
 
@@ -169,5 +165,13 @@ public class MinCountPropertyShape extends PathPropertyShape {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), minCount);
+	}
+
+	@Override
+	public String toString() {
+		return "MinCountPropertyShape{" +
+				"minCount=" + minCount +
+				", path=" + path +
+				'}';
 	}
 }

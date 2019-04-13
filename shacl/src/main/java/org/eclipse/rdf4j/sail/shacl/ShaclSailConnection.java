@@ -20,6 +20,8 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDF4J;
+import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.NotifyingSail;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
@@ -40,6 +42,7 @@ import org.eclipse.rdf4j.sail.shacl.results.ValidationReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,6 +93,8 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 	boolean validating;
 
 	private long stamp;
+
+	ValueComparator valueComparator = new ValueComparator();
 
 	ShaclSailConnection(ShaclSail sail, NotifyingSailConnection connection,
 						NotifyingSailConnection previousStateConnection, SailRepositoryConnection shapesRepoConnection) {
@@ -219,6 +224,15 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 	}
 
 	@Override
+	public void clear(Resource... contexts) throws SailException {
+		if (Arrays.asList(contexts).contains(RDF4J.SHACL_SHAPE_GRAPH)) {
+			shapesRepoConnection.clear();
+			isShapeRefreshNeeded = true;
+		}
+		super.clear(contexts);
+	}
+
+	@Override
 	public void rollback() throws SailException {
 
 		previousStateConnection.rollback();
@@ -304,7 +318,19 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 								+ propertyShape.getId());
 						}
 
+						long before = 0;
+						if (sail.isPerformanceLogging()) {
+							before = System.currentTimeMillis();
+						}
+
 						List<Tuple> collect = stream.collect(Collectors.toList());
+
+						if (sail.isPerformanceLogging()) {
+							long after = System.currentTimeMillis();
+							PropertyShape propertyShape = ((EnrichWithShape) planNode).getPropertyShape();
+							logger.info("Execution of plan took {} ms for {} : {}", (after - before),
+									propertyShape.getNodeShape().toString(), propertyShape.toString());
+						}
 
 						if (LoggingNode.loggingEnabled) {
 							PropertyShape propertyShape = ((EnrichWithShape) planNode).getPropertyShape();
@@ -529,6 +555,9 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 	@Override
 	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subj, IRI pred, Value obj,
 																				boolean includeInferred, Resource... contexts) throws SailException {
+		if (contexts.length == 1 && contexts[0].equals(RDF4J.SHACL_SHAPE_GRAPH)) {
+			return getCloseableIteration(shapesRepoConnection.getStatements(subj, pred, obj, includeInferred));
+		}
 		if (rdfsSubClassOfReasoner != null && includeInferred && validating && obj instanceof Resource
 			&& RDF.TYPE.equals(pred)) {
 			Set<Resource> inferredTypes = rdfsSubClassOfReasoner.backwardsChain((Resource) obj);
@@ -602,9 +631,41 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 		return super.getStatements(subj, pred, obj, includeInferred, contexts);
 	}
 
+	private CloseableIteration<Statement, SailException> getCloseableIteration(
+			RepositoryResult<Statement> statements1) {
+		return new CloseableIteration<Statement, SailException>() {
+
+			RepositoryResult<Statement> statements = statements1;
+
+			@Override
+			public boolean hasNext() throws SailException {
+				return statements.hasNext();
+			}
+
+			@Override
+			public Statement next() throws SailException {
+				return statements.next();
+			}
+
+			@Override
+			public void remove() throws SailException {
+				statements.remove();
+			}
+
+			@Override
+			public void close() throws SailException {
+				statements.close();
+			}
+		};
+	}
+
 	@Override
 	public boolean hasStatement(Resource subj, IRI pred, Value obj, boolean includeInferred, Resource... contexts)
 		throws SailException {
+
+		if (contexts.length == 1 && contexts[0].equals(RDF4J.SHACL_SHAPE_GRAPH)) {
+			return shapesRepoConnection.hasStatement(subj, pred, obj, includeInferred);
+		}
 		boolean hasStatement = super.hasStatement(subj, pred, obj, includeInferred, contexts);
 
 		if (rdfsSubClassOfReasoner != null && includeInferred && validating && obj instanceof Resource

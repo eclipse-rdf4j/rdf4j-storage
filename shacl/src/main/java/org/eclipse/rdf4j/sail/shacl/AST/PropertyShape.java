@@ -21,8 +21,10 @@ import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadonly;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.SourceConstraintComponent;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
+import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNodeProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -49,7 +51,7 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 
 	@Override
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape, boolean printPlans,
-							PlanNode overrideTargetNode) {
+							PlanNodeProvider overrideTargetNode) {
 		throw new IllegalStateException("Should never get here!!!");
 	}
 
@@ -262,5 +264,15 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 	@Override
 	public int hashCode() {
 		return Objects.hash(deactivated, id);
+	}
+
+	protected static String toString(List<List<PropertyShape>> propertyShapes) {
+
+		List<String> collect = propertyShapes.stream()
+				.map(l -> Arrays.toString(l.toArray()))
+				.collect(Collectors.toList());
+
+		return Arrays.toString(collect.toArray());
+
 	}
 }

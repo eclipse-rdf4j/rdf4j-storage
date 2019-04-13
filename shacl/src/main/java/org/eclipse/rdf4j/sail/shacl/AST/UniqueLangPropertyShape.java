@@ -15,9 +15,11 @@ import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 import org.eclipse.rdf4j.sail.shacl.SourceConstraintComponent;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BulkedExternalInnerJoin;
 import org.eclipse.rdf4j.sail.shacl.planNodes.EnrichWithShape;
+import org.eclipse.rdf4j.sail.shacl.planNodes.InnerJoin;
 import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.NonUniqueTargetLang;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
+import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNodeProvider;
 import org.eclipse.rdf4j.sail.shacl.planNodes.TrimTuple;
 import org.eclipse.rdf4j.sail.shacl.planNodes.UnBufferedPlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.UnionNode;
@@ -48,14 +50,16 @@ public class UniqueLangPropertyShape extends PathPropertyShape {
 
 	@Override
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape, boolean printPlans,
-			PlanNode overrideTargetNode) {
+			PlanNodeProvider overrideTargetNode) {
 		if (deactivated) {
 			return null;
 		}
 
 		if (overrideTargetNode != null) {
-			PlanNode relevantTargetsWithPath = new LoggingNode(new BulkedExternalInnerJoin(overrideTargetNode,
-					shaclSailConnection, path.getQuery("?a", "?c", null), false), "");
+			PlanNode relevantTargetsWithPath = new LoggingNode(
+					new BulkedExternalInnerJoin(overrideTargetNode.getPlanNode(),
+							shaclSailConnection, path.getQuery("?a", "?c", null), false),
+					"");
 
 			PlanNode planNode = new NonUniqueTargetLang(relevantTargetsWithPath);
 
@@ -65,6 +69,28 @@ public class UniqueLangPropertyShape extends PathPropertyShape {
 			}
 
 			return new EnrichWithShape(new LoggingNode(planNode, ""), this);
+		}
+
+		if (shaclSailConnection.stats.isBaseSailEmpty()) {
+			PlanNode addedTargets = new LoggingNode(
+					nodeShape.getPlanAddedStatements(shaclSailConnection, nodeShape, null),
+					"");
+
+			PlanNode addedByPath = new LoggingNode(super.getPlanAddedStatements(shaclSailConnection, nodeShape, null),
+					"");
+
+			PlanNode innerJoin = new LoggingNode(
+					new InnerJoin(addedTargets, addedByPath).getJoined(UnBufferedPlanNode.class), "");
+
+			PlanNode planNode = new NonUniqueTargetLang(innerJoin);
+
+			if (printPlans) {
+				String planAsGraphvizDot = getPlanAsGraphvizDot(planNode, shaclSailConnection);
+				logger.info(planAsGraphvizDot);
+			}
+
+			return new EnrichWithShape(new LoggingNode(planNode, ""), this);
+
 		}
 
 		PlanNode addedTargets = new LoggingNode(nodeShape.getPlanAddedStatements(shaclSailConnection, nodeShape, null),
@@ -119,5 +145,13 @@ public class UniqueLangPropertyShape extends PathPropertyShape {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), uniqueLang);
+	}
+
+	@Override
+	public String toString() {
+		return "UniqueLangPropertyShape{" +
+				"uniqueLang=" + uniqueLang +
+				", path=" + path +
+				'}';
 	}
 }
