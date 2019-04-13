@@ -12,160 +12,107 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author Håvard Mikkelsen Ottestad
  */
-class OrderedOPSIndex {
+class OPSIndex {
 
-	private static final ArrayIndexIterable.EmptyArrayIndexIterable EMPTY_ARRAY_INDEX_ITERABLE = new ArrayIndexIterable.EmptyArrayIndexIterable();
-	Statement[] orderedArray;
+	private static final ListIterable.EmptyListIterable EMPTY_ARRAY_INDEX_ITERABLE = new ListIterable.EmptyListIterable();
+	List<Statement> allStatements;
 
-	Map<OpsCompound, ArrayIndex> opsIndex;
-	Map<OpCompound, ArrayIndex> opIndex;
-	Map<OCompound, ArrayIndex> oIndex;
-
-	static final ValueComparator valueComparator = new ValueComparator();
+	Map<OpCompound, List<Statement>> opIndex;
+	Map<OCompound, List<Statement>> oIndex;
 
 
-	OrderedOPSIndex(Set<Statement> statementSet) {
-		this(statementSet
-			.stream()
-			.sorted(getStatementComparator())
-			.toArray(Statement[]::new), true);
-	}
+	OPSIndex(List<Statement> statements) {
+
+		opIndex = new HashMap<>(statements.size() / 5, 0.5f);
+		oIndex = new HashMap<>(statements.size() / 5, 0.5f);
 
 
+		allStatements = statements;
 
-	OrderedOPSIndex(Statement[] sortableStatements, boolean sorted) {
-
-		opsIndex = new HashMap<>(0);
-		opIndex = new HashMap<>(sortableStatements.length/5, 0.5f);
-		oIndex = new HashMap<>(sortableStatements.length/5, 0.5f);
-
-
-		if(!sorted){
-			sortableStatements = Arrays
-				.stream(sortableStatements)
-				.sorted(getStatementComparator())
-				.toArray(Statement[]::new);
-		}
-
-		orderedArray = sortableStatements;
-
-		for (int i = 0; i < orderedArray.length; i++) {
-			Statement statement = orderedArray[i];
-
-			int index = i;
+		for (Statement statement : statements) {
 
 			OCompound oKey = new OCompound(statement.getObject());
 			OpCompound opKey = new OpCompound(statement.getObject(), statement.getPredicate());
-			OpsCompound opsKey = new OpsCompound(statement.getObject(), statement.getPredicate(), statement.getSubject());
 
-			oIndex.compute(oKey, (key, value) -> {
-				if (value == null) {
-					return new ArrayIndex(index, index + 1);
-				} else {
-					value.stopExclusive = index + 1;
-					return value;
+			oIndex.compute(oKey, (k, v) -> {
+				List<Statement> list = v;
+				if (list == null) {
+					list = new ArrayList<>();
 				}
+
+				list.add(statement);
+
+				return list;
+
 			});
 
-			opIndex.compute(opKey, (key, value) -> {
-				if (value == null) {
-					return new ArrayIndex(index, index + 1);
-				} else {
-					value.stopExclusive = index + 1;
-					return value;
+			opIndex.compute(opKey, (k, v) -> {
+				List<Statement> list = v;
+				if (list == null) {
+					list = new ArrayList<>();
 				}
-			});
 
-//			opsIndex.compute(opsKey, (key, value) -> {
-//				if (value == null) {
-//					return new ArrayIndex(index, index + 1);
-//				} else {
-//					value.stopExclusive = index + 1;
-//					return value;
-//				}
-//			});
+				list.add(statement);
+
+				return list;
+
+			});
 
 		}
 
 	}
 
-	ArrayIndexIterable getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
+	ListIterable getStatements(Resource subject, IRI predicate, Value object, Resource... context) {
 		if (object != null) {
 			if (predicate != null) {
 				if (subject != null) {
-					ArrayIndex arrayIndex = opsIndex.get(new OpsCompound(object, predicate, subject));
-					if (arrayIndex == null) {
-						return EMPTY_ARRAY_INDEX_ITERABLE;
-					}
-					if ((context == null || context.length == 0)) {
-						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
-							false);
-					} else {
-						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
-							true);
-					}
+					throw new IllegalStateException();
 
 				} else {
-					ArrayIndex arrayIndex = opIndex.get(new OpCompound(object, predicate));
-					if (arrayIndex == null) {
+					List<Statement> statements = opIndex.get(new OpCompound(object, predicate));
+					if (statements == null) {
 						return EMPTY_ARRAY_INDEX_ITERABLE;
 					}
 
 					if ((context == null || context.length == 0)) {
-						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
-							false);
+						return new ListIterable(statements, false);
 					} else {
-						return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
-							true);
+						return new ListIterable(statements, true);
 					}
 				}
 
 			} else {
-				ArrayIndex arrayIndex = oIndex.get(new OCompound(object));
-				if (arrayIndex == null) {
+				List<Statement> statements = oIndex.get(new OCompound(object));
+				if (statements == null) {
 					return EMPTY_ARRAY_INDEX_ITERABLE;
 				}
 
 				if (subject == null && (context == null || context.length == 0)) {
-					return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
-						false);
+					return new ListIterable(statements, false);
+
 				} else {
-					return new ArrayIndexIterable(orderedArray, arrayIndex.startInclusive, arrayIndex.stopExclusive,
-						true);
+					return new ListIterable(statements, true);
+
 				}
 			}
 
 		} else {
-			return new ArrayIndexIterable(orderedArray, 0, orderedArray.length, true);
+			return new ListIterable(allStatements, true);
 		}
 
 	}
 
-	private static Comparator<Statement> getStatementComparator() {
-		return (a, b) -> {
-			int compare = valueComparator.compare(a.getObject(), b.getObject());
-			if (compare != 0) return compare;
 
-			compare = valueComparator.compare(a.getPredicate(), b.getPredicate());
-			if (compare != 0) return compare;
-
-
-			compare = valueComparator.compare(a.getSubject(), b.getSubject());
-			return compare;
-		};
-	}
 }
 
 class OpsCompound {
