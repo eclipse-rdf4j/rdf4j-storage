@@ -144,5 +144,3 @@ class CloseableIterationOverIterator implements CloseableIteration<Statement, Sa
 		throw new IllegalStateException();
 	}
 }
-
-

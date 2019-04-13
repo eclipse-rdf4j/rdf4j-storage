@@ -85,6 +85,7 @@ public class ExternalTypeFilterNode implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				parentIterator.close();
+				parentIterator = null;
 			}
 
 			@Override
@@ -126,8 +127,10 @@ public class ExternalTypeFilterNode implements PlanNode {
 		stringBuilder.append(parent.getId() + " -> " + getId()).append("\n");
 
 		if (connection instanceof MemoryStoreReadOnlyConnection) {
-			stringBuilder.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
-					+ getId() + " [label=\"filter source\"]").append("\n");
+			stringBuilder
+					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
+							+ getId() + " [label=\"filter source\"]")
+					.append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId() + " [label=\"filter source\"]")
 					.append("\n");

@@ -51,7 +51,7 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 
 	@Override
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape, boolean printPlans,
-							PlanNodeProvider overrideTargetNode) {
+			PlanNodeProvider overrideTargetNode) {
 		throw new IllegalStateException("Should never get here!!!");
 	}
 
@@ -87,26 +87,28 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 
 		stringBuilder.append("digraph  {").append("\n");
 		stringBuilder.append("labelloc=t;\nfontsize=30;\nlabel=\"" + this.getClass().getSimpleName() + "\";")
-			.append("\n");
+				.append("\n");
 
 		stringBuilder.append(System.identityHashCode(shaclSailConnection)
-			+ " [label=\"Base sail\" nodeShape=pentagon fillcolor=lightblue style=filled];").append("\n");
+				+ " [label=\"Base sail\" nodeShape=pentagon fillcolor=lightblue style=filled];").append("\n");
 		stringBuilder
-			.append(System.identityHashCode(shaclSailConnection.getPreviousStateConnection())
-				+ " [label=\"Previous state connection\" nodeShape=pentagon fillcolor=lightblue style=filled];")
-			.append("\n");
+				.append(System.identityHashCode(shaclSailConnection.getPreviousStateConnection())
+						+ " [label=\"Previous state connection\" nodeShape=pentagon fillcolor=lightblue style=filled];")
+				.append("\n");
 
-		MemoryStoreReadonly addedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getAddedStatements()).getSail();
-		MemoryStoreReadonly removedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getRemovedStatements()).getSail();
+		MemoryStoreReadonly addedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getAddedStatements())
+				.getSail();
+		MemoryStoreReadonly removedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection
+				.getRemovedStatements()).getSail();
 
 		stringBuilder
-			.append(System.identityHashCode(addedStatements)
-				+ " [label=\"Added statements\" nodeShape=pentagon fillcolor=lightblue style=filled];")
-			.append("\n");
+				.append(System.identityHashCode(addedStatements)
+						+ " [label=\"Added statements\" nodeShape=pentagon fillcolor=lightblue style=filled];")
+				.append("\n");
 		stringBuilder
-			.append(System.identityHashCode(removedStatements)
-				+ " [label=\"Removed statements\" nodeShape=pentagon fillcolor=lightblue style=filled];")
-			.append("\n");
+				.append(System.identityHashCode(removedStatements)
+						+ " [label=\"Removed statements\" nodeShape=pentagon fillcolor=lightblue style=filled];")
+				.append("\n");
 
 		planNode.getPlanAsGraphvizDot(stringBuilder);
 
@@ -149,10 +151,10 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 	static class Factory {
 
 		static List<PropertyShape> getPropertyShapes(Resource ShapeId, SailRepositoryConnection connection,
-													 NodeShape nodeShape) {
+				NodeShape nodeShape) {
 
 			try (Stream<Statement> stream = Iterations
-				.stream(connection.getStatements(ShapeId, SHACL.PROPERTY, null))) {
+					.stream(connection.getStatements(ShapeId, SHACL.PROPERTY, null))) {
 				return stream.map(Statement::getObject).map(v -> (Resource) v).flatMap(propertyShapeId -> {
 					List<PropertyShape> propertyShapes = getPropertyShapesInner(connection, nodeShape, propertyShapeId);
 					return propertyShapes.stream();
@@ -162,71 +164,71 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 		}
 
 		static List<PropertyShape> getPropertyShapesInner(SailRepositoryConnection connection, NodeShape nodeShape,
-														  Resource propertyShapeId) {
+				Resource propertyShapeId) {
 			List<PropertyShape> propertyShapes = new ArrayList<>(2);
 
 			ShaclProperties shaclProperties = new ShaclProperties(propertyShapeId, connection);
 
 			if (shaclProperties.minCount != null) {
 				propertyShapes.add(new MinCountPropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.minCount));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.minCount));
 			}
 			if (shaclProperties.maxCount != null) {
 				propertyShapes.add(new MaxCountPropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxCount));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxCount));
 			}
 			if (shaclProperties.datatype != null) {
 				propertyShapes.add(new DatatypePropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.datatype));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.datatype));
 			}
 			if (!shaclProperties.or.isEmpty()) {
 				shaclProperties.or.forEach(or -> {
 					propertyShapes.add(new OrPropertyShape(propertyShapeId, connection, nodeShape,
-						shaclProperties.deactivated, or));
+							shaclProperties.deactivated, or));
 				});
 			}
 			if (shaclProperties.minLength != null) {
 				propertyShapes.add(new MinLengthPropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.minLength));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.minLength));
 			}
 			if (shaclProperties.maxLength != null) {
 				propertyShapes.add(new MaxLengthPropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxLength));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxLength));
 			}
 			if (!shaclProperties.pattern.isEmpty()) {
 				shaclProperties.pattern.forEach(pattern -> {
 					propertyShapes.add(new PatternPropertyShape(propertyShapeId, connection, nodeShape,
-						shaclProperties.deactivated, shaclProperties.path, pattern, shaclProperties.flags));
+							shaclProperties.deactivated, shaclProperties.path, pattern, shaclProperties.flags));
 				});
 			}
 			if (shaclProperties.languageIn != null) {
 				propertyShapes.add(new LanguageInPropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.languageIn));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.languageIn));
 			}
 			if (shaclProperties.nodeKind != null) {
 				propertyShapes.add(new NodeKindPropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.nodeKind));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.nodeKind));
 			}
 			if (shaclProperties.minExclusive != null) {
 				propertyShapes.add(new MinExclusivePropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.minExclusive));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.minExclusive));
 			}
 			if (shaclProperties.maxExclusive != null) {
 				propertyShapes.add(new MaxExclusivePropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxExclusive));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxExclusive));
 			}
 			if (shaclProperties.maxInclusive != null) {
 				propertyShapes.add(new MaxInclusivePropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxInclusive));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.maxInclusive));
 			}
 			if (shaclProperties.minInclusive != null) {
 				propertyShapes.add(new MinInclusivePropertyShape(propertyShapeId, connection, nodeShape,
-					shaclProperties.deactivated, shaclProperties.path, shaclProperties.minInclusive));
+						shaclProperties.deactivated, shaclProperties.path, shaclProperties.minInclusive));
 			}
 			if (!shaclProperties.clazz.isEmpty()) {
 				shaclProperties.clazz.forEach(clazz -> {
 					propertyShapes.add(new ClassPropertyShape(propertyShapeId, connection, nodeShape,
-						shaclProperties.deactivated, shaclProperties.path, clazz));
+							shaclProperties.deactivated, shaclProperties.path, clazz));
 				});
 			}
 			if (!shaclProperties.and.isEmpty()) {

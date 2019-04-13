@@ -46,8 +46,8 @@ public class PathPropertyShape extends PropertyShape {
 	@Override
 	public PlanNode getPlan(ShaclSailConnection shaclSailConnection, NodeShape nodeShape, boolean printPlans,
 			PlanNodeProvider overrideTargetNode) {
-		return shaclSailConnection.getCachedNodeFor(new Sort(new UnorderedSelect(shaclSailConnection, null,
-				(IRI) path.getId(), null, UnorderedSelect.OutputPattern.SubjectObject)));
+		return new UnorderedSelect(shaclSailConnection, null,
+				(IRI) path.getId(), null, UnorderedSelect.OutputPattern.SubjectObject);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class PathPropertyShape extends PropertyShape {
 		if (planeNodeWrapper != null) {
 			unorderedSelect = planeNodeWrapper.wrap(unorderedSelect);
 		}
-		return shaclSailConnection.getCachedNodeFor(new Sort(unorderedSelect));
+		return unorderedSelect;
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class PathPropertyShape extends PropertyShape {
 		if (planeNodeWrapper != null) {
 			unorderedSelect = planeNodeWrapper.wrap(unorderedSelect);
 		}
-		return shaclSailConnection.getCachedNodeFor(new Sort(unorderedSelect));
+		return unorderedSelect;
 	}
 
 	@Override

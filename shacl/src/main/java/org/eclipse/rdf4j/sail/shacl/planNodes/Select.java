@@ -64,6 +64,7 @@ public class Select implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				bindingSet.close();
+				bindingSet = null;
 			}
 
 			@Override
@@ -98,7 +99,8 @@ public class Select implements PlanNode {
 
 		if (connection instanceof MemoryStoreReadOnlyConnection) {
 			stringBuilder
-					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> " + getId())
+					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
+							+ getId())
 					.append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId()).append("\n");
@@ -132,7 +134,8 @@ public class Select implements PlanNode {
 		Select select = (Select) o;
 
 		return Objects.equals(
-				connection instanceof MemoryStoreReadOnlyConnection ? ((MemoryStoreReadOnlyConnection) connection).getSail()
+				connection instanceof MemoryStoreReadOnlyConnection
+						? ((MemoryStoreReadOnlyConnection) connection).getSail()
 						: connection,
 				select.connection instanceof MemoryStoreReadOnlyConnection
 						? ((MemoryStoreReadOnlyConnection) select.connection).getSail()

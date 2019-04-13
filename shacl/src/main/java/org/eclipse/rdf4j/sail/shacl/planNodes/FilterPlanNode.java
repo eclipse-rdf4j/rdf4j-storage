@@ -120,6 +120,7 @@ public abstract class FilterPlanNode implements MultiStreamPlanNode, PlanNode {
 				closed = true;
 				if (parentIterator != null) {
 					parentIterator.close();
+					parentIterator = null;
 				}
 			}
 

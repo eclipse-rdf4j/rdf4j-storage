@@ -39,6 +39,7 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 			public void close() throws SailException {
 				closed = true;
 				parent.close();
+				parent = null;
 			}
 
 			@Override

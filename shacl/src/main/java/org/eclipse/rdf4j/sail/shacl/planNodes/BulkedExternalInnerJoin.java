@@ -127,6 +127,10 @@ public class BulkedExternalInnerJoin extends AbstractBulkJoinPlanNode {
 			@Override
 			public void close() throws SailException {
 				leftNodeIterator.close();
+				leftNodeIterator = null;
+				left = null;
+				right = null;
+				joined = null;
 			}
 
 			@Override
@@ -165,8 +169,10 @@ public class BulkedExternalInnerJoin extends AbstractBulkJoinPlanNode {
 		stringBuilder.append(leftNode.getId() + " -> " + getId() + " [label=\"left\"]").append("\n");
 
 		if (connection instanceof MemoryStoreReadOnlyConnection) {
-			stringBuilder.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
-					+ getId() + " [label=\"right\"]").append("\n");
+			stringBuilder
+					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
+							+ getId() + " [label=\"right\"]")
+					.append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId() + " [label=\"right\"]")
 					.append("\n");

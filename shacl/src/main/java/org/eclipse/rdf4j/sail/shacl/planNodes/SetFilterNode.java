@@ -54,6 +54,7 @@ public class SetFilterNode implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				iterator.close();
+				iterator = null;
 			}
 
 			@Override

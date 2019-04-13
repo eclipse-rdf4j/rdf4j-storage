@@ -186,6 +186,8 @@ public class InnerJoin implements MultiStreamPlanNode, PlanNode {
 			public void close() throws SailException {
 				leftIterator.close();
 				rightIterator.close();
+				leftIterator = null;
+				rightIterator = null;
 			}
 
 			@Override

@@ -85,6 +85,7 @@ public class UnionNode implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				iterators.forEach(CloseableIteration::close);
+				iterators = null;
 			}
 
 			@Override

@@ -69,5 +69,3 @@ public class ListIterable implements Iterable<Statement> {
 	}
 
 }
-
-

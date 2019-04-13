@@ -58,6 +58,7 @@ public class UnorderedSelect implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				statements.close();
+				statements = null;
 			}
 
 			@Override
@@ -105,7 +106,8 @@ public class UnorderedSelect implements PlanNode {
 
 		if (connection instanceof MemoryStoreReadOnlyConnection) {
 			stringBuilder
-					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> " + getId())
+					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
+							+ getId())
 					.append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId()).append("\n");

@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNodeProvider;
 import org.eclipse.rdf4j.sail.shacl.planNodes.Select;
+import org.eclipse.rdf4j.sail.shacl.planNodes.Sort;
 import org.eclipse.rdf4j.sail.shacl.planNodes.TrimTuple;
 import org.eclipse.rdf4j.sail.shacl.planNodes.UnorderedSelect;
 
@@ -60,10 +61,10 @@ public class TargetSubjectsOf extends NodeShape {
 					UnorderedSelect.OutputPattern.SubjectPredicateObject);
 		} else {
 			select = new Select(connection.getAddedStatements(), getQuery("?a", "?c", null), "?a", "?b1", "?c");
+			select = connection.getCachedNodeFor(select);
 		}
 
-		PlanNode cachedNodeFor = connection.getCachedNodeFor(select);
-		return new TrimTuple(new LoggingNode(cachedNodeFor, ""), 0, 1);
+		return new TrimTuple(new LoggingNode(select, ""), 0, 1);
 
 	}
 
@@ -78,10 +79,10 @@ public class TargetSubjectsOf extends NodeShape {
 					UnorderedSelect.OutputPattern.SubjectPredicateObject);
 		} else {
 			select = new Select(connection.getRemovedStatements(), getQuery("?a", "?c", null), "?a", "?b1", "?c");
+			select = connection.getCachedNodeFor(select);
 		}
 
-		PlanNode cachedNodeFor = connection.getCachedNodeFor(select);
-		return new TrimTuple(new LoggingNode(cachedNodeFor, ""), 0, 1);
+		return new TrimTuple(new LoggingNode(select, ""), 0, 1);
 
 	}
 

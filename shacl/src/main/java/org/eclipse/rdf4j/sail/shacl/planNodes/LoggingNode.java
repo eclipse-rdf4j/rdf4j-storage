@@ -66,7 +66,7 @@ public class LoggingNode implements PlanNode {
 
 						@Override
 						public void close() throws SailException {
-
+							iterator = null;
 						}
 
 						@Override
@@ -91,6 +91,7 @@ public class LoggingNode implements PlanNode {
 				public void close() throws SailException {
 
 					parentIterator.close();
+					parentIterator = null;
 
 				}
 

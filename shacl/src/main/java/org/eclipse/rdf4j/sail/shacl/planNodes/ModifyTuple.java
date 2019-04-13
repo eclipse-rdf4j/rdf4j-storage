@@ -32,6 +32,7 @@ public class ModifyTuple implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				parentIterator.close();
+				parentIterator = null;
 			}
 
 			@Override

@@ -34,8 +34,6 @@ public class Sort implements PlanNode {
 
 			CloseableIteration<Tuple, SailException> iterator = parent.iterator();
 
-			List<Tuple> sortedTuples;
-
 			Iterator<Tuple> sortedTuplesIterator;
 
 			ValueComparator valueComparator = new ValueComparator();
@@ -43,29 +41,17 @@ public class Sort implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				iterator.close();
+				iterator = null;
 			}
 
 			@Override
 			public boolean hasNext() throws SailException {
-				sortTuples();
-				return sortedTuplesIterator.hasNext();
+				return (sortedTuplesIterator != null && sortedTuplesIterator.hasNext()) || iterator.hasNext();
 			}
 
 			private void sortTuples() {
-				if (sortedTuples == null && parent instanceof UnorderedSelect || (parent instanceof LoggingNode && ((LoggingNode) parent).parent instanceof UnorderedSelect)) {
-					sortedTuples = new ArrayList<>();
-
-					while (iterator.hasNext()) {
-						Tuple next = iterator.next();
-						sortedTuples.add(next);
-					}
-					sortedTuplesIterator = sortedTuples.iterator();
-					return;
-				}
-
-
-				if (sortedTuples == null) {
-					sortedTuples = new ArrayList<>();
+				if (sortedTuplesIterator == null) {
+					List<Tuple> sortedTuples = new ArrayList<>();
 					boolean alreadySorted = true;
 					Tuple prev = null;
 					while (iterator.hasNext()) {
@@ -81,7 +67,7 @@ public class Sort implements PlanNode {
 						if (sortedTuples.size() > 8192) { // MIN_ARRAY_SORT_GRAN in Arrays.parallelSort(...)
 							Tuple[] objects = sortedTuples.toArray(new Tuple[0]);
 							Arrays.parallelSort(objects,
-								(a, b) -> valueComparator.compare(a.line.get(0), b.line.get(0)));
+									(a, b) -> valueComparator.compare(a.line.get(0), b.line.get(0)));
 							sortedTuples = Arrays.asList(objects);
 						} else {
 							sortedTuples.sort((a, b) -> valueComparator.compare(a.line.get(0), b.line.get(0)));
@@ -119,7 +105,7 @@ public class Sort implements PlanNode {
 		}
 		printed = true;
 		stringBuilder.append(getId() + " [label=\"" + StringEscapeUtils.escapeJava(this.toString()) + "\"];")
-			.append("\n");
+				.append("\n");
 		stringBuilder.append(parent.getId() + " -> " + getId()).append("\n");
 		parent.getPlanAsGraphvizDot(stringBuilder);
 	}

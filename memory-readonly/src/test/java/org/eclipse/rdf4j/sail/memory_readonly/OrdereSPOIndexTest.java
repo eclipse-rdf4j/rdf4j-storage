@@ -27,7 +27,6 @@ import static org.junit.Assert.assertNotEquals;
 
 public class OrdereSPOIndexTest {
 
-
 	private static final SimpleValueFactory vf = SimpleValueFactory.getInstance();
 	private static final IRI subA = vf.createIRI("http://example.com/", "subA");
 	private static final IRI predA = vf.createIRI("http://example.com/", "predA");

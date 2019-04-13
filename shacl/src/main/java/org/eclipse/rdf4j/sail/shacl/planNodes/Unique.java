@@ -59,6 +59,7 @@ public class Unique implements PlanNode {
 			@Override
 			public void close() throws SailException {
 				parentIterator.close();
+				parentIterator = null;
 			}
 
 			@Override

@@ -79,6 +79,9 @@ public class BulkedExternalLeftOuterJoin extends AbstractBulkJoinPlanNode {
 			@Override
 			public void close() throws SailException {
 				leftNodeIterator.close();
+				leftNodeIterator = null;
+				left = null;
+				right = null;
 			}
 
 			@Override
@@ -155,8 +158,10 @@ public class BulkedExternalLeftOuterJoin extends AbstractBulkJoinPlanNode {
 		leftNode.getPlanAsGraphvizDot(stringBuilder);
 
 		if (connection instanceof MemoryStoreReadOnlyConnection) {
-			stringBuilder.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
-					+ getId() + " [label=\"right\"]").append("\n");
+			stringBuilder
+					.append(System.identityHashCode(((MemoryStoreReadOnlyConnection) connection).getSail()) + " -> "
+							+ getId() + " [label=\"right\"]")
+					.append("\n");
 		} else {
 			stringBuilder.append(System.identityHashCode(connection) + " -> " + getId() + " [label=\"right\"]")
 					.append("\n");

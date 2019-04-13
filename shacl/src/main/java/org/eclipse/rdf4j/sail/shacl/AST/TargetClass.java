@@ -60,9 +60,8 @@ public class TargetClass extends NodeShape {
 		PlanNode planNode;
 		if (targetClass.size() == 1) {
 			Resource clazz = targetClass.stream().findAny().get();
-			planNode = shaclSailConnection
-					.getCachedNodeFor(new Sort(new UnorderedSelect(shaclSailConnection.getAddedStatements(), null,
-							RDF.TYPE, clazz, UnorderedSelect.OutputPattern.SubjectPredicateObject)));
+			planNode = new UnorderedSelect(shaclSailConnection.getAddedStatements(), null, RDF.TYPE, clazz,
+					UnorderedSelect.OutputPattern.SubjectPredicateObject);
 		} else {
 			planNode = shaclSailConnection.getCachedNodeFor(
 					new Select(shaclSailConnection.getAddedStatements(), getQuery("?a", "?c", null), "*"));

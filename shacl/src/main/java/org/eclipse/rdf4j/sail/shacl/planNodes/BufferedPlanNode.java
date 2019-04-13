@@ -38,6 +38,7 @@ public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implemen
 			public void close() throws SailException {
 				closed = true;
 				parent.close();
+				parent = null;
 			}
 
 			@Override

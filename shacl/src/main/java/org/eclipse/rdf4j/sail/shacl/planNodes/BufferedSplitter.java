@@ -55,13 +55,14 @@ public class BufferedSplitter implements PlanNodeProvider {
 			public CloseableIteration<Tuple, SailException> iterator() {
 
 				init();
-				Iterator<Tuple> iterator = tuplesBuffer.iterator();
 
 				return new CloseableIteration<Tuple, SailException>() {
 
+					Iterator<Tuple> iterator = tuplesBuffer.iterator();
+
 					@Override
 					public void close() throws SailException {
-
+						iterator = null;
 					}
 
 					@Override

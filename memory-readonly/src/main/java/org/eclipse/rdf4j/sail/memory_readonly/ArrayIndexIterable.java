@@ -72,5 +72,3 @@ public class ArrayIndexIterable implements Iterable<Statement> {
 	}
 
 }
-
-
