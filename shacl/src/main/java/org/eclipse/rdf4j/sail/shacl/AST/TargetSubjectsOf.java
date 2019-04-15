@@ -57,8 +57,8 @@ public class TargetSubjectsOf extends NodeShape {
 		PlanNode select;
 		if (targetSubjectsOf.size() == 1) {
 			IRI iri = targetSubjectsOf.stream().findAny().get();
-			select = new UnorderedSelect(connection.getAddedStatements(), null, iri, null,
-					UnorderedSelect.OutputPattern.SubjectPredicateObject);
+			select = new Sort(new UnorderedSelect(connection.getAddedStatements(), null, iri, null,
+					UnorderedSelect.OutputPattern.SubjectPredicateObject));
 		} else {
 			select = new Select(connection.getAddedStatements(), getQuery("?a", "?c", null), "?a", "?b1", "?c");
 			select = connection.getCachedNodeFor(select);
@@ -75,8 +75,8 @@ public class TargetSubjectsOf extends NodeShape {
 		PlanNode select;
 		if (targetSubjectsOf.size() == 1) {
 			IRI iri = targetSubjectsOf.stream().findAny().get();
-			select = new UnorderedSelect(connection.getRemovedStatements(), null, iri, null,
-					UnorderedSelect.OutputPattern.SubjectPredicateObject);
+			select = new Sort(new UnorderedSelect(connection.getRemovedStatements(), null, iri, null,
+					UnorderedSelect.OutputPattern.SubjectPredicateObject));
 		} else {
 			select = new Select(connection.getRemovedStatements(), getQuery("?a", "?c", null), "?a", "?b1", "?c");
 			select = connection.getCachedNodeFor(select);

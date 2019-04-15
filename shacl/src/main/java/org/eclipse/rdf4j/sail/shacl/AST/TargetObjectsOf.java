@@ -79,8 +79,8 @@ public class TargetObjectsOf extends NodeShape {
 		if (targetObjectsOf.size() == 1) {
 			IRI iri = targetObjectsOf.stream().findAny().get();
 
-			select = new UnorderedSelect(shaclSailConnection.getRemovedStatements(), null, iri, null,
-					UnorderedSelect.OutputPattern.ObjectPredicateSubject);
+			select = new Sort(new UnorderedSelect(shaclSailConnection.getRemovedStatements(), null, iri, null,
+					UnorderedSelect.OutputPattern.ObjectPredicateSubject));
 		} else {
 			select = new Select(shaclSailConnection.getRemovedStatements(), getQuery("?a", "?c", null), "?a", "?b1",
 					"?c");

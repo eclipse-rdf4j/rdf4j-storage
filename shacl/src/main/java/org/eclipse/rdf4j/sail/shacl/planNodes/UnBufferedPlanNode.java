@@ -51,8 +51,9 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 			private void calculateNext() {
 				while (next == null) {
 					boolean success = parent.incrementIterator();
-					if (!success)
+					if (!success) {
 						break;
+					}
 				}
 			}
 
