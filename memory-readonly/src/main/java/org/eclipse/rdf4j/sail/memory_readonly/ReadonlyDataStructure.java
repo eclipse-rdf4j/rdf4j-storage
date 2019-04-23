@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  */
 public class ReadonlyDataStructure extends DataStructureInterface {
 
-	ValueFactory vf = SimpleValueFactory.getInstance();
+	private final ValueFactory vf = SimpleValueFactory.getInstance();
 
 
 	private SPOIndex SPOIndex;
@@ -44,7 +44,6 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 
 
 	ReadonlyDataStructure(List<Statement> statements) {
-//		List<Statement> collect = statements;
 
 		statements.forEach(s -> {
 			valueMap.computeIfAbsent(s.getSubject(), a -> s.getSubject());
@@ -97,12 +96,11 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 			iterable = OPSIndex.getStatements(subject, predicate, object, context);
 		} else if (subject == null && predicate == null && object != null) {
 			iterable = OPSIndex.getStatements(subject, predicate, object, context);
-		} else if (subject == null && predicate != null && object == null) {
+		} else if (subject == null && predicate != null) {
 			iterable = PSOIndex.getStatements(subject, predicate, object, context);
 		} else {
 			iterable = SPOIndex.getStatements(subject, predicate, object, context);
 		}
-
 
 		CloseableIteration<Statement, SailException> iterator = new CloseableIterationOverIterator(iterable.iterator());
 
@@ -123,9 +121,9 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 
 class CloseableIterationOverIterator implements CloseableIteration<Statement, SailException> {
 
-	Iterator<Statement> iterator;
+	private final Iterator<Statement> iterator;
 
-	public CloseableIterationOverIterator(Iterator<Statement> iterator) {
+	CloseableIterationOverIterator(Iterator<Statement> iterator) {
 		this.iterator = iterator;
 	}
 
