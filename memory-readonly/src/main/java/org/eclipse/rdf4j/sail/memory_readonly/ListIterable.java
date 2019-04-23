@@ -13,6 +13,7 @@ import org.eclipse.rdf4j.util.iterators.EmptyIterator;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
 
 /**
  * @author Håvard Mikkelsen Ottestad
@@ -34,24 +35,17 @@ public class ListIterable implements Iterable<Statement> {
 
 	@Override
 	public Iterator<Statement> iterator() {
-		return new Iterator<Statement>() {
+		return statements.iterator();
+	}
 
-
-			Iterator<Statement> iterator = statements.iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public Statement next() {
-				return iterator.next();
-			}
-		};
+	@Override
+	public Spliterator<Statement> spliterator() {
+		return statements.spliterator();
 	}
 
 	static class EmptyListIterable extends ListIterable {
+
+		private static final EmptyIterator<Statement> STATEMENT_EMPTY_ITERATOR = new EmptyIterator<>();
 
 		EmptyListIterable(List<Statement> statements, boolean needsFurtherFiltering){
 			super(statements, needsFurtherFiltering);
@@ -64,7 +58,7 @@ public class ListIterable implements Iterable<Statement> {
 
 		@Override
 		public Iterator<Statement> iterator() {
-			return new EmptyIterator<>();
+			return STATEMENT_EMPTY_ITERATOR;
 		}
 	}
 

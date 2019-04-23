@@ -32,6 +32,7 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 
 	private final ValueFactory vf = SimpleValueFactory.getInstance();
 
+	private final static ListIterable.EmptyListIterable emptyListIterable = new ListIterable.EmptyListIterable();
 
 	private SPOIndex SPOIndex;
 	private PSOIndex PSOIndex;
@@ -91,6 +92,10 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subject, IRI predicate,
 																				Value object, Resource... context) {
 		ListIterable iterable;
+
+		if (SPOIndex.isEmpty()) {
+			return new CloseableIterationOverIterator(emptyListIterable.iterator());
+		}
 
 		if (subject == null && object != null && predicate != null) {
 			iterable = OPSIndex.getStatements(subject, predicate, object, context);

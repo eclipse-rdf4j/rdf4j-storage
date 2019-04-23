@@ -138,6 +138,9 @@ class SPOIndex {
 	}
 
 
+	public boolean isEmpty() {
+		return sIndex.isEmpty();
+	}
 }
 
 class SpoCompound {

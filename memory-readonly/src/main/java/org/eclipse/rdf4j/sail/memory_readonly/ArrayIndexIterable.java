@@ -55,7 +55,11 @@ public class ArrayIndexIterable implements Iterable<Statement> {
 		};
 	}
 
+
 	static class EmptyArrayIndexIterable extends ArrayIndexIterable{
+
+		static final EmptyArrayIndexIterable emptyArrayIndexIterable = new EmptyArrayIndexIterable();
+		private static final EmptyIterator<Statement> STATEMENT_EMPTY_ITERATOR = new EmptyIterator<>();
 
 		EmptyArrayIndexIterable(Statement[] array, int startInclusive, int stopExclusive, boolean needsFurtherFiltering) {
 			super(array, startInclusive, stopExclusive, needsFurtherFiltering);
@@ -67,7 +71,7 @@ public class ArrayIndexIterable implements Iterable<Statement> {
 
 		@Override
 		public Iterator<Statement> iterator() {
-			return new EmptyIterator<>();
+			return STATEMENT_EMPTY_ITERATOR;
 		}
 	}
 
