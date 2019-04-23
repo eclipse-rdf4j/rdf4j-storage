@@ -34,12 +34,12 @@ public class MemoryStoreReadonly extends AbstractNotifyingSail implements Federa
 
 	private MemorySailStoreReadonly sailStore;
 
-	public MemoryStoreReadonly(Set<Statement> statements, Set<Statement> statementsInferred) {
+	public MemoryStoreReadonly(List<Statement> statements, List<Statement> statementsInferred) {
 		sailStore = new MemorySailStoreReadonly(statements, statementsInferred);
 
 	}
 
-	public MemoryStoreReadonly(Set<Statement> statements) {
+	public MemoryStoreReadonly(List<Statement> statements) {
 		sailStore = new MemorySailStoreReadonly(statements);
 
 	}

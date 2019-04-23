@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadonly;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,9 +29,9 @@ public class Temp {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		SimpleValueFactory vf = SimpleValueFactory.getInstance();
-		HashSet<Statement> statements1 = new HashSet<>(
+		ArrayList<Statement> statements1 = new ArrayList<>(
 				Arrays.asList(vf.createStatement(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE)));
-		SailRepository sail = new SailRepository(new MemoryStoreReadonly(statements1, new HashSet<Statement>()));
+		SailRepository sail = new SailRepository(new MemoryStoreReadonly(statements1, new ArrayList<>()));
 		sail.initialize();
 
 		try (SailRepositoryConnection connection = sail.getConnection()) {

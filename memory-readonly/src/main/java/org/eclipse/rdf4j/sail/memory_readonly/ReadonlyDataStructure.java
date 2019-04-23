@@ -43,7 +43,7 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 	private ValueComparator valueComparator = new ValueComparator();
 
 
-	ReadonlyDataStructure(Set<Statement> statements) {
+	ReadonlyDataStructure(List<Statement> statements) {
 
 		statements.forEach(s -> {
 			valueMap.computeIfAbsent(s.getSubject(), a -> s.getSubject());

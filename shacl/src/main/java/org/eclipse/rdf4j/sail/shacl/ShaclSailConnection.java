@@ -43,6 +43,7 @@ import org.eclipse.rdf4j.sail.shacl.results.ValidationReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -167,7 +168,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 		}
 	}
 
-	private MemoryStoreReadonly getNewMemorySail(Set<Statement> statements) {
+	private MemoryStoreReadonly getNewMemorySail(List<Statement> statements) {
 		MemoryStoreReadonly sail = new MemoryStoreReadonly(statements);
 		sail.setDefaultIsolationLevel(IsolationLevels.NONE);
 		sail.init();
@@ -501,6 +502,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 		}
 	}
 
+
 	void fillAddedAndRemovedStatementRepositories() {
 
 		long before = 0;
@@ -511,13 +513,30 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 		connectionsToClose.forEach(SailConnection::close);
 		connectionsToClose = new ConcurrentLinkedQueue<>();
 
-		if (stats.baseSailEmpty && ((rdfsSubClassOfReasoner == null || rdfsSubClassOfReasoner.isEmpty())
-			&& sail.getBaseSail() instanceof MemoryStore && this.getIsolationLevel() == IsolationLevels.NONE)) {
+		if (stats.baseSailEmpty) {
 
 			flush();
 
-			addedStatements = sail.getBaseSail();
-			removedStatements = getNewMemorySail(new HashSet<>());
+			if ((rdfsSubClassOfReasoner == null || rdfsSubClassOfReasoner.isEmpty())
+				&& sail.getBaseSail() instanceof MemoryStore && this.getIsolationLevel() == IsolationLevels.NONE) {
+				addedStatements = (MemoryStore) sail.getBaseSail();
+				removedStatements = getNewMemorySail(Collections.emptyList());
+			} else {
+
+				try (Stream<? extends Statement> stream = Iterations.stream(getStatements(null, null, null, false))) {
+					List<Statement> collect = stream
+						.flatMap(statement -> rdfsSubClassOfReasoner == null ? Stream.of(statement)
+							: rdfsSubClassOfReasoner.forwardChain(statement))
+						.collect(Collectors.toList());
+					addedStatements = getNewMemorySail(collect);
+
+
+				}
+
+				removedStatements = getNewMemorySail(Collections.emptyList());
+
+
+			}
 
 		} else {
 
@@ -535,11 +554,11 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 						set.forEach(stats::removed);
 					}
 
-					Set<Statement> collect = set.stream()
+					List<Statement> collect = set.stream()
 						.filter(statement -> !otherSet.contains(statement))
 						.flatMap(statement -> rdfsSubClassOfReasoner == null ? Stream.of(statement)
 							: rdfsSubClassOfReasoner.forwardChain(statement))
-						.collect(Collectors.toSet());
+						.collect(Collectors.toList());
 
 					if (set == addedStatementsSet) {
 
@@ -563,8 +582,6 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 				});
 
 		}
-
-
 		selectNodeCache = new HashMap<>();
 
 		if (sail.isPerformanceLogging()) {
