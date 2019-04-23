@@ -19,6 +19,7 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 	Tuple next;
 	private boolean closed;
 	private boolean printed;
+	private int depth = 0;
 
 	UnBufferedPlanNode(T parent) {
 		this.parent = parent;
@@ -33,6 +34,7 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 
 			{
 				parent.init();
+				depth = parent.depth();
 			}
 
 			@Override
@@ -74,6 +76,9 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 
 	@Override
 	public int depth() {
+		if (parent == null) {
+			return depth;
+		}
 		return parent.depth();
 	}
 
@@ -86,7 +91,7 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 		parent.getPlanAsGraphvizDot(stringBuilder);
 
 		stringBuilder.append(getId() + " [label=\"" + StringEscapeUtils.escapeJava(this.toString()) + "\"];")
-				.append("\n");
+			.append("\n");
 	}
 
 	@Override

@@ -21,6 +21,7 @@ public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implemen
 	private Queue<Tuple> buffer = new ArrayDeque<>();
 	private boolean closed;
 	private boolean printed;
+	private int depth = 0;
 
 	BufferedPlanNode(T parent) {
 		this.parent = parent;
@@ -32,6 +33,7 @@ public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implemen
 
 			{
 				parent.init();
+				depth = parent.depth();
 			}
 
 			@Override
@@ -71,6 +73,9 @@ public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implemen
 
 	@Override
 	public int depth() {
+		if (parent == null) {
+			return depth;
+		}
 		return parent.depth();
 	}
 
@@ -83,7 +88,7 @@ public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implemen
 		parent.getPlanAsGraphvizDot(stringBuilder);
 
 		stringBuilder.append(getId() + " [label=\"" + StringEscapeUtils.escapeJava(this.toString()) + "\"];")
-				.append("\n");
+			.append("\n");
 	}
 
 	@Override

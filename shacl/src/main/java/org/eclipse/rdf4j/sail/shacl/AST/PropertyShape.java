@@ -15,7 +15,9 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SHACL;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.SailConnection;
+import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
 import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadOnlyConnection;
 import org.eclipse.rdf4j.sail.memory_readonly.MemoryStoreReadonly;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
@@ -96,10 +98,28 @@ public class PropertyShape implements PlanGenerator, RequiresEvalutation {
 						+ " [label=\"Previous state connection\" nodeShape=pentagon fillcolor=lightblue style=filled];")
 				.append("\n");
 
-		MemoryStoreReadonly addedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getAddedStatements())
+		Sail addedStatements = null;
+		Sail removedStatements = null;
+
+		if(shaclSailConnection.getAddedStatements() instanceof MemoryStoreReadOnlyConnection){
+			 addedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getAddedStatements())
 				.getSail();
-		MemoryStoreReadonly removedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection
-				.getRemovedStatements()).getSail();
+		}
+		if(shaclSailConnection.getAddedStatements() instanceof MemoryStoreConnection){
+			addedStatements = ((MemoryStoreConnection) shaclSailConnection.getAddedStatements())
+				.getSail();
+		}
+
+		if(shaclSailConnection.getRemovedStatements() instanceof MemoryStoreReadOnlyConnection){
+			removedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getRemovedStatements())
+				.getSail();
+		}
+		if(shaclSailConnection.getRemovedStatements() instanceof MemoryStoreConnection){
+			removedStatements = ((MemoryStoreConnection) shaclSailConnection.getRemovedStatements())
+				.getSail();
+		}
+
+
 
 		stringBuilder
 				.append(System.identityHashCode(addedStatements)
