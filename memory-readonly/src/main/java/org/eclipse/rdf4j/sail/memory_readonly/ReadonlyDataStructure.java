@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Håvard Mikkelsen Ottestad
@@ -44,6 +44,7 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 
 
 	ReadonlyDataStructure(List<Statement> statements) {
+//		List<Statement> collect = statements;
 
 		statements.forEach(s -> {
 			valueMap.computeIfAbsent(s.getSubject(), a -> s.getSubject());
@@ -66,10 +67,14 @@ public class ReadonlyDataStructure extends DataStructureInterface {
 			.sorted((a, b) -> valueComparator.compare(a.getSubject(), b.getSubject()))
 			.collect(Collectors.toList());
 
-
-		SPOIndex = new SPOIndex(collect);
-		PSOIndex = new PSOIndex(collect);
-		OPSIndex = new OPSIndex(collect);
+		Stream
+			.of(
+				(Runnable) () -> SPOIndex = new SPOIndex(collect),
+				(Runnable) () -> PSOIndex = new PSOIndex(collect),
+				(Runnable) () -> OPSIndex = new OPSIndex(collect)
+			)
+			.parallel()
+			.forEach(Runnable::run);
 
 	}
 
