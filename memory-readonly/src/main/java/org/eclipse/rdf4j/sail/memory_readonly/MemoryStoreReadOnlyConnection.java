@@ -55,13 +55,14 @@ public class MemoryStoreReadOnlyConnection extends SailSourceConnection {
 
 	@Override
 	public boolean hasStatement(Resource subj, IRI pred, Value obj, boolean includeInferred, Resource... contexts) throws SailException {
-		try (CloseableIteration<? extends Statement, SailException> stIter = getStatements2(subj, pred, obj, includeInferred, contexts)) {
+		try (CloseableIteration<? extends Statement, SailException> stIter = getStatements(subj, pred, obj, includeInferred, contexts)) {
 			return stIter.hasNext();
 		}
 	}
 
 
-	public CloseableIteration<? extends Statement, SailException> getStatements2(Resource subj, IRI pred,
+	@Override
+	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subj, IRI pred,
 																				 Value obj, boolean includeInferred, Resource... contexts) throws SailException {
 		return getStatementsInternal(subj, pred, obj, includeInferred, contexts);
 

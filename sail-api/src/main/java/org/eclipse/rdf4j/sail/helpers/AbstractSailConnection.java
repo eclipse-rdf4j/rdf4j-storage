@@ -281,7 +281,7 @@ public abstract class AbstractSailConnection implements SailConnection {
 	}
 
 	@Override
-	public final CloseableIteration<? extends Statement, SailException> getStatements(Resource subj, IRI pred,
+	public CloseableIteration<? extends Statement, SailException> getStatements(Resource subj, IRI pred,
 			Value obj, boolean includeInferred, Resource... contexts) throws SailException {
 		flushPendingUpdates();
 		connectionLock.readLock().lock();
