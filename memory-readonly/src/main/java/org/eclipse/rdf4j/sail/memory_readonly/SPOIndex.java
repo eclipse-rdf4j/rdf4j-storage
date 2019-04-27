@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,40 +41,59 @@ class SPOIndex {
 
 		allStatements = statements;
 
-		spoIndex = new HashMap<>(statements.size()/5, 0.5f);
-		spIndex = new HashMap<>(statements.size()/5, 0.5f);
-		sIndex = new HashMap<>(statements.size()/5, 0.5f);
+		spoIndex = new HashMap<>(statements.size() / 5, 0.5f);
+		spIndex = new HashMap<>(statements.size() / 5, 0.5f);
+		sIndex = new HashMap<>(statements.size() / 5, 0.5f);
 
 		for (Statement statement : statements) {
 			SCompound sKey = new SCompound(statement.getSubject());
 			SpCompound spKey = new SpCompound(statement.getSubject(), statement.getPredicate());
 			SpoCompound spoKey = new SpoCompound(statement.getSubject(), statement.getPredicate(), statement.getObject());
 
-			sIndex.compute(sKey, (k,v)->{
+			sIndex.compute(sKey, (k, v) -> {
 				List<Statement> list = v;
-				if(list == null) list = new ArrayList<>();
+				if (list == null) {
+					list = Collections.singletonList(statement);
+				} else {
+					if (!(list instanceof ArrayList)) {
+						list = new ArrayList<>(list);
+					}
+					list.add(statement);
 
-				list.add(statement);
+				}
 
 				return list;
 
 			});
 
-			spIndex.compute(spKey, (k,v)->{
+			spIndex.compute(spKey, (k, v) -> {
 				List<Statement> list = v;
-				if(list == null) list = new ArrayList<>();
+				if (list == null) {
+					list = Collections.singletonList(statement);
+				} else {
+					if (!(list instanceof ArrayList)) {
+						list = new ArrayList<>(list);
+					}
+					list.add(statement);
 
-				list.add(statement);
+				}
 
 				return list;
 
 			});
 
-			spoIndex.compute(spoKey, (k,v)->{
+			spoIndex.compute(spoKey, (k, v) -> {
 				List<Statement> list = v;
-				if(list == null) list = new ArrayList<>();
+				if (list == null) {
+					list = Collections.singletonList(statement);
+				} else {
+					if (!(list instanceof ArrayList)) {
+						list = new ArrayList<>(list);
+					}
+					list.add(statement);
 
-				list.add(statement);
+				}
+
 
 				return list;
 
@@ -131,7 +150,7 @@ class SPOIndex {
 			}
 
 		} else {
-			return new ListIterable(allStatements,  true);
+			return new ListIterable(allStatements, true);
 		}
 
 

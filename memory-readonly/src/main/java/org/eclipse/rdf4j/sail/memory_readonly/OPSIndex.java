@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +48,14 @@ class OPSIndex {
 			oIndex.compute(oKey, (k, v) -> {
 				List<Statement> list = v;
 				if (list == null) {
-					list = new ArrayList<>();
-				}
+					list = Collections.singletonList(statement);
+				} else {
+					if (!(list instanceof ArrayList)) {
+						list = new ArrayList<>(list);
+					}
+					list.add(statement);
 
-				list.add(statement);
+				}
 
 				return list;
 
@@ -59,10 +64,14 @@ class OPSIndex {
 			opIndex.compute(opKey, (k, v) -> {
 				List<Statement> list = v;
 				if (list == null) {
-					list = new ArrayList<>();
-				}
+					list = Collections.singletonList(statement);
+				} else {
+					if (!(list instanceof ArrayList)) {
+						list = new ArrayList<>(list);
+					}
+					list.add(statement);
 
-				list.add(statement);
+				}
 
 				return list;
 
