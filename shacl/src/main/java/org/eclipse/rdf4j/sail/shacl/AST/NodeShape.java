@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * The AST (Abstract Syntax Tree) node that represents the NodeShape node. NodeShape nodes can have multiple property
@@ -43,14 +44,14 @@ public class NodeShape implements PlanGenerator, RequiresEvalutation, QueryGener
 
 	private Resource id;
 
-	private List<PropertyShape> propertyShapes = Collections.emptyList();
-	private List<PropertyShape> nodeShapes = Collections.emptyList();
+	private List<PathPropertyShape> propertyShapes = Collections.emptyList();
+	private List<PathPropertyShape> nodeShapes = Collections.emptyList();
 
 	public NodeShape(Resource id, SailRepositoryConnection connection, boolean deactivated) {
 		this.id = id;
 		if (!deactivated) {
 			propertyShapes = PropertyShape.Factory.getPropertyShapes(id, connection, this);
-			nodeShapes = PropertyShape.Factory.getPropertyShapesInner(connection, this, id);
+			nodeShapes = PropertyShape.Factory.getPropertyShapesInner(connection, this, id, null);
 		}
 	}
 
@@ -81,7 +82,7 @@ public class NodeShape implements PlanGenerator, RequiresEvalutation, QueryGener
 		throw new IllegalStateException();
 	}
 
-	public List<PlanNode> generatePlans(ShaclSailConnection shaclSailConnection, NodeShape nodeShape,
+	public Stream<PlanNode> generatePlans(ShaclSailConnection shaclSailConnection, NodeShape nodeShape,
 			boolean printPlans, boolean validateEntireBaseSail) {
 
 		PlanNodeProvider overrideTargetNodeBufferedSplitter;
@@ -103,28 +104,26 @@ public class NodeShape implements PlanGenerator, RequiresEvalutation, QueryGener
 			removedStatements = shaclSailConnection.getRemovedStatements();
 		}
 
-		List<PlanNode> propertyShapesPlans = convertToPlan(propertyShapes, shaclSailConnection, nodeShape, printPlans,
-				validateEntireBaseSail, overrideTargetNodeBufferedSplitter, addedStatements, removedStatements);
+		Stream<PlanNode> propertyShapesPlans = convertToPlan(propertyShapes, shaclSailConnection, nodeShape, printPlans,
+				overrideTargetNodeBufferedSplitter, addedStatements, removedStatements);
 
-		List<PlanNode> nodeShapesPlans = convertToPlan(this.nodeShapes, shaclSailConnection, nodeShape, printPlans,
-				validateEntireBaseSail, overrideTargetNodeBufferedSplitter, addedStatements, removedStatements);
+		Stream<PlanNode> nodeShapesPlans = convertToPlan(this.nodeShapes, shaclSailConnection, nodeShape, printPlans,
+				overrideTargetNodeBufferedSplitter, addedStatements, removedStatements);
 
-		nodeShapesPlans.addAll(propertyShapesPlans);
-
-		return nodeShapesPlans;
+		return Stream.concat(propertyShapesPlans, nodeShapesPlans);
 	}
 
-	private List<PlanNode> convertToPlan(List<PropertyShape> propertyShapes, ShaclSailConnection shaclSailConnection,
-			NodeShape nodeShape, boolean printPlans, boolean validateEntireBaseSail,
-			PlanNodeProvider overrideTargetNodeBufferedSplitter, SailConnection addedStatements,
+	private Stream<PlanNode> convertToPlan(List<PathPropertyShape> propertyShapes,
+			ShaclSailConnection shaclSailConnection,
+			NodeShape nodeShape, boolean printPlans, PlanNodeProvider overrideTargetNodeBufferedSplitter,
+			SailConnection addedStatements,
 			SailConnection removedStatements) {
 
 		return propertyShapes
 				.stream()
 				.filter(propertyShape -> propertyShape.requiresEvaluation(addedStatements, removedStatements))
 				.map(propertyShape -> propertyShape.getPlan(shaclSailConnection, nodeShape, printPlans,
-						overrideTargetNodeBufferedSplitter))
-				.collect(Collectors.toList());
+						overrideTargetNodeBufferedSplitter));
 	}
 
 	@Override

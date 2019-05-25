@@ -360,7 +360,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 
 				Stream<PlanNode> planNodeStream = nodeShapeStream.flatMap(nodeShape -> nodeShape
 					.generatePlans(this, nodeShape, sail.isLogValidationPlans(), validateEntireBaseSail)
-					.stream()).filter(Objects::nonNull);
+					).filter(Objects::nonNull);
 				if (sail.isParallelValidation()) {
 					planNodeStream = planNodeStream.parallel();
 				}
