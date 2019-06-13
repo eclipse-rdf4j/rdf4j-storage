@@ -109,7 +109,7 @@ class PCompound {
 
 	@Override
 	public int hashCode() {
-		return predicate.hashCode();
+		return System.identityHashCode(predicate);
 	}
 
 	@Override

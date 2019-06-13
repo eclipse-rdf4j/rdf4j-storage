@@ -70,6 +70,7 @@
 		<module>spin</module>
 		<module>shacl</module>
 		<module>memory-readonly</module>
+		<module>memory-readonly-bplus</module>
 		<module>storage</module>
         <module>testsuites</module>
         <module>compliance</module>

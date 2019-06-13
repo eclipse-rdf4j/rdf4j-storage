@@ -1,0 +1,129 @@
+@prefix ex: <http://example.com/>.
+
+ex:subA ex:predA ex:objA.
+ex:subA ex:predA ex:objB.
+ex:subA ex:predA ex:objC.
+
+
+ex:subA ex:predB ex:objA.
+ex:subA ex:predB ex:objB.
+ex:subA ex:predB ex:objC.
+
+
+ex:subB ex:predA ex:objA.
+ex:subB ex:predA ex:objB.
+ex:subB ex:predA ex:objC.
+
+
+ex:subB ex:predB ex:objA.
+ex:subB ex:predB ex:objB.
+ex:subB ex:predB ex:objC.
+
+ex:subA ex:subA ex:subA.
+ex:predA ex:predA ex:predA.
+ex:objA ex:objA ex:objA.
+
+
+
+
+
+
+ ex:sub2A ex:pre2dA ex:obj2A.
+ ex:sub2A ex:pre2dA ex:obj2B.
+ ex:sub2A ex:pre2dA ex:obj2C.
+
+
+ ex:sub2A ex:pre2dB ex:obj2A.
+ ex:sub2A ex:pre2dB ex:obj2B.
+ ex:sub2A ex:pre2dB ex:obj2C.
+
+
+ ex:sub2B ex:pre2dA ex:obj2A.
+ ex:sub2B ex:pre2dA ex:obj2B.
+ ex:sub2B ex:pre2dA ex:obj2C.
+
+
+ ex:sub2B ex:pre2dB ex:obj2A.
+ ex:sub2B ex:pre2dB ex:obj2B.
+ ex:sub2B ex:pre2dB ex:obj2C.
+
+ ex:sub2A ex:sub2A ex:sub2A.
+ ex:pre2dA ex:pre2dA ex:pre2dA.
+ ex:obj2A ex:obj2A ex:obj2A.
+
+
+
+
+
+
+ ex:subA ex:predA ex:objAB.
+ ex:subA ex:predA ex:objBB.
+ ex:subA ex:predA ex:objCB.
+
+
+ ex:subA ex:predB ex:objAB.
+ ex:subA ex:predB ex:objBB.
+ ex:subA ex:predB ex:objCB.
+
+
+ ex:subB ex:predA ex:objAB.
+ ex:subB ex:predA ex:objBB.
+ ex:subB ex:predA ex:objCB.
+
+
+ ex:subB ex:predB ex:objAB.
+ ex:subB ex:predB ex:objBB.
+ ex:subB ex:predB ex:objCB.
+
+ ex:subA ex:subA ex:subAB.
+ ex:predA ex:predA ex:predAB.
+ ex:objA ex:objA ex:objAB.
+
+
+ ex:sub4A ex:pre4dA ex:obj4A.
+  ex:sub4A ex:pre4dA ex:obj4B.
+  ex:sub4A ex:pre4dA ex:obj4C.
+
+
+  ex:sub4A ex:pre4dB ex:obj4A.
+  ex:sub4A ex:pre4dB ex:obj4B.
+  ex:sub4A ex:pre4dB ex:obj4C.
+
+
+  ex:sub4B ex:pre4dA ex:obj4A.
+  ex:sub4B ex:pre4dA ex:obj4B.
+  ex:sub4B ex:pre4dA ex:obj4C.
+
+
+  ex:sub4B ex:pre4dB ex:obj4A.
+  ex:sub4B ex:pre4dB ex:obj4B.
+  ex:sub4B ex:pre4dB ex:obj4C.
+
+  ex:sub4A ex:sub4A ex:sub4A.
+  ex:pre4dA ex:pre4dA ex:pre4dA.
+  ex:obj4A ex:obj4A ex:obj4A.
+
+
+   ex:sub3A ex:pre3dA ex:obj3A.
+    ex:sub3A ex:pre3dA ex:obj3B.
+    ex:sub3A ex:pre3dA ex:obj3C.
+
+
+    ex:sub3A ex:pre3dB ex:obj3A.
+    ex:sub3A ex:pre3dB ex:obj3B.
+    ex:sub3A ex:pre3dB ex:obj3C.
+
+
+    ex:sub3B ex:pre3dA ex:obj3A.
+    ex:sub3B ex:pre3dA ex:obj3B.
+    ex:sub3B ex:pre3dA ex:obj3C.
+
+
+    ex:sub3B ex:pre3dB ex:obj3A.
+    ex:sub3B ex:pre3dB ex:obj3B.
+    ex:sub3B ex:pre3dB ex:obj3C.
+
+    ex:sub3A ex:sub3A ex:sub3A.
+    ex:pre3dA ex:pre3dA ex:pre3dA.
+    ex:obj3A ex:obj3A ex:obj3A.
+

@@ -187,7 +187,7 @@ class SpoCompound {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(subject, predicate, object);
+		return Objects.hash(System.identityHashCode(subject), System.identityHashCode(predicate), System.identityHashCode(object));
 	}
 
 	@Override
@@ -222,7 +222,7 @@ class SpCompound {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(subject, predicate);
+		return Objects.hash(System.identityHashCode(subject), System.identityHashCode(predicate));
 	}
 
 	@Override
@@ -253,7 +253,7 @@ class SCompound {
 
 	@Override
 	public int hashCode() {
-		return subject.hashCode();
+		return System.identityHashCode(subject);
 	}
 
 	@Override

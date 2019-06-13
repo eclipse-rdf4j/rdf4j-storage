@@ -109,7 +109,12 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-sail-memory-readonly-bplus</artifactId>
+			<version>${project.version}</version>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
 </project>
