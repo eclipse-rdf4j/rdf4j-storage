@@ -406,12 +406,30 @@ public interface SailConnection extends AutoCloseable {
 	public void clearNamespaces() throws SailException;
 
 	/**
+	 * Removes the specified contexts from the store. If the specified contexts contain any statements, those statements
+	 * are also removed.
+	 * <p>
+	 * For backward compatibility purposes, the default implementation clears the supplied contexts but does not ensure
+	 * that the underlying store also removes the (empty) context itself. Sail implementations that allow empty named
+	 * graphs / contexts should override this behavior.
+	 * 
+	 * @param contexts The context(s) to remove. Note that this parameter is optional. If no contexts are specified the
+	 *                 method operates on the entire repository (and therefore removes all statements from the entire
+	 *                 database). A <tt>null</tt> value can be used to match context-less statements.
+	 * @throws SailException If the Sail encountered an error.
+	 * @since 3.0
+	 */
+	default void drop(Resource... contexts) throws SailException {
+		clear(contexts);
+	}
+
+	/**
 	 * Indicates if the Sail has any statement removal operations pending (not yet {@link #flush() flushed}) for the
 	 * current transaction.
 	 * 
 	 * @return true if any statement removal operations have not yet been flushed, false otherwise.
 	 * @see #flush()
-	 * @deprecated
+	 * @deprecated since 3.0.
 	 */
 	@Deprecated
 	boolean pendingRemovals();

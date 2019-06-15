@@ -34,6 +34,7 @@ import org.eclipse.rdf4j.query.algebra.Clear;
 import org.eclipse.rdf4j.query.algebra.Copy;
 import org.eclipse.rdf4j.query.algebra.Create;
 import org.eclipse.rdf4j.query.algebra.DeleteData;
+import org.eclipse.rdf4j.query.algebra.Drop;
 import org.eclipse.rdf4j.query.algebra.InsertData;
 import org.eclipse.rdf4j.query.algebra.Load;
 import org.eclipse.rdf4j.query.algebra.Modify;
@@ -127,6 +128,8 @@ public class SailUpdateExecutor {
 				executeClear((Clear) updateExpr, uc, maxExecutionTime);
 			} else if (updateExpr instanceof Create) {
 				executeCreate((Create) updateExpr, uc);
+			} else if (updateExpr instanceof Drop) {
+				executeDrop((Drop) updateExpr, uc, maxExecutionTime);
 			} else if (updateExpr instanceof Copy) {
 				executeCopy((Copy) updateExpr, uc, maxExecutionTime);
 			} else if (updateExpr instanceof Add) {
@@ -375,6 +378,55 @@ public class SailUpdateExecutor {
 			}
 		} catch (SailException e) {
 			if (!clearExpr.isSilent()) {
+				throw e;
+			}
+		}
+	}
+
+	/**
+	 * @param dropExpr
+	 * @param uc
+	 * @throws SailException
+	 */
+	protected void executeDrop(Drop dropExpr, UpdateContext uc, int maxExecutionTime) throws SailException {
+		try {
+			ValueConstant graph = dropExpr.getGraph();
+
+			if (graph != null) {
+				Resource context = (Resource) graph.getValue();
+				con.drop(context);
+			} else {
+				Scope scope = dropExpr.getScope();
+				if (Scope.NAMED_CONTEXTS.equals(scope)) {
+					CloseableIteration<? extends Resource, SailException> contextIDs = null;
+					try {
+						contextIDs = con.getContextIDs();
+						if (maxExecutionTime > 0) {
+							contextIDs = new TimeLimitIteration<Resource, SailException>(contextIDs,
+									1000L * maxExecutionTime) {
+
+								@Override
+								protected void throwInterruptedException() throws SailException {
+									throw new SailException("execution took too long");
+								}
+							};
+						}
+						while (contextIDs.hasNext()) {
+							con.clear(contextIDs.next());
+						}
+					} finally {
+						if (contextIDs != null) {
+							contextIDs.close();
+						}
+					}
+				} else if (Scope.DEFAULT_CONTEXTS.equals(scope)) {
+					con.drop((Resource) null);
+				} else {
+					con.drop();
+				}
+			}
+		} catch (SailException e) {
+			if (!dropExpr.isSilent()) {
 				throw e;
 			}
 		}
