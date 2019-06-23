@@ -7,10 +7,10 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.repository.sail.memory;
 
-import org.eclipse.rdf4j.repository.OptimisticIsolationTest;
 import org.eclipse.rdf4j.repository.config.RepositoryImplConfig;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryFactory;
+import org.eclipse.rdf4j.sail.OptimisticIsolationTest;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

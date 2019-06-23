@@ -18,7 +18,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>rdf4j-store-testsuite</artifactId>
+			<artifactId>rdf4j-repository-testsuite</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>rdf4j-sail-testsuite</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

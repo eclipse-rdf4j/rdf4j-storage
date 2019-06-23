@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
-package org.eclipse.rdf4j.repository.optimistic;
+package org.eclipse.rdf4j.sail.optimistic;
 
 import static org.junit.Assert.assertTrue;
 
@@ -13,9 +13,9 @@ import org.eclipse.rdf4j.IsolationLevel;
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.common.io.IOUtil;
 import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.repository.OptimisticIsolationTest;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.sail.OptimisticIsolationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;

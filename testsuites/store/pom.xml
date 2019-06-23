@@ -10,14 +10,12 @@
 		<version>3.0.0-M1</version>
 	</parent>
 
-	<artifactId>rdf4j-store-testsuite</artifactId>
+	<artifactId>rdf4j-sail-testsuite</artifactId>
 
-	<name>RDF4J SAIL and Repository API compliance test suite</name>
-	<description>Test suite for SAIL and Repository API</description>
+	<name>RDF4J SAIL API compliance test suite</name>
+	<description>Test suite for SAIL API</description>
 
 	<dependencies>
-
-
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>rdf4j-repository-api</artifactId>
