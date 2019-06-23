@@ -80,7 +80,7 @@ class PSOIndex {
 			return new ListIterable(statements, false);
 
 
-		}else{
+		} else {
 			return new ListIterable(allStatements, true);
 
 
@@ -109,7 +109,7 @@ class PCompound {
 
 	@Override
 	public int hashCode() {
-		return System.identityHashCode(predicate);
+		return predicate.hashCode();
 	}
 
 	@Override

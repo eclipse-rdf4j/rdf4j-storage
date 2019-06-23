@@ -149,7 +149,7 @@ class OpsCompound {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(System.identityHashCode(object), System.identityHashCode(predicate), System.identityHashCode(subject));
+		return Objects.hash((object), (predicate), (subject));
 	}
 
 	@Override
@@ -184,7 +184,7 @@ class OpCompound {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(System.identityHashCode(object), System.identityHashCode(predicate));
+		return Objects.hash((object), (predicate));
 	}
 
 	@Override
@@ -216,7 +216,7 @@ class OCompound {
 
 	@Override
 	public int hashCode() {
-		return System.identityHashCode(object);
+		return object.hashCode();
 	}
 
 	@Override
