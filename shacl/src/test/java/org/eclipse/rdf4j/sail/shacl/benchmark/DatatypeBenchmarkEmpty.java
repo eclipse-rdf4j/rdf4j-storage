@@ -93,14 +93,13 @@ public class DatatypeBenchmarkEmpty {
 
 		SailRepository repository = new SailRepository(Utils.getInitializedShaclSail("shaclDatatype.ttl"));
 
-//		((ShaclSail) repository.getSail()).setIgnoreNoShapesLoadedException(true);
 		((ShaclSail) repository.getSail()).setCacheSelectNodes(true);
 		((ShaclSail) repository.getSail()).setParallelValidation(false);
 
-//		try (SailRepositoryConnection connection = repository.getConnection()) {
-//			connection.begin(IsolationLevels.SNAPSHOT);
-//			connection.commit();
-//		}
+		try (SailRepositoryConnection connection = repository.getConnection()) {
+			connection.begin(IsolationLevels.SNAPSHOT);
+			connection.commit();
+		}
 
 		try (SailRepositoryConnection connection = repository.getConnection()) {
 			for (List<Statement> statements : allStatements) {
