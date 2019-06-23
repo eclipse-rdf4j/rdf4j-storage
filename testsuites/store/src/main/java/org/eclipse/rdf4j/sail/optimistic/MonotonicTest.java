@@ -5,10 +5,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
-package org.eclipse.rdf4j.repository.optimistic;
+package org.eclipse.rdf4j.sail.optimistic;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +22,15 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.repository.OptimisticIsolationTest;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.sail.SailConflictException;
+import org.eclipse.rdf4j.sail.OptimisticIsolationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SnapshotTest {
+public class MonotonicTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -46,7 +43,7 @@ public class SnapshotTest {
 
 	private RepositoryConnection b;
 
-	private IsolationLevel level = IsolationLevels.SNAPSHOT;
+	private IsolationLevel level = IsolationLevels.SNAPSHOT_READ;
 
 	private String NS = "http://rdf.example.org/";
 
@@ -84,7 +81,7 @@ public class SnapshotTest {
 
 	@Before
 	public void setUp() throws Exception {
-		repo = OptimisticIsolationTest.getEmptyInitializedRepository(SnapshotTest.class);
+		repo = OptimisticIsolationTest.getEmptyInitializedRepository(MonotonicTest.class);
 		lf = repo.getValueFactory();
 		ValueFactory uf = repo.getValueFactory();
 		PAINTER = uf.createIRI(NS, "Painter");
@@ -152,8 +149,8 @@ public class SnapshotTest {
 		b.add(REMBRANDT, RDF.TYPE, PAINTER);
 		assertEquals(1, size(a, null, RDF.TYPE, PAINTER, false));
 		a.commit();
-		b.commit();
 		assertEquals(2, size(b, null, RDF.TYPE, PAINTER, false));
+		b.commit();
 	}
 
 	@Test
@@ -164,26 +161,20 @@ public class SnapshotTest {
 		b.prepareUpdate(QueryLanguage.SPARQL, "INSERT DATA { <rembrandt> a <Painter> }", NS).execute();
 		assertEquals(1, size(a, null, RDF.TYPE, PAINTER, false));
 		a.commit();
-		b.commit();
 		assertEquals(2, size(b, null, RDF.TYPE, PAINTER, false));
+		b.commit();
 	}
 
 	@Test
-	public void test_conflictPattern() throws Exception {
+	public void test_changedPattern() throws Exception {
 		a.begin(level);
 		b.begin(level);
 		a.add(PICASSO, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, RDF.TYPE, PAINTER);
 		assertEquals(1, size(b, null, RDF.TYPE, PAINTER, false));
 		a.commit();
-		try {
-			int size = size(b, null, RDF.TYPE, PAINTER, false);
-			b.commit();
-			assertEquals(1, size);
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-		}
+		assertEquals(2, size(b, null, RDF.TYPE, PAINTER, false));
+		b.commit();
 	}
 
 	@Test
@@ -269,7 +260,7 @@ public class SnapshotTest {
 	}
 
 	@Test
-	public void test_conflictQuery() throws Exception {
+	public void test_changedQuery() throws Exception {
 		a.add(PICASSO, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, PAINTS, NIGHTWATCH);
@@ -285,20 +276,13 @@ public class SnapshotTest {
 			b.add((Resource) painting, RDF.TYPE, PAINTING);
 		}
 		a.commit();
-		try {
-			int size = size(b, null, PAINTS, null, false);
-			b.commit();
-			assertEquals(3, size);
-			assertEquals(3, size(a, null, RDF.TYPE, PAINTING, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(0, size(a, null, RDF.TYPE, PAINTING, false));
-		}
+		assertEquals(5, size(b, null, PAINTS, null, false));
+		b.commit();
+		assertEquals(3, size(a, null, RDF.TYPE, PAINTING, false));
 	}
 
 	@Test
-	public void test_conflictInsert() throws Exception {
+	public void test_changedInsert() throws Exception {
 		a.add(PICASSO, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, PAINTS, NIGHTWATCH);
@@ -312,16 +296,9 @@ public class SnapshotTest {
 		b.prepareUpdate(QueryLanguage.SPARQL,
 				"INSERT { ?painting a <Painting> }\n" + "WHERE { [a <Painter>] <paints> ?painting }", NS).execute();
 		a.commit();
-		try {
-			int size = size(b, null, PAINTS, null, false);
-			b.commit();
-			assertEquals(3, size);
-			assertEquals(3, size(a, null, RDF.TYPE, PAINTING, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(0, size(a, null, RDF.TYPE, PAINTING, false));
-		}
+		assertEquals(5, size(b, null, PAINTS, null, false));
+		b.commit();
+		assertEquals(3, size(a, null, RDF.TYPE, PAINTING, false));
 	}
 
 	@Test
@@ -413,7 +390,7 @@ public class SnapshotTest {
 	}
 
 	@Test
-	public void test_conflictOptionalQuery() throws Exception {
+	public void test_changedOptionalQuery() throws Exception {
 		a.add(PICASSO, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, PAINTS, NIGHTWATCH);
@@ -432,20 +409,13 @@ public class SnapshotTest {
 			}
 		}
 		a.commit();
-		try {
-			int size = size(b, null, PAINTS, null, false);
-			b.commit();
-			assertEquals(3, size);
-			assertEquals(10, size(a, null, null, null, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(7, size(a, null, null, null, false));
-		}
+		assertEquals(5, size(b, null, PAINTS, null, false));
+		b.commit();
+		assertEquals(10, size(a, null, null, null, false));
 	}
 
 	@Test
-	public void test_conflictOptionalInsert() throws Exception {
+	public void test_changedOptionalInsert() throws Exception {
 		a.add(PICASSO, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, RDF.TYPE, PAINTER);
 		b.add(REMBRANDT, PAINTS, NIGHTWATCH);
@@ -459,16 +429,9 @@ public class SnapshotTest {
 		b.prepareUpdate(QueryLanguage.SPARQL, "INSERT { ?painting a <Painting> }\n" + "WHERE { ?painter a <Painter> "
 				+ "OPTIONAL { ?painter <paints> ?painting } }", NS).execute();
 		a.commit();
-		try {
-			int size = size(b, null, PAINTS, null, false);
-			b.commit();
-			assertEquals(3, size);
-			assertEquals(10, size(a, null, null, null, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(7, size(a, null, null, null, false));
-		}
+		assertEquals(5, size(b, null, PAINTS, null, false));
+		b.commit();
+		assertEquals(10, size(a, null, null, null, false));
 	}
 
 	@Test
@@ -528,6 +491,7 @@ public class SnapshotTest {
 		a.add(JACQUELINE, RDF.TYPE, PAINTING);
 		List<Value> result = eval("painting", b, "SELECT ?painting " + "WHERE { [a <Painter>] <paints> ?painting "
 				+ "OPTIONAL { ?painting a ?type  } FILTER (!bound(?type)) }");
+		assertEquals(5, result.size());
 		for (Value painting : result) {
 			if (painting != null) {
 				b.add((Resource) painting, RDF.TYPE, PAINTING);
@@ -563,7 +527,7 @@ public class SnapshotTest {
 	}
 
 	@Test
-	public void test_conflictOptionalFilterQuery() throws Exception {
+	public void test_changedOptionalFilterQuery() throws Exception {
 		a.add(PICASSO, RDF.TYPE, PAINTER);
 		a.add(PICASSO, PAINTS, GUERNICA);
 		a.add(PICASSO, PAINTS, JACQUELINE);
@@ -577,27 +541,19 @@ public class SnapshotTest {
 		a.add(JACQUELINE, RDF.TYPE, PAINTING);
 		List<Value> result = eval("painting", b, "SELECT ?painting " + "WHERE { [a <Painter>] <paints> ?painting "
 				+ "OPTIONAL { ?painting a ?type  } FILTER (!bound(?type)) }");
-		assertEquals(5, result.size());
 		for (Value painting : result) {
 			if (painting != null) {
 				b.add((Resource) painting, RDF.TYPE, PAINTING);
 			}
 		}
 		a.commit();
-		try {
-			int size = size(b, null, RDF.TYPE, PAINTING, false);
-			b.commit();
-			assertEquals(5, size);
-			assertEquals(12, size(a, null, null, null, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(9, size(a, null, null, null, false));
-		}
+		assertEquals(5, size(b, null, RDF.TYPE, PAINTING, false));
+		b.commit();
+		assertEquals(12, size(a, null, null, null, false));
 	}
 
 	@Test
-	public void test_conflictOptionalFilterInsert() throws Exception {
+	public void test_changedOptionalFilterInsert() throws Exception {
 		a.add(PICASSO, RDF.TYPE, PAINTER);
 		a.add(PICASSO, PAINTS, GUERNICA);
 		a.add(PICASSO, PAINTS, JACQUELINE);
@@ -613,17 +569,9 @@ public class SnapshotTest {
 				"INSERT { ?painting a <Painting> }\n" + "WHERE { [a <Painter>] <paints> ?painting "
 						+ "OPTIONAL { ?painting a ?type  } FILTER (!bound(?type)) }",
 				NS).execute();
-		a.commit();
-		try {
-			int size = size(b, null, RDF.TYPE, PAINTING, false);
-			b.commit();
-			assertEquals(5, size);
-			assertEquals(12, size(a, null, null, null, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(9, size(a, null, null, null, false));
-		}
+		assertEquals(5, size(b, null, RDF.TYPE, PAINTING, false));
+		b.commit();
+		assertEquals(12, size(a, null, null, null, false));
 	}
 
 	@Test
@@ -739,7 +687,7 @@ public class SnapshotTest {
 	}
 
 	@Test
-	public void test_conflictRangeQuery() throws Exception {
+	public void test_changedRangeQuery() throws Exception {
 		a.add(REMBRANDT, RDF.TYPE, PAINTER);
 		a.add(REMBRANDT, PAINTS, NIGHTWATCH);
 		a.add(REMBRANDT, PAINTS, ARTEMISIA);
@@ -762,20 +710,13 @@ public class SnapshotTest {
 		a.add(REMBRANDT, PAINTS, BELSHAZZAR);
 		a.add(BELSHAZZAR, YEAR, lf.createLiteral(1635));
 		a.commit();
-		try {
-			int size = size(b, REMBRANDT, PAINTS, null, false);
-			b.commit();
-			assertEquals(5, size);
-			assertEquals(16, size(a, null, null, null, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(13, size(a, null, null, null, false));
-		}
+		assertEquals(6, size(b, REMBRANDT, PAINTS, null, false));
+		b.commit();
+		assertEquals(16, size(a, null, null, null, false));
 	}
 
 	@Test
-	public void test_conflictRangeInsert() throws Exception {
+	public void test_changedRangeInsert() throws Exception {
 		a.add(REMBRANDT, RDF.TYPE, PAINTER);
 		a.add(REMBRANDT, PAINTS, NIGHTWATCH);
 		a.add(REMBRANDT, PAINTS, ARTEMISIA);
@@ -797,16 +738,9 @@ public class SnapshotTest {
 		a.add(REMBRANDT, PAINTS, BELSHAZZAR);
 		a.add(BELSHAZZAR, YEAR, lf.createLiteral(1635));
 		a.commit();
-		try {
-			int size = size(b, REMBRANDT, PAINTS, null, false);
-			b.commit();
-			assertEquals(5, size);
-			assertEquals(16, size(a, null, null, null, false));
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-			assertTrue(e.getCause() instanceof SailConflictException);
-			assertEquals(13, size(a, null, null, null, false));
-		}
+		assertEquals(6, size(b, REMBRANDT, PAINTS, null, false));
+		b.commit();
+		assertEquals(16, size(a, null, null, null, false));
 	}
 
 	private int size(RepositoryConnection con, Resource subj, IRI pred, Value obj, boolean inf, Resource... ctx)
