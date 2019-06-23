@@ -177,7 +177,6 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 
 	@Override
 	public void commit() throws SailException {
-
 		if (!preparedHasRun) {
 			prepare();
 		}
