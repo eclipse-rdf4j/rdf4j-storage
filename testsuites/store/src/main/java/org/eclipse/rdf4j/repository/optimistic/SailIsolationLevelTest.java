@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
-package org.eclipse.rdf4j.sail.optimistic;
+package org.eclipse.rdf4j.repository.optimistic;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,11 +23,11 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.repository.OptimisticIsolationTest;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.UnknownTransactionStateException;
-import org.eclipse.rdf4j.sail.OptimisticIsolationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;

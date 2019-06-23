@@ -5,25 +5,23 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
-package org.eclipse.rdf4j.sail;
+package org.eclipse.rdf4j.repository;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.common.io.FileUtil;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryFactory;
-import org.eclipse.rdf4j.sail.optimistic.DeadLockTest;
-import org.eclipse.rdf4j.sail.optimistic.DeleteInsertTest;
-import org.eclipse.rdf4j.sail.optimistic.LinearTest;
-import org.eclipse.rdf4j.sail.optimistic.ModificationTest;
-import org.eclipse.rdf4j.sail.optimistic.MonotonicTest;
-import org.eclipse.rdf4j.sail.optimistic.RemoveIsolationTest;
-import org.eclipse.rdf4j.sail.optimistic.SailIsolationLevelTest;
-import org.eclipse.rdf4j.sail.optimistic.SerializableTest;
-import org.eclipse.rdf4j.sail.optimistic.SnapshotTest;
+import org.eclipse.rdf4j.repository.optimistic.DeadLockTest;
+import org.eclipse.rdf4j.repository.optimistic.DeleteInsertTest;
+import org.eclipse.rdf4j.repository.optimistic.LinearTest;
+import org.eclipse.rdf4j.repository.optimistic.ModificationTest;
+import org.eclipse.rdf4j.repository.optimistic.MonotonicTest;
+import org.eclipse.rdf4j.repository.optimistic.RemoveIsolationTest;
+import org.eclipse.rdf4j.repository.optimistic.SailIsolationLevelTest;
+import org.eclipse.rdf4j.repository.optimistic.SerializableTest;
+import org.eclipse.rdf4j.repository.optimistic.SnapshotTest;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
