@@ -7,11 +7,20 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.sail.lucene;
 
+import org.eclipse.rdf4j.query.algebra.BindingSetAssignment;
 import org.eclipse.rdf4j.query.algebra.QueryModelNode;
 
 public interface SearchQueryEvaluator {
 
 	QueryModelNode getParentQueryModelNode();
 
-	void updateQueryModelNodes(boolean hasResult);
+	/**
+	 * @param bsa if null or empty then there're no results for the query
+	 */
+	void replaceQueryPatternsWithResults(final BindingSetAssignment bsa);
+
+	/**
+	 * Removes the query patterns and returns a placeholder where the query results could be placed.
+	 */
+	QueryModelNode removeQueryPatterns();
 }

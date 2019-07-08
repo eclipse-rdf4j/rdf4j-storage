@@ -106,6 +106,7 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 
 	@Override
 	public void push(Tuple next) {
+		assert (this.next == null);
 		this.next = next;
 	}
 
