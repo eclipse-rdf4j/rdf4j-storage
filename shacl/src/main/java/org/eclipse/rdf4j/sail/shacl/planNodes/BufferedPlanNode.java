@@ -47,7 +47,6 @@ public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implemen
 			public void close() throws SailException {
 				closed = true;
 				parent.close();
-				parent = null;
 			}
 
 			@Override
@@ -102,7 +101,7 @@ public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implemen
 		parent.getPlanAsGraphvizDot(stringBuilder);
 
 		stringBuilder.append(getId() + " [label=\"" + StringEscapeUtils.escapeJava(this.toString()) + "\"];")
-			.append("\n");
+				.append("\n");
 	}
 
 	@Override

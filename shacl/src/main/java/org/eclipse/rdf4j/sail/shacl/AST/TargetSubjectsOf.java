@@ -67,7 +67,7 @@ public class TargetSubjectsOf extends NodeShape {
 			select = connection.getCachedNodeFor(select);
 		}
 
-		return new Unique(new TrimTuple(new LoggingNode(select, ""), 0, 1));
+		return new Unique(new TrimTuple(select, 0, 1));
 
 	}
 
@@ -85,7 +85,7 @@ public class TargetSubjectsOf extends NodeShape {
 			select = connection.getCachedNodeFor(select);
 		}
 
-		return new Unique(new TrimTuple(new LoggingNode(select, ""), 0, 1));
+		return new Unique(new TrimTuple(select, 0, 1));
 
 	}
 

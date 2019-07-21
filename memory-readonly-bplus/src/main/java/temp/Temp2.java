@@ -8,6 +8,6 @@ public class Temp2 extends Temp {
 	}
 }
 
-class Temp3{
+class Temp3 {
 	Temp2 t = new Temp2("s");
 }

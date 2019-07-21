@@ -103,25 +103,23 @@ public abstract class PropertyShape implements PlanGenerator, RequiresEvalutatio
 		Sail addedStatements = null;
 		Sail removedStatements = null;
 
-		if(shaclSailConnection.getAddedStatements() instanceof MemoryStoreReadOnlyConnection){
-			 addedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getAddedStatements())
-				.getSail();
+		if (shaclSailConnection.getAddedStatements() instanceof MemoryStoreReadOnlyConnection) {
+			addedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getAddedStatements())
+					.getSail();
 		}
-		if(shaclSailConnection.getAddedStatements() instanceof MemoryStoreConnection){
+		if (shaclSailConnection.getAddedStatements() instanceof MemoryStoreConnection) {
 			addedStatements = ((MemoryStoreConnection) shaclSailConnection.getAddedStatements())
-				.getSail();
+					.getSail();
 		}
 
-		if(shaclSailConnection.getRemovedStatements() instanceof MemoryStoreReadOnlyConnection){
+		if (shaclSailConnection.getRemovedStatements() instanceof MemoryStoreReadOnlyConnection) {
 			removedStatements = ((MemoryStoreReadOnlyConnection) shaclSailConnection.getRemovedStatements())
-				.getSail();
+					.getSail();
 		}
-		if(shaclSailConnection.getRemovedStatements() instanceof MemoryStoreConnection){
+		if (shaclSailConnection.getRemovedStatements() instanceof MemoryStoreConnection) {
 			removedStatements = ((MemoryStoreConnection) shaclSailConnection.getRemovedStatements())
-				.getSail();
+					.getSail();
 		}
-
-
 
 		stringBuilder
 				.append(System.identityHashCode(addedStatements)

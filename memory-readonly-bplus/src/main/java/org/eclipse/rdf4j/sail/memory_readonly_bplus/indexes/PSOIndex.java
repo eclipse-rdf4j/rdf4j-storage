@@ -24,6 +24,7 @@ public class PSOIndex {
 		index = new BplusTree<>(collect, new PSOCComparator());
 
 	}
+
 	public ListIterable getStatements(Resource subject, IRI predicate, Value object, Resource[] context) {
 		return null;
 	}

@@ -41,11 +41,9 @@ public class BplusTree<E> {
 
 			}
 
-
 		} else {
 			throw new IllegalStateException();
 		}
-
 
 		return newIndex;
 	}
@@ -117,7 +115,6 @@ public class BplusTree<E> {
 
 		}
 
-
 		// link
 		link(dataNodes);
 
@@ -141,7 +138,6 @@ public class BplusTree<E> {
 
 		}
 
-
 		if (node == null) {
 			return null;
 		}
@@ -158,7 +154,6 @@ public class BplusTree<E> {
 			node = (IndexNode) node.getLastNode(find, comparator);
 
 		}
-
 
 		if (node == null) {
 			return null;

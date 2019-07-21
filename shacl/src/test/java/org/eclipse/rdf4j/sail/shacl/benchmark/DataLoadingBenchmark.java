@@ -44,8 +44,8 @@ import java.util.stream.Collectors;
  */
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
-@BenchmarkMode({Mode.AverageTime})
-@Fork(value = 1, jvmArgs = {"-Xms8G", "-Xmx8G"})
+@BenchmarkMode({ Mode.AverageTime })
+@Fork(value = 1, jvmArgs = { "-Xms8G", "-Xmx8G" })
 //@Fork(value = 1, jvmArgs = {"-Xms8G", "-Xmx8G", "-XX:+UnlockCommercialFeatures", "-XX:StartFlightRecording=delay=15s,duration=120s,filename=recording.jfr,settings=profile", "-XX:FlightRecorderOptions=samplethreads=true,stackdepth=1024", "-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints"})
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -57,28 +57,30 @@ public class DataLoadingBenchmark {
 	{
 		try {
 
-			Model parse = Rio.parse(DataLoadingBenchmark.class.getClassLoader().getResourceAsStream("complexBenchmark/generated.ttl"), "", RDFFormat.TURTLE);
+			Model parse = Rio.parse(
+					DataLoadingBenchmark.class.getClassLoader().getResourceAsStream("complexBenchmark/generated.ttl"),
+					"", RDFFormat.TURTLE);
 
 			SimpleValueFactory vf = SimpleValueFactory.getInstance();
 
-			statements = parse.stream().map(s -> vf.createStatement(s.getSubject(), s.getPredicate(), s.getObject(), s.getContext())).collect(Collectors.toList());
+			statements = parse.stream()
+					.map(s -> vf.createStatement(s.getSubject(), s.getPredicate(), s.getObject(), s.getContext()))
+					.collect(Collectors.toList());
 
 			Collections.shuffle(statements);
 
 			statementsString = statements.stream().map(s -> {
 				StringBuilder stringBuilder = new StringBuilder();
 				return stringBuilder.append(s.getSubject().toString())
-					.append("::")
-					.append(s.getPredicate().toString())
-					.append("::")
-					.append(s.getObject().toString()).toString();
-
+						.append("::")
+						.append(s.getPredicate().toString())
+						.append("::")
+						.append(s.getObject().toString())
+						.toString();
 
 			}).collect(Collectors.toList());
 
-
 		} catch (IOException e) {
-
 
 		}
 
@@ -89,7 +91,6 @@ public class DataLoadingBenchmark {
 
 		new MemoryStoreReadonlyBplus(statements);
 
-
 	}
 
 	@Benchmark
@@ -99,7 +100,6 @@ public class DataLoadingBenchmark {
 
 	}
 
-
 	@Benchmark
 	public void oldMem() {
 
@@ -108,13 +108,12 @@ public class DataLoadingBenchmark {
 
 		try (NotifyingSailConnection connection = memoryStore.getConnection()) {
 			connection.begin(IsolationLevels.NONE);
-			statements.forEach(s -> connection.addStatement(s.getSubject(), s.getPredicate(), s.getObject(), s.getContext()));
+			statements.forEach(
+					s -> connection.addStatement(s.getSubject(), s.getPredicate(), s.getObject(), s.getContext()));
 			connection.commit();
 		}
 
-
 	}
-
 
 	@Benchmark
 	public void sortSPOC() {
@@ -130,11 +129,11 @@ public class DataLoadingBenchmark {
 		List<String> collect = statements.stream().map(s -> {
 			StringBuilder stringBuilder = new StringBuilder();
 			return stringBuilder.append(s.getSubject().toString())
-				.append("::")
-				.append(s.getPredicate().toString())
-				.append("::")
-				.append(s.getObject().toString()).toString();
-
+					.append("::")
+					.append(s.getPredicate().toString())
+					.append("::")
+					.append(s.getObject().toString())
+					.toString();
 
 		}).sorted().collect(Collectors.toList());
 
@@ -154,16 +153,15 @@ public class DataLoadingBenchmark {
 		List<String> collect = statements.stream().map(s -> {
 			StringBuilder stringBuilder = new StringBuilder();
 			return stringBuilder.append(s.getObject().toString())
-				.append("::")
-				.append(s.getPredicate().toString())
-				.append("::")
-				.append(s.getSubject().toString()).toString();
-
+					.append("::")
+					.append(s.getPredicate().toString())
+					.append("::")
+					.append(s.getSubject().toString())
+					.toString();
 
 		}).sorted().collect(Collectors.toList());
 
 	}
-
 
 	@Benchmark
 	public void sortOPSC() {

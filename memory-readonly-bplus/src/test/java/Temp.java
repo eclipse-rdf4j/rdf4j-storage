@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2019 Eclipse RDF4J contributors.
  * All rights reserved. This program and the accompanying materials
@@ -27,7 +28,7 @@ public class Temp {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		SimpleValueFactory vf = SimpleValueFactory.getInstance();
 		ArrayList<Statement> statements1 = new ArrayList<>(
-			Arrays.asList(vf.createStatement(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE)));
+				Arrays.asList(vf.createStatement(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE)));
 		SailRepository sail = new SailRepository(new MemoryStoreReadonlyBplus(statements1, new ArrayList<>()));
 		sail.initialize();
 

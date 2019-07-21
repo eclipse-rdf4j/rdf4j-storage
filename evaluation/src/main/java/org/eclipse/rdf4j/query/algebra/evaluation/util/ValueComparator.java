@@ -30,7 +30,8 @@ public class ValueComparator implements Comparator<Value> {
 
 	@Override
 	public int compare(Value o1, Value o2) {
-		if(o1 == o2) return 0;
+		if (o1 == o2)
+			return 0;
 
 		// 1. (Lowest) no value assigned to the variable
 		if (o1 == null) {
@@ -53,7 +54,6 @@ public class ValueComparator implements Comparator<Value> {
 			return 1;
 		}
 
-
 		// 3. IRIs
 		boolean u1 = o1 instanceof IRI;
 		boolean u2 = o2 instanceof IRI;
@@ -66,8 +66,6 @@ public class ValueComparator implements Comparator<Value> {
 		if (u2) {
 			return 1;
 		}
-
-
 
 		// 4. RDF literals
 		return compareLiterals((Literal) o1, (Literal) o2);

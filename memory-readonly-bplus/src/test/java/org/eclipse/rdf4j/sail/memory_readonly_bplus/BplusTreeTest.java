@@ -16,14 +16,12 @@ import static org.junit.Assert.*;
 
 public class BplusTreeTest {
 
-
 	@Test
 	public void initialTest() throws IOException {
 
 		BplusTree<Statement> statementBplusTree = loadSPOC();
 
 	}
-
 
 	@Test
 	public void getFirstElement() throws IOException {
@@ -34,7 +32,8 @@ public class BplusTreeTest {
 
 		String NS = "http://example.com/";
 
-		Statement subB_predB_objA = vf.createStatement(vf.createIRI(NS, "subB"), vf.createIRI(NS, "predB"), vf.createIRI(NS, "objA"));
+		Statement subB_predB_objA = vf.createStatement(vf.createIRI(NS, "subB"), vf.createIRI(NS, "predB"),
+				vf.createIRI(NS, "objA"));
 
 		BplusTree<Statement>.DataNode firstNode = statementBplusTree.getFirstNode(subB_predB_objA);
 
@@ -76,7 +75,6 @@ public class BplusTreeTest {
 
 	}
 
-
 	@Test
 	public void getLastElementPartialIndex2() throws IOException {
 
@@ -94,17 +92,15 @@ public class BplusTreeTest {
 
 	}
 
-
-
 	private BplusTree<Statement> loadSPOC() throws IOException {
-		Model parse = Rio.parse(BplusTreeTest.class.getClassLoader().getResourceAsStream("test.ttl"), "", RDFFormat.TURTLE);
+		Model parse = Rio.parse(BplusTreeTest.class.getClassLoader().getResourceAsStream("test.ttl"), "",
+				RDFFormat.TURTLE);
 
 		ArrayList<Statement> statements = new ArrayList<>(parse);
 
 		ValueComparator valueComparator = new ValueComparator();
 
 		statements.sort(new SPOCComparator());
-
 
 		return new BplusTree<>(statements, new SPOCComparator());
 	}
