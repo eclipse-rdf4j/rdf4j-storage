@@ -11,8 +11,12 @@ package org.eclipse.rdf4j.sail.shacl.planNodes;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.sail.SailException;
+import org.eclipse.rdf4j.sail.shacl.GlobalValidationExecutionLogging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implements PushablePlanNode {
+	private final Logger logger = LoggerFactory.getLogger(UnBufferedPlanNode.class);
 
 	private T parent;
 
@@ -21,8 +25,12 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 	private boolean printed;
 	private int depth = 0;
 
-	UnBufferedPlanNode(T parent) {
+	String name;
+	private ValidationExecutionLogger validationExecutionLogger;
+
+	UnBufferedPlanNode(T parent, String name) {
 		this.parent = parent;
+		this.name = name;
 	}
 
 	@Override
@@ -62,15 +70,22 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 			@Override
 			public Tuple next() throws SailException {
 				calculateNext();
-				Tuple temp = next;
+				Tuple tuple = next;
+				if (GlobalValidationExecutionLogging.loggingEnabled) {
+					validationExecutionLogger.log(depth(),
+							parent.getClass().getSimpleName() + ":UnBuffered" + name + ".next()", tuple, parent,
+							getId());
+				}
 				next = null;
-				return temp;
+
+				return tuple;
 			}
 
 			@Override
 			public void remove() throws SailException {
 
 			}
+
 		};
 	}
 
@@ -118,5 +133,13 @@ public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implem
 	@Override
 	public String toString() {
 		return "UnBufferedPlanNode";
+	}
+
+	@Override
+	public void receiveLogger(ValidationExecutionLogger validationExecutionLogger) {
+		if (this.validationExecutionLogger == null) {
+			this.validationExecutionLogger = validationExecutionLogger;
+			parent.receiveLogger(validationExecutionLogger);
+		}
 	}
 }

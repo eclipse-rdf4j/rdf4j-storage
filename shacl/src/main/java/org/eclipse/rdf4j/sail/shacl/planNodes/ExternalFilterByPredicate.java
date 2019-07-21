@@ -31,6 +31,7 @@ public class ExternalFilterByPredicate implements PlanNode {
 	final int index;
 	private final On on;
 	private boolean printed = false;
+	private ValidationExecutionLogger validationExecutionLogger;
 
 	public enum On {
 		Subject,
@@ -48,7 +49,7 @@ public class ExternalFilterByPredicate implements PlanNode {
 
 	@Override
 	public CloseableIteration<Tuple, SailException> iterator() {
-		return new CloseableIteration<Tuple, SailException>() {
+		return new LoggingCloseableIteration(this, validationExecutionLogger) {
 
 			Tuple next = null;
 
@@ -97,13 +98,13 @@ public class ExternalFilterByPredicate implements PlanNode {
 			}
 
 			@Override
-			public boolean hasNext() throws SailException {
+			boolean localHasNext() throws SailException {
 				calculateNext();
 				return next != null;
 			}
 
 			@Override
-			public Tuple next() throws SailException {
+			Tuple loggingNext() throws SailException {
 				calculateNext();
 
 				Tuple temp = next;
@@ -162,5 +163,11 @@ public class ExternalFilterByPredicate implements PlanNode {
 	@Override
 	public IteratorData getIteratorDataType() {
 		return parent.getIteratorDataType();
+	}
+
+	@Override
+	public void receiveLogger(ValidationExecutionLogger validationExecutionLogger) {
+		this.validationExecutionLogger = validationExecutionLogger;
+		parent.receiveLogger(validationExecutionLogger);
 	}
 }

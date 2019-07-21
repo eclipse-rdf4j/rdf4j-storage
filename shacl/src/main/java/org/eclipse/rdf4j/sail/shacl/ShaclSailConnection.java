@@ -36,9 +36,9 @@ import org.eclipse.rdf4j.sail.shacl.AST.NodeShape;
 import org.eclipse.rdf4j.sail.shacl.AST.PropertyShape;
 import org.eclipse.rdf4j.sail.shacl.planNodes.BufferedSplitter;
 import org.eclipse.rdf4j.sail.shacl.planNodes.EnrichWithShape;
-import org.eclipse.rdf4j.sail.shacl.planNodes.LoggingNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.Tuple;
+import org.eclipse.rdf4j.sail.shacl.planNodes.ValidationExecutionLogger;
 import org.eclipse.rdf4j.sail.shacl.results.ValidationReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -365,8 +365,10 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 				}
 
 				return planNodeStream.flatMap(planNode -> {
+					ValidationExecutionLogger validationExecutionLogger = new ValidationExecutionLogger();
+					planNode.receiveLogger(validationExecutionLogger);
 					try (Stream<Tuple> stream = Iterations.stream(planNode.iterator())) {
-						if (LoggingNode.loggingEnabled) {
+						if (GlobalValidationExecutionLogging.loggingEnabled) {
 							PropertyShape propertyShape = ((EnrichWithShape) planNode).getPropertyShape();
 							logger.info("Start execution of plan " + propertyShape.getNodeShape().toString() + " : "
 								+ propertyShape.getId());
@@ -378,6 +380,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 						}
 
 						List<Tuple> collect = stream.collect(Collectors.toList());
+						validationExecutionLogger.flush();
 
 						if (sail.isPerformanceLogging()) {
 							long after = System.currentTimeMillis();
@@ -386,7 +389,7 @@ public class ShaclSailConnection extends NotifyingSailConnectionWrapper implemen
 								propertyShape.getNodeShape().toString(), propertyShape.toString());
 						}
 
-						if (LoggingNode.loggingEnabled) {
+						if (GlobalValidationExecutionLogging.loggingEnabled) {
 							PropertyShape propertyShape = ((EnrichWithShape) planNode).getPropertyShape();
 							logger.info("Finished execution of plan {} : {}", propertyShape.getNodeShape().toString(),
 								propertyShape.getId());
