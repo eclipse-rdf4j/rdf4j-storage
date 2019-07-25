@@ -34,7 +34,6 @@ public class SnapshotIsolationTest {
 		multithreaded(IsolationLevels.SNAPSHOT, repo);
 		repo.shutDown();
 
-
 	}
 
 	@Test
@@ -45,21 +44,17 @@ public class SnapshotIsolationTest {
 		multithreaded(IsolationLevels.SERIALIZABLE, repo);
 		repo.shutDown();
 
-
 	}
 
-
 	private void multithreaded(IsolationLevels isolationLevel, Sail repo)
-		throws InterruptedException {
+			throws InterruptedException {
 
 		ValueFactory vf = SimpleValueFactory.getInstance();
 		IRI iri = vf.createIRI("http://example.com/resouce1");
 
-
 		try (SailConnection connctionAddRemoveEarly = repo.getConnection()) {
 			try (SailConnection connectionAddRemoveLate = repo.getConnection()) {
 				try (SailConnection connectionNoWritesAtAll = repo.getConnection()) {
-
 
 					connctionAddRemoveEarly.begin(isolationLevel);
 					connectionAddRemoveLate.begin(isolationLevel);
@@ -67,7 +62,6 @@ public class SnapshotIsolationTest {
 
 					connctionAddRemoveEarly.addStatement(RDF.TYPE, RDF.TYPE, RDFS.RESOURCE);
 					connctionAddRemoveEarly.removeStatements(RDF.TYPE, RDF.TYPE, RDFS.RESOURCE);
-
 
 					Runnable runnable1 = () -> {
 
@@ -78,22 +72,18 @@ public class SnapshotIsolationTest {
 							connection.addStatement(iri, RDFS.LABEL, vf.createLiteral("a"));
 							connection.addStatement(iri, RDFS.LABEL, vf.createLiteral("b"));
 
-
 							connection.commit();
 
 						}
 
 					};
 
-
 					Thread thread1 = new Thread(runnable1);
 					thread1.start();
 					thread1.join();
 
-
 					connectionAddRemoveLate.addStatement(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
 					connectionAddRemoveLate.removeStatements(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
-
 
 					assertEquals(0, getCount(connctionAddRemoveEarly));
 					assertEquals(0, getCount(connectionAddRemoveLate));
@@ -106,18 +96,17 @@ public class SnapshotIsolationTest {
 				}
 			}
 
-
 		}
 
 	}
 
 	private long getCount(SailConnection connection1) {
 
-		try (Stream<? extends Statement> stream = Iterations.stream(connection1.getStatements(null, null, null, false))) {
+		try (Stream<? extends Statement> stream = Iterations
+				.stream(connection1.getStatements(null, null, null, false))) {
 			long count = stream.peek(System.out::println).count();
 			return count;
 		}
 	}
-
 
 }
