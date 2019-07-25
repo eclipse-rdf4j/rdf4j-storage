@@ -49,23 +49,23 @@ public class SnapshotIsolationTest {
 	private void multithreaded(IsolationLevels isolationLevel, Sail repo)
 			throws InterruptedException {
 
-		ValueFactory vf = SimpleValueFactory.getInstance();
-		IRI iri = vf.createIRI("http://example.com/resouce1");
-
-		try (SailConnection connctionAddRemoveEarly = repo.getConnection()) {
+		try (SailConnection connectionAddRemoveEarly = repo.getConnection()) {
 			try (SailConnection connectionAddRemoveLate = repo.getConnection()) {
 				try (SailConnection connectionNoWritesAtAll = repo.getConnection()) {
 
-					connctionAddRemoveEarly.begin(isolationLevel);
+					connectionAddRemoveEarly.begin(isolationLevel);
 					connectionAddRemoveLate.begin(isolationLevel);
 					connectionNoWritesAtAll.begin(isolationLevel);
 
-					connctionAddRemoveEarly.addStatement(RDF.TYPE, RDF.TYPE, RDFS.RESOURCE);
-					connctionAddRemoveEarly.removeStatements(RDF.TYPE, RDF.TYPE, RDFS.RESOURCE);
+					connectionAddRemoveEarly.addStatement(RDF.TYPE, RDF.TYPE, RDFS.RESOURCE);
+					connectionAddRemoveEarly.removeStatements(RDF.TYPE, RDF.TYPE, RDFS.RESOURCE);
 
 					Runnable runnable1 = () -> {
 
 						try (SailConnection connection = repo.getConnection()) {
+							ValueFactory vf = SimpleValueFactory.getInstance();
+							IRI iri = vf.createIRI("http://example.com/resouce1");
+
 							connection.begin(isolationLevel);
 
 							connection.addStatement(iri, RDF.TYPE, RDFS.RESOURCE);
@@ -85,11 +85,11 @@ public class SnapshotIsolationTest {
 					connectionAddRemoveLate.addStatement(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
 					connectionAddRemoveLate.removeStatements(RDFS.RESOURCE, RDF.TYPE, RDFS.RESOURCE);
 
-					assertEquals(0, getCount(connctionAddRemoveEarly));
+					assertEquals(0, getCount(connectionAddRemoveEarly));
 					assertEquals(0, getCount(connectionAddRemoveLate));
 					assertEquals(0, getCount(connectionNoWritesAtAll));
 
-					connctionAddRemoveEarly.commit();
+					connectionAddRemoveEarly.commit();
 					connectionAddRemoveLate.commit();
 					connectionNoWritesAtAll.commit();
 
