@@ -171,9 +171,8 @@ public abstract class AbstractSailConnection implements SailConnection {
 				if (isActive()) {
 					throw new SailException("a transaction is already active on this connection.");
 				}
-
-				startTransactionInternal();
 				txnActive = true;
+				startTransactionInternal();
 			} finally {
 				updateLock.unlock();
 			}

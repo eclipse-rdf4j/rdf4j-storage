@@ -9,6 +9,7 @@
 package org.eclipse.rdf4j.sail.memory;
 
 import org.eclipse.rdf4j.IsolationLevels;
+import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
@@ -16,8 +17,11 @@ import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.sail.NotifyingSailConnection;
 import org.eclipse.rdf4j.sail.Sail;
+import org.eclipse.rdf4j.sail.SailConflictException;
 import org.eclipse.rdf4j.sail.SailConnection;
+import org.eclipse.rdf4j.sail.SailException;
 import org.junit.Test;
 
 import java.util.stream.Stream;
@@ -89,9 +93,19 @@ public class SnapshotIsolationTest {
 					assertEquals(0, getCount(connectionAddRemoveLate));
 					assertEquals(0, getCount(connectionNoWritesAtAll));
 
-					connectionAddRemoveEarly.commit();
-					connectionAddRemoveLate.commit();
-					connectionNoWritesAtAll.commit();
+					try {
+						connectionAddRemoveEarly.commit();
+					} catch (SailConflictException ignored) {
+					}
+
+					try {
+						connectionAddRemoveLate.commit();
+					} catch (SailConflictException ignored) {
+					}
+					try {
+						connectionNoWritesAtAll.commit();
+					} catch (SailConflictException ignored) {
+					}
 
 				}
 			}

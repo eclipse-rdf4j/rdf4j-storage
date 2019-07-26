@@ -357,6 +357,17 @@ public abstract class SailSourceConnection extends NotifyingSailConnectionBase
 			explicitOnlyBranch = store.getExplicitSailSource().fork();
 			inferredOnlyBranch = store.getInferredSailSource().fork();
 			includeInferredBranch = new UnionSailSource(inferredOnlyBranch, explicitOnlyBranch);
+
+			// active transaction isolation
+			synchronized (datasets) {
+				UpdateContext op = null;
+				if (!datasets.containsKey(null)) {
+					SailSource source = branch(false);
+					datasets.put(null, source.dataset(getIsolationLevel()));
+					explicitSinks.put(null, source.sink(getIsolationLevel()));
+				}
+				assert explicitSinks.containsKey(op);
+			}
 		}
 	}
 
