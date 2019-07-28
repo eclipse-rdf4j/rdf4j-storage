@@ -818,7 +818,7 @@ public class StrictEvaluationStrategy implements EvaluationStrategy, FederatedSe
 			return new ServiceJoinIterator(leftIter, (Service) join.getRightArg(), bindings, this);
 		}
 
-		if (TupleExprs.containsSubquery(join.getRightArg())) {
+		if (TupleExprs.isGraphPatternGroup(join.getRightArg()) || TupleExprs.containsSubquery(join.getRightArg())) {
 			return new HashJoinIteration(this, join, bindings);
 		} else {
 			return new JoinIterator(this, join, bindings);
