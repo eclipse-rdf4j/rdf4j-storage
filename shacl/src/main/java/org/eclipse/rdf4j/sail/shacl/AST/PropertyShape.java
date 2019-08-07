@@ -189,6 +189,12 @@ public abstract class PropertyShape implements PlanGenerator, RequiresEvalutatio
 							shaclProperties.deactivated, parent, shaclProperties.path, or));
 				});
 			}
+			if (!shaclProperties.xone.isEmpty()) {
+				shaclProperties.xone.forEach(xone -> {
+					propertyShapes.add(new XonePropertyShape(propertyShapeId, connection, nodeShape,
+						shaclProperties.deactivated, parent, shaclProperties.path, xone));
+				});
+			}
 			if (shaclProperties.minLength != null) {
 				propertyShapes.add(new MinLengthPropertyShape(propertyShapeId, connection, nodeShape,
 						shaclProperties.deactivated, parent, shaclProperties.path, shaclProperties.minLength));

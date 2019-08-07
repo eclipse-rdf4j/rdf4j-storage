@@ -29,6 +29,7 @@ public enum SourceConstraintComponent {
 	InConstraintComponent(SHACL.IN_CONSTRAINT_COMPONENT),
 	UniqueLangConstraintComponent(SHACL.UNIQUE_LANG_CONSTRAINT_COMPONENT),
 	AndConstraintComponent(SHACL.AND_CONSTRAINT_COMPONENT),
+	XoneConstraintComponent(SHACL.XONE_CONSTRAINT_COMPONENT),
 	NotConstraintComponent(SHACL.NOT_CONSTRAINT_COMPONENT);
 
 	private final IRI iri;
