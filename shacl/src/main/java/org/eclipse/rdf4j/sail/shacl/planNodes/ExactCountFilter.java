@@ -16,15 +16,21 @@ import org.eclipse.rdf4j.model.Literal;
 public class ExactCountFilter extends FilterPlanNode {
 
 	private final long exactCount;
+	private final int index;
 
 	public ExactCountFilter(PlanNode parent, long exactCount) {
+		this(parent, exactCount, 1);
+	}
+
+	public ExactCountFilter(PlanNode parent, long exactCount, int index) {
 		super(parent);
 		this.exactCount = exactCount;
+		this.index = index;
 	}
 
 	@Override
 	boolean checkTuple(Tuple t) {
-		Literal literal = (Literal) t.line.get(1);
+		Literal literal = (Literal) t.line.get(index);
 		return literal.longValue() == exactCount;
 	}
 

@@ -12,6 +12,6 @@ ex:validPerson1 a ex:Person ;
 
 
 ex:peter a ex:Person.
-ex:steve a ex:Horse.
+ex:steve a ex:Horse, ex:Person.
 
 }

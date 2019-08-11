@@ -22,12 +22,18 @@ import java.util.List;
  */
 public class GroupByCount implements PlanNode {
 
-	PlanNode parent;
+	final PlanNode parent;
+	final int width;
 	private boolean printed = false;
 	private ValidationExecutionLogger validationExecutionLogger;
 
 	public GroupByCount(PlanNode parent) {
+		this(parent, 1);
+	}
+
+	public GroupByCount(PlanNode parent, int width) {
 		this.parent = parent;
+		this.width = width;
 	}
 
 	@Override
@@ -57,26 +63,54 @@ public class GroupByCount implements PlanNode {
 
 				next = new Tuple();
 
-				Value subject = tempNext.line.get(0);
 
-				while (tempNext != null && (tempNext.line.get(0) == subject || tempNext.line.get(0).equals(subject))) {
+				if(width == 1) {
 
-					next.addHistory(tempNext);
-					if (tempNext.line.size() > 1) {
-						count++;
+					Value subject = tempNext.line.get(0);
+
+					while (tempNext != null && (tempNext.line.get(0) == subject || tempNext.line.get(0).equals(subject))) {
+
+						next.addHistory(tempNext);
+						if (tempNext.line.size() > 1) {
+							count++;
+						}
+
+						if (parentIterator.hasNext()) {
+							tempNext = parentIterator.next();
+						} else {
+							tempNext = null;
+						}
+
 					}
 
-					if (parentIterator.hasNext()) {
-						tempNext = parentIterator.next();
-					} else {
-						tempNext = null;
+					List<Value> line = Arrays.asList(subject, SimpleValueFactory.getInstance().createLiteral(count));
+
+					next.line = line;
+				} else{
+
+
+					List<Value> values = tempNext.line.subList(0, width);
+
+					while(tempNext != null && listEquals(values, tempNext.line.subList(0,width))){
+						next.addHistory(tempNext);
+						if (tempNext.line.size() > 1) {
+							count++;
+						}
+
+						if (parentIterator.hasNext()) {
+							tempNext = parentIterator.next();
+						} else {
+							tempNext = null;
+						}
 					}
+
+
+					values.add(SimpleValueFactory.getInstance().createLiteral(count));
+					List<Value> line = values;
+
+					next.line = line;
 
 				}
-
-				List<Value> line = Arrays.asList(subject, SimpleValueFactory.getInstance().createLiteral(count));
-
-				next.line = line;
 
 			}
 
@@ -108,6 +142,20 @@ public class GroupByCount implements PlanNode {
 
 			}
 		};
+	}
+
+	private boolean listEquals(List<Value> values, List<Value> subList) {
+		if(values.size() != subList.size()) return false;
+
+		for (int i = values.size() - 1; i >= 0; i--) {
+			if(!values.get(i).equals(subList.get(i))){
+				return false;
+			}
+
+		}
+
+		return true;
+
 	}
 
 	@Override

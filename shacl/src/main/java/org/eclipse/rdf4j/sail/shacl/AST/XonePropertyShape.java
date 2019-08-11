@@ -77,6 +77,42 @@ public class XonePropertyShape extends PathPropertyShape {
 		}
 
 		if (this.getPath() != null) {
+
+			List<PlanNode> collect = xone.stream()
+				.map(l -> l.stream().map(p -> p.getPlan(connectionsGroup, false, overrideTargetNode, negateThisPlan, negateSubPlans)).collect(Collectors.toList()))
+				.map(XonePropertyShape::unionAll)
+				.collect(Collectors.toList());
+
+			List<PlanNode> collect2 = xone.stream()
+				.map(l -> l.stream().map(p -> p.getPlan(connectionsGroup, false, overrideTargetNode, true, negateSubPlans)).collect(Collectors.toList()))
+				.map(XonePropertyShape::unionAll)
+				.collect(Collectors.toList());
+
+			PlanNode planNode = unionAll(collect);
+			PlanNode planNode2 = unionAll(collect2);
+
+			Unique uniqueTargets = new Unique(new UnionNode(new TrimTuple(planNode, 0, 1), new TrimTuple(planNode2, 0, 1)));
+
+			BufferedSplitter bufferedSplitter = new BufferedSplitter(uniqueTargets);
+
+			List<PlanNode> collect1 = xone.stream()
+				.map(l -> l.stream().map(p -> p.getPlan(connectionsGroup, false, () -> bufferedSplitter.getPlanNode(), true, negateSubPlans)).collect(Collectors.toList()))
+				.map(XonePropertyShape::unionAll)
+				.map(Unique::new)
+				.collect(Collectors.toList());
+
+			PlanNode planNode1 = unionAll(collect1);
+
+			PlanNode groupByCount = new GroupByCount(planNode1, 2);
+
+			PlanNode falseNode = new ExactCountFilter(groupByCount, 1, 2).getFalseNode(UnBufferedPlanNode.class);
+
+			PlanNode trimTuple = new TrimTuple(falseNode, 0, 2);
+
+			return new EnrichWithShape(trimTuple, this);
+
+
+
 		} else {
 
 
@@ -118,8 +154,6 @@ public class XonePropertyShape extends PathPropertyShape {
 
 
 		}
-
-		return null;
 
 	}
 

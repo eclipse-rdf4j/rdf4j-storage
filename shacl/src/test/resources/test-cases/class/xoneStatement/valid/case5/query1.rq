@@ -8,10 +8,9 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 INSERT DATA {
 
 ex:validPerson1 a ex:Person ;
-	ex:knows ex:peter, ex:steve.
+	ex:knows ex:peter.
 
+ex:peter a ex:Car.
 
-ex:peter a ex:Person.
-ex:steve a ex:Horse.
 
 }
