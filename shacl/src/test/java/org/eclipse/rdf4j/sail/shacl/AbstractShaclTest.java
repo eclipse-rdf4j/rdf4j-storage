@@ -75,7 +75,8 @@ abstract public class AbstractShaclTest {
 //		"test-cases/class/targetNode",
 //		"test-cases/class/validateTarget",
 //		"test-cases/class/validateTargetNot",
-		"test-cases/class/xone"
+		"test-cases/class/xone",
+		"test-cases/class/xoneStatement"
 
 //		"test-cases/complex/dcat",
 //		"test-cases/complex/foaf",
