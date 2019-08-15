@@ -103,11 +103,30 @@ public class XonePropertyShape extends PathPropertyShape {
 
 			PlanNode planNode1 = unionAll(collect1);
 
-			PlanNode groupByCount = new GroupByCount(planNode1, 2);
 
-			PlanNode falseNode = new ExactCountFilter(groupByCount, 1, 2).getFalseNode(UnBufferedPlanNode.class);
 
-			PlanNode trimTuple = new TrimTuple(falseNode, 0, 2);
+				List<PlanNode> collect_2 = xone.stream()
+					.map(l -> l.stream().map(p -> p.getPlan(connectionsGroup, false, overrideTargetNode, negateThisPlan, negateSubPlans)).collect(Collectors.toList()))
+					.map(XonePropertyShape::unionAll)
+					.collect(Collectors.toList());
+
+				List<PlanNode> collect2_2 = xone.stream()
+					.map(l -> l.stream().map(p -> p.getPlan(connectionsGroup, false, overrideTargetNode, true, negateSubPlans)).collect(Collectors.toList()))
+					.map(XonePropertyShape::unionAll)
+					.collect(Collectors.toList());
+
+				PlanNode planNode_2 = unionAll(collect_2);
+				PlanNode planNode2_2 = unionAll(collect2_2);
+
+				Unique uniqueTargets_2 = new Unique(new UnionNode(planNode_2,planNode2_2));
+
+
+
+			PlanNode groupByCount = new GroupByCount(new UnionNode(planNode1, uniqueTargets_2), 2);
+
+			PlanNode falseNode = new ExactCountFilter(groupByCount, 2, 2).getFalseNode(UnBufferedPlanNode.class);
+
+			PlanNode trimTuple = new Unique(new TrimTuple(falseNode, 0, 2));
 
 			return new EnrichWithShape(trimTuple, this);
 
