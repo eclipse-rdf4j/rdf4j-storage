@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 @RunWith(Parameterized.class)
 public class ShaclTest extends AbstractShaclTest {

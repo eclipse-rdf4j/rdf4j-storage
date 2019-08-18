@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class MockConsumePlanNode {
 

@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 
 /**
  * @author Heshan Jayasinghe
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class ShaclSailConnection extends NotifyingSailConnectionWrapper implements SailConnectionListener {
 

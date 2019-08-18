@@ -30,9 +30,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * sh:targetClass
+ * The AST (Abstract Syntax Tree) node that represents sh:targetClass
  *
- * @author Heshan Jayasinghe
+ * @author Heshan Jayasinghe. Håvard Mikkelsen Ottestad
  */
 public class TargetClass extends NodeShape {
 

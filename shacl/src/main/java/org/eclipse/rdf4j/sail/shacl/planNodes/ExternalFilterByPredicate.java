@@ -21,7 +21,8 @@ import java.util.Arrays;
 import java.util.Set;
 
 /**
- * @author Håvard Ottestad
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class ExternalFilterByPredicate implements PlanNode {
 
@@ -72,23 +73,26 @@ public class ExternalFilterByPredicate implements PlanNode {
 			}
 
 			private IRI matchesFilter(Value node) {
+				IRI result = null;
 
 				if (node instanceof Resource && on == On.Subject) {
 
-					return filterOnPredicates.stream()
-							.filter(predicate -> connection.hasStatement((Resource) node, predicate, null, true))
-							.findFirst()
-							.orElse(null);
+					result = filterOnPredicates.stream()
+						.filter(predicate -> connection.hasStatement((Resource) node, predicate, null, true))
+						.findFirst()
+						.orElse(null);
 
-				} else if (on == On.Object) {
+				} else {
+					if (on == On.Object) {
 
-					return filterOnPredicates.stream()
+						result = filterOnPredicates.stream()
 							.filter(predicate -> connection.hasStatement(null, predicate, node, true))
 							.findFirst()
 							.orElse(null);
 
+					}
 				}
-				return null;
+				return result;
 			}
 
 			@Override

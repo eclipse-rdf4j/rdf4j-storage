@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.AST;
 
 import org.eclipse.rdf4j.model.Resource;
@@ -29,7 +30,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author Håvard Ottestad
+ * The AST (Abstract Syntax Tree) node that represents a sh:not restriction.
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class NotPropertyShape extends PathPropertyShape {
 

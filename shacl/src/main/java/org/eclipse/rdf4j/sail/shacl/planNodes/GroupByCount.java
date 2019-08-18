@@ -18,7 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Håvard Ottestad
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class GroupByCount implements PlanNode {
 

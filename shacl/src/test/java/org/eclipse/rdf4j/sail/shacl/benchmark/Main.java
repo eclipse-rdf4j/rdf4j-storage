@@ -14,7 +14,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class Main {
 

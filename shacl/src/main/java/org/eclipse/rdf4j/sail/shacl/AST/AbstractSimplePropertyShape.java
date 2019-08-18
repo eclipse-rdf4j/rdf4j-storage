@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.AST;
 
 import org.eclipse.rdf4j.model.Resource;
@@ -23,7 +24,9 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.UnionNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.Unique;
 
 /**
- * @author Håvard Ottestad
+ * The AST (Abstract Syntax Tree) node that is used for simple property shapes such as sh:datatype or sh:pattern.
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public abstract class AbstractSimplePropertyShape extends PathPropertyShape {
 

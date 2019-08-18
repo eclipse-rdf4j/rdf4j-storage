@@ -29,7 +29,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class EqualsJoinTest {
 

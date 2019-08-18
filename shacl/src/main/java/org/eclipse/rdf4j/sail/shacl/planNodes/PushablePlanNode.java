@@ -8,6 +8,10 @@
 
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public interface PushablePlanNode extends PlanNode {
 
 	void push(Tuple tuple);

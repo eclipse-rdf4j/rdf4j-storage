@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.shacl.AST.PropertyShape;
 
 /**
+ *
  * @author Håvard Mikkelsen Ottestad
  */
 public class EnrichWithShape implements PlanNode {

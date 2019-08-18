@@ -14,8 +14,8 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.SailConnection;
-import org.eclipse.rdf4j.sail.shacl.RdfsSubClassOfReasoner;
 import org.eclipse.rdf4j.sail.shacl.ConnectionsGroup;
+import org.eclipse.rdf4j.sail.shacl.RdfsSubClassOfReasoner;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNodeProvider;
 import org.eclipse.rdf4j.sail.shacl.planNodes.Select;
@@ -28,9 +28,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * sh:targetNode
+ * The AST (Abstract Syntax Tree) node that represents sh:targetNode.
  *
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class TargetNode extends NodeShape {
 

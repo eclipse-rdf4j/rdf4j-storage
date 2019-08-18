@@ -27,7 +27,7 @@ import java.util.Objects;
 /**
  * The AST (Abstract Syntax Tree) node that represents the sh:path on a property nodeShape.
  *
- * @author Heshan Jayasinghe
+ * @author Heshan Jayasinghe, Håvard Mikkelsen Ottestad
  */
 public abstract class PathPropertyShape extends PropertyShape {
 

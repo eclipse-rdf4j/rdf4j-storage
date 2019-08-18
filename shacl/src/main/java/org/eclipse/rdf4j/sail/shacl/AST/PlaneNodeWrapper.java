@@ -10,6 +10,11 @@ package org.eclipse.rdf4j.sail.shacl.AST;
 
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 
+/**
+ * Functional interface used to specify how a plan node should be wrapped. Used for pushing filters.
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public interface PlaneNodeWrapper {
 
 	PlanNode wrap(PlanNode planNode);

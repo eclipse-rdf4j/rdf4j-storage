@@ -13,7 +13,7 @@ import org.eclipse.rdf4j.model.Value;
 import java.util.regex.Pattern;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class PatternFilter extends FilterPlanNode {
 

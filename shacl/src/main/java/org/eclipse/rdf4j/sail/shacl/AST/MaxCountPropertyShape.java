@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
- * The AST (Abstract Syntax Tree) node that represents a sh:maxCount property nodeShape restriction.
+ * The AST (Abstract Syntax Tree) node that represents a sh:maxCount restriction.
  *
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class MaxCountPropertyShape extends PathPropertyShape {
 

@@ -12,8 +12,8 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.SailConnection;
-import org.eclipse.rdf4j.sail.shacl.RdfsSubClassOfReasoner;
 import org.eclipse.rdf4j.sail.shacl.ConnectionsGroup;
+import org.eclipse.rdf4j.sail.shacl.RdfsSubClassOfReasoner;
 import org.eclipse.rdf4j.sail.shacl.planNodes.ExternalFilterByPredicate;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNode;
 import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNodeProvider;
@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * sh:targetObjectsOf
+ * The AST (Abstract Syntax Tree) node that represents sh:targetObjectsOf.
  *
  * @author Håvard Mikkelsen Ottestad
  */
@@ -105,6 +105,7 @@ public class TargetObjectsOf extends NodeShape {
 	@Override
 	public String getQuery(String subjectVariable, String objectVariable,
 			RdfsSubClassOfReasoner rdfsSubClassOfReasoner) {
+
 		return targetObjectsOf.stream()
 				.map(target -> "\n{ BIND(<" + target + "> as ?b1) \n " + objectVariable + " ?b1 " + subjectVariable
 						+ ". } \n")

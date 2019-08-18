@@ -15,6 +15,10 @@ import org.eclipse.rdf4j.sail.shacl.GlobalValidationExecutionLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class UnBufferedPlanNode<T extends PlanNode & MultiStreamPlanNode> implements PushablePlanNode {
 	private final Logger logger = LoggerFactory.getLogger(UnBufferedPlanNode.class);
 

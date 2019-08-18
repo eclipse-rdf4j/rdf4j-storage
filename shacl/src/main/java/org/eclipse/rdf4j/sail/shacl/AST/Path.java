@@ -14,8 +14,9 @@ import org.eclipse.rdf4j.model.Resource;
  * The AST (Abstract Syntax Tree) node that represents a simple path for exactly one predicate. Currently there is no
  * support for complex paths.
  *
- * @author Heshan Jayasinghe
+ * @author Heshan Jayasinghe, Håvard Mikkelsen Ottestad
  */
+
 abstract public class Path implements RequiresEvalutation, QueryGenerator {
 
 	private Resource id;

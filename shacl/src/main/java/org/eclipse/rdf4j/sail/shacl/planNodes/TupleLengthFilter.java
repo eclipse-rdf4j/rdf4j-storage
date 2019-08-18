@@ -8,6 +8,10 @@
 
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class TupleLengthFilter extends FilterPlanNode {
 	private final int length;
 	private final boolean exact;
@@ -20,15 +24,16 @@ public class TupleLengthFilter extends FilterPlanNode {
 
 	@Override
 	boolean checkTuple(Tuple t) {
+		boolean result = false;
 		if (t.line.size() >= length) {
 			if (exact) {
-				return t.line.size() == length;
+				result = t.line.size() == length;
 			} else {
-				return true;
+				result = true;
 			}
 		}
 
-		return false;
+		return result;
 	}
 
 	@Override

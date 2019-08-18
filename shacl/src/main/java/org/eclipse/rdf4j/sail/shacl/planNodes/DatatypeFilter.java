@@ -12,7 +12,8 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 
 /**
- * @author Håvard Ottestad
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class DatatypeFilter extends FilterPlanNode {
 
@@ -25,11 +26,13 @@ public class DatatypeFilter extends FilterPlanNode {
 
 	@Override
 	boolean checkTuple(Tuple t) {
-		if (!(t.line.get(1) instanceof Literal))
-			return false;
+		boolean result = false;
+		if (t.line.get(1) instanceof Literal) {
+			Literal literal = (Literal) t.line.get(1);
+			result = literal.getDatatype() == datatype || literal.getDatatype().equals(datatype);
+		}
 
-		Literal literal = (Literal) t.line.get(1);
-		return literal.getDatatype() == datatype || literal.getDatatype().equals(datatype);
+		return result;
 	}
 
 	@Override

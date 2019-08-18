@@ -11,7 +11,9 @@ package org.eclipse.rdf4j.sail.shacl.AST;
 import org.eclipse.rdf4j.sail.SailConnection;
 
 /**
- * @author Håvard Ottestad
+ * Interface used to specify when a shape needs to be evaluated.
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public interface RequiresEvalutation {
 

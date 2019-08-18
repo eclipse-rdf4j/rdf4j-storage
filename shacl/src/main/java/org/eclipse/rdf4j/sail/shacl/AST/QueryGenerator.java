@@ -11,7 +11,10 @@ package org.eclipse.rdf4j.sail.shacl.AST;
 import org.eclipse.rdf4j.sail.shacl.RdfsSubClassOfReasoner;
 
 /**
- * @author Håvard Ottestad
+ * Interface used to specify how a SPARQL query should be generated with ability to specify the name for the subject and
+ * object variables. The RdfsSubClassOfReasoner can be specified if the query should be rewritten.
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public interface QueryGenerator {
 	String getQuery(String subjectVariable, String objectVariable, RdfsSubClassOfReasoner rdfsSubClassOfReasoner);

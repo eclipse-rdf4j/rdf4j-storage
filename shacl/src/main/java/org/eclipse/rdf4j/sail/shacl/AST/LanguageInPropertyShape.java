@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.AST;
 
 import org.eclipse.rdf4j.model.Resource;
@@ -25,7 +26,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author Håvard Ottestad
+ * The AST (Abstract Syntax Tree) node that represents a sh:languageIn restriction.
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class LanguageInPropertyShape extends AbstractSimplePropertyShape {
 

@@ -11,7 +11,7 @@ package org.eclipse.rdf4j.sail.shacl.planNodes;
 import org.eclipse.rdf4j.model.Literal;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class MinCountFilter extends FilterPlanNode {
 

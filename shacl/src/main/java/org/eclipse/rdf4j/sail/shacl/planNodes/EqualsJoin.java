@@ -5,12 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.sail.SailException;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class EqualsJoin implements PlanNode {
 	private PlanNode left;
 	private PlanNode right;

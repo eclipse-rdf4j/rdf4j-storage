@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -23,6 +24,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 
 abstract class AbstractBulkJoinPlanNode implements PlanNode {
 

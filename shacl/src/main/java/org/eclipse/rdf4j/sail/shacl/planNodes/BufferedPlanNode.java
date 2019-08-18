@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -17,6 +18,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class BufferedPlanNode<T extends MultiStreamPlanNode & PlanNode> implements PushablePlanNode {
 	private final Logger logger = LoggerFactory.getLogger(BufferedPlanNode.class);
 

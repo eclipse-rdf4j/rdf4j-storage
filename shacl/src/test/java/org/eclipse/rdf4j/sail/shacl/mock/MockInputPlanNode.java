@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class MockInputPlanNode implements PlanNode {
 

@@ -18,7 +18,7 @@ import java.util.Objects;
  * The AST (Abstract Syntax Tree) node that represents a simple path for exactly one predicate. Currently there is no
  * support for complex paths.
  *
- * @author Heshan Jayasinghe
+ * @author Heshan Jayasinghe. Håvard Mikkelsen Ottestad
  */
 public class SimplePath extends Path {
 

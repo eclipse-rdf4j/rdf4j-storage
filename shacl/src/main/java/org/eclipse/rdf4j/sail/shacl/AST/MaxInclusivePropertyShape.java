@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.AST;
 
 import org.eclipse.rdf4j.model.Literal;
@@ -22,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
- * @author Håvard Ottestad
+ * The AST (Abstract Syntax Tree) node that represents a sh:maxInclusive restriction.
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class MaxInclusivePropertyShape extends AbstractSimplePropertyShape {
 

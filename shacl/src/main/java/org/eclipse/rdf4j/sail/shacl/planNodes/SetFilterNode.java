@@ -16,6 +16,10 @@ import org.eclipse.rdf4j.sail.SailException;
 import java.util.Arrays;
 import java.util.Set;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class SetFilterNode implements PlanNode {
 
 	private Set<Value> targetNodeList;

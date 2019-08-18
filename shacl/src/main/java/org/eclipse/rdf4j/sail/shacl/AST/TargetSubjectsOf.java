@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * sh:targetSubjectsOf
+ * The AST (Abstract Syntax Tree) node that represents sh:targetSubjectsOf.
  *
  * @author Håvard Mikkelsen Ottestad
  */
@@ -102,6 +102,7 @@ public class TargetSubjectsOf extends NodeShape {
 	@Override
 	public String getQuery(String subjectVariable, String objectVariable,
 			RdfsSubClassOfReasoner rdfsSubClassOfReasoner) {
+
 		return targetSubjectsOf.stream()
 				.map(target -> "\n { BIND(<" + target + "> as ?b1) \n " + subjectVariable + " ?b1 " + objectVariable
 						+ ".  } \n")

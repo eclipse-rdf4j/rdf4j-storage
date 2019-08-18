@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  * The AST (Abstract Syntax Tree) node that represents a property nodeShape without any restrictions. This node should
  * be extended by other nodes.
  *
- * @author Heshan Jayasinghe, Håvard Mikkelsen Ottestad
+ * @author Heshan Jayasinghe. Håvard Mikkelsen Ottestad
  */
 public abstract class PropertyShape implements PlanGenerator, RequiresEvalutation {
 

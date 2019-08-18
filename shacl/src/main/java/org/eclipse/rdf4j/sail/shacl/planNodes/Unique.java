@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class Unique implements PlanNode {
 	private final Logger logger = LoggerFactory.getLogger(Unique.class);
@@ -48,10 +48,6 @@ public class Unique implements PlanNode {
 			Tuple previous;
 
 			private void calculateNext() {
-				if (next != null) {
-					return;
-				}
-
 				while (next == null && parentIterator.hasNext()) {
 					Tuple temp = parentIterator.next();
 

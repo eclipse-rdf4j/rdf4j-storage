@@ -19,7 +19,7 @@ import org.eclipse.rdf4j.query.algebra.evaluation.util.ValueComparator;
 import java.util.function.Function;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class LiteralComparatorFilter extends FilterPlanNode {
 
@@ -48,6 +48,8 @@ public class LiteralComparatorFilter extends FilterPlanNode {
 
 	@Override
 	boolean checkTuple(Tuple t) {
+		boolean result = false;
+
 		Value literal = t.line.get(1);
 
 		if (literal instanceof Literal) {
@@ -58,17 +60,17 @@ public class LiteralComparatorFilter extends FilterPlanNode {
 
 				if (dateDatatype && XMLSchema.DATETIME.equals(datatype)) {
 					literal = SimpleValueFactory.getInstance()
-							.createLiteral(literal.stringValue().split("T")[0], XMLSchema.DATE);
+						.createLiteral(literal.stringValue().split("T")[0], XMLSchema.DATE);
 				}
 
 				int compare = new ValueComparator().compare(compareTo, literal);
 
-				return function.apply(compare);
+				result = function.apply(compare);
 			}
 
 		}
 
-		return false;
+		return result;
 	}
 
 	private boolean datatypesMatch(IRI datatype) {

@@ -15,7 +15,9 @@ import org.eclipse.rdf4j.sail.shacl.planNodes.PlanNodeProvider;
 import java.util.List;
 
 /**
- * @author Heshan Jayasinghe
+ * Interface used to specify how a plan can be generated and which methods are required.
+ *
+ * @author Heshan Jayasinghe. Håvard Mikkelsen Ottestad
  */
 public interface PlanGenerator {
 

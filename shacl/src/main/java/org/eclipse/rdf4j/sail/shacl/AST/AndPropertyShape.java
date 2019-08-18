@@ -5,13 +5,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.AST;
 
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.SailConnection;
-import org.eclipse.rdf4j.sail.shacl.SourceConstraintComponent;
 import org.eclipse.rdf4j.sail.shacl.ConnectionsGroup;
+import org.eclipse.rdf4j.sail.shacl.SourceConstraintComponent;
 import org.eclipse.rdf4j.sail.shacl.planNodes.AggregateIteratorTypeOverride;
 import org.eclipse.rdf4j.sail.shacl.planNodes.EnrichWithShape;
 import org.eclipse.rdf4j.sail.shacl.planNodes.IteratorData;
@@ -30,7 +31,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * @author Håvard Ottestad
+ * The AST (Abstract Syntax Tree) node that represents a sh:and restriction.
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class AndPropertyShape extends PathPropertyShape {
 

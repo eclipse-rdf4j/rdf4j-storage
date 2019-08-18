@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class ValueInFilter extends FilterPlanNode {
 

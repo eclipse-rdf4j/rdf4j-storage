@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The AST (Abstract Syntax Tree) node that represents the NodeShape node. NodeShape nodes can have multiple property
+ * The AST (Abstract Syntax Tree) node that represents the NodeShape node. NodeShape nodes can have multiple property *
  * nodeShapes, which are the restrictions for everything that matches the NodeShape.
  *
- * @author Heshan Jayasinghe
+ * @author Heshan Jayasinghe, Håvard Mikkelsen Ottestad
  */
 public class NodeShape implements PlanGenerator, RequiresEvalutation, QueryGenerator {
 

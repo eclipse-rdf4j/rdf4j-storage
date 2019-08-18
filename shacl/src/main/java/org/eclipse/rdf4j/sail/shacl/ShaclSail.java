@@ -130,7 +130,7 @@ import java.util.concurrent.locks.StampedLock;
  * </pre>
  *
  * @author Heshan Jayasinghe
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  * @see <a href="https://www.w3.org/TR/shacl/">SHACL W3C Recommendation</a>
  */
 public class ShaclSail extends NotifyingSailWrapper {

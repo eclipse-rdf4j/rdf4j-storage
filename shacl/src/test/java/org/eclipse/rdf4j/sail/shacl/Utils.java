@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class Utils {
 

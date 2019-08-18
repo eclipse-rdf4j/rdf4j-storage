@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.sail.shacl.AST.NodeKindPropertyShape;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class NodeKindFilter extends FilterPlanNode {
 

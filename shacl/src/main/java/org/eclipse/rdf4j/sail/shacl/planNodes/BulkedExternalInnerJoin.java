@@ -13,16 +13,14 @@ import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.parser.ParsedQuery;
 import org.eclipse.rdf4j.query.parser.QueryParserUtil;
-import org.eclipse.rdf4j.sail.NotifyingSailConnection;
 import org.eclipse.rdf4j.sail.SailConnection;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
-import org.eclipse.rdf4j.sail.shacl.ShaclSailConnection;
 
 import java.util.ArrayDeque;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  *         <p>
  *         This inner join algorithm assumes the left iterator is unique for tuple[0], eg. no two tuples have the same
  *         value at index 0. The right iterator is allowed to contain duplicates.

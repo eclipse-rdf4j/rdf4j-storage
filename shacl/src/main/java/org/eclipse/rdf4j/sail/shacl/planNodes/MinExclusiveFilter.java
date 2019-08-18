@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.model.Value;
 import java.math.BigDecimal;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class MinExclusiveFilter extends FilterPlanNode {
 
@@ -27,15 +27,16 @@ public class MinExclusiveFilter extends FilterPlanNode {
 
 	@Override
 	boolean checkTuple(Tuple t) {
-		Value literal = t.line.get(1);
+		boolean result = false;
 
+		Value literal = t.line.get(1);
 		if (literal instanceof Literal) {
 			BigDecimal bigDecimal = ((Literal) literal).decimalValue();
-			return min.compareTo(bigDecimal) < 0;
+			result = min.compareTo(bigDecimal) < 0;
 
 		}
 
-		return false;
+		return result;
 	}
 
 	@Override

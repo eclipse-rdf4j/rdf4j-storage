@@ -21,7 +21,7 @@ import org.eclipse.rdf4j.sail.memory.MemoryStoreConnection;
 import java.util.ArrayDeque;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  *         <p>
  *         External means that this plan node can join the iterator from a plan node with an external source (Repository
  *         or SailConnection) based on a query or a predicate.

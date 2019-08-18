@@ -26,7 +26,7 @@ import java.util.Set;
  * If a Value on index 1 has no language because it is a literal without a language or because it is an IRI or BNode,
  * then its language is considered empty and not cached.
  *
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class NonUniqueTargetLang implements PlanNode {
 	PlanNode parent;

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class UnorderedSelect implements PlanNode {
 

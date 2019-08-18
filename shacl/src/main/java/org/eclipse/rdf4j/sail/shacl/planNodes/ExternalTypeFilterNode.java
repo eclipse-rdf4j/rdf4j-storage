@@ -22,7 +22,8 @@ import java.util.Arrays;
 import java.util.Set;
 
 /**
- * @author Håvard Ottestad
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class ExternalTypeFilterNode implements PlanNode {
 
@@ -89,13 +90,14 @@ public class ExternalTypeFilterNode implements PlanNode {
 			}
 
 			private Resource isType(Value subject) {
+				Resource result = null;
 				if (subject instanceof Resource) {
-					return filterOnType.stream()
-							.filter(type -> connection.hasStatement((Resource) subject, RDF.TYPE, type, true))
-							.findFirst()
-							.orElse(null);
+					result = filterOnType.stream()
+						.filter(type -> connection.hasStatement((Resource) subject, RDF.TYPE, type, true))
+						.findFirst()
+						.orElse(null);
 				}
-				return null;
+				return result;
 			}
 
 			@Override

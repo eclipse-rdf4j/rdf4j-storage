@@ -5,13 +5,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.shacl.GlobalValidationExecutionLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  *         <p>
  *         This inner join algorithm assumes the left iterator is unique for tuple[0], eg. no two tuples have the same
  *         value at index 0. The right iterator is allowed to contain duplicates.

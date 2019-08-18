@@ -53,7 +53,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 @RunWith(Parameterized.class)
 abstract public class AbstractShaclTest {

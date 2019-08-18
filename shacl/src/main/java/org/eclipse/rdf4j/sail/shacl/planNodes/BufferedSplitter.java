@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  *         <p>
  *         Allows the iterator of one planNode to be used by multiple other nodes by buffering all results from the
  *         parent iterator. This will potentially take a fair bit of memory, but maybe be useful for perfomance so that

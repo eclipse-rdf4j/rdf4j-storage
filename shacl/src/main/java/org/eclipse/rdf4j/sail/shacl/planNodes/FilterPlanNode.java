@@ -16,7 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Håvard Ottestad
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public abstract class FilterPlanNode implements MultiStreamPlanNode, PlanNode {
 

@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.planNodes;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -13,6 +14,10 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.model.vocabulary.SHACL;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class Formatter {
 
 	public static String prefix(Value in) {

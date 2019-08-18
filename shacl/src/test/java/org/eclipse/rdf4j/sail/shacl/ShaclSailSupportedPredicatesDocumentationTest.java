@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 @RunWith(Parameterized.class)
 public class ShaclSailSupportedPredicatesDocumentationTest extends AbstractShaclTest {

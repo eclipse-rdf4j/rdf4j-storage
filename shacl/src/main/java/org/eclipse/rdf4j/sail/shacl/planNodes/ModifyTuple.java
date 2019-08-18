@@ -13,6 +13,10 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.sail.SailException;
 
+/**
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class ModifyTuple implements PlanNode {
 	PlanNode parent;
 	ModifyTupleInterface function;

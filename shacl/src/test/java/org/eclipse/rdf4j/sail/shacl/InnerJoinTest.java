@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import static junit.framework.TestCase.assertTrue;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class InnerJoinTest {
 

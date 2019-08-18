@@ -13,7 +13,8 @@ import org.eclipse.rdf4j.common.iteration.CloseableIteration;
 import org.eclipse.rdf4j.sail.SailException;
 
 /**
- * @author Håvard Ottestad
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class LeftOuterJoin implements PlanNode {
 
@@ -22,6 +23,7 @@ public class LeftOuterJoin implements PlanNode {
 	private boolean printed = false;
 	private ValidationExecutionLogger validationExecutionLogger;
 
+	@Deprecated
 	public LeftOuterJoin(PlanNode left, PlanNode right) {
 		this.left = left;
 		this.right = right;

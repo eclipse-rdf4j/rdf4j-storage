@@ -15,7 +15,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * @author Håvard Ottestad
+ *
+ * @author Håvard Mikkelsen Ottestad
  */
 public class LanguageInFilter extends FilterPlanNode {
 
@@ -28,13 +29,13 @@ public class LanguageInFilter extends FilterPlanNode {
 
 	@Override
 	boolean checkTuple(Tuple t) {
-		if (!(t.line.get(1) instanceof Literal)) {
-			return false;
+		boolean result = false;
+		if (t.line.get(1) instanceof Literal) {
+			Optional<String> language = ((Literal) t.line.get(1)).getLanguage();
+			result = language.filter(languageIn::contains).isPresent();
 		}
 
-		Optional<String> language = ((Literal) t.line.get(1)).getLanguage();
-		return language.filter(languageIn::contains).isPresent();
-
+		return result;
 	}
 
 	@Override

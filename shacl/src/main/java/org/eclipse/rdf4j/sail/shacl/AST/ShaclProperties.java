@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Eclipse RDF4J contributors.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Distribution License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *******************************************************************************/
+
 package org.eclipse.rdf4j.sail.shacl.AST;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -16,6 +24,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+/**
+ * A class that can hold all properties used by SHACL.
+ *
+ * @author Håvard Mikkelsen Ottestad
+ */
 public class ShaclProperties {
 
 	private static final Logger logger = LoggerFactory.getLogger(ShaclProperties.class);

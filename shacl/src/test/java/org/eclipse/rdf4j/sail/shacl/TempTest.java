@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 public class TempTest {
 

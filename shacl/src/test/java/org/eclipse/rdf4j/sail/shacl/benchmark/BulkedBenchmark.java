@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @author Håvard Ottestad
+ * @author Håvard Mikkelsen Ottestad
  */
 @State(Scope.Benchmark)
 @Warmup(iterations = 20)
